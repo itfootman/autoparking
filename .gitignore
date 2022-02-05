@@ -1,0 +1,9 @@
+*.o
+*.stash
+Makefile
+autoparking.pro.user
+autoparking
+release
+debug
+*.rcc
+*.swp
