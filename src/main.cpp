@@ -4,9 +4,13 @@
 #include <QQuick3D>
 #include <QResource>
 #include <QQmlContext>
+#include "ros/ros.h"
+#include "messageshub/messages_hub.h"
 
 int main(int argc, char *argv[])
 {
+    using namespace hmi;
+    ros::init(argc, argv, "autoparking");
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
@@ -23,6 +27,8 @@ int main(int argc, char *argv[])
     }
     engine.rootContext()->setContextProperty("applicationDirPath", app.applicationDirPath());
     engine.load(QUrl("qrc:/qml/main.qml"));
+    MessagesHub messagesHub;
+    messagesHub.plugIn();
 
     return app.exec();
 }
