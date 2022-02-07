@@ -1,4 +1,5 @@
 _Pragma("once")
+#include <cmath>
 
 namespace hmi {
 uint16_t constexpr INITIAL_BASE () {
@@ -29,7 +30,7 @@ struct CombinedData {
     float pointDepthEndX = std::nan("1");
     float pointDepthEndY = std::nan("1");
     uint16_t readyFlag = INITIAL_BASE();
-    
+
     bool isReady() {
         return readyFlag == (VEHICLE_INFO() | SLOT_FUSION_INFO());
     }

@@ -155,6 +155,7 @@ include_directories(
 # )
 
 set(CMAKE_AUTORCC OFF)
+set(CMAKE_AUTOMOC ON)
 set(CMAKE_PREFIX_PATH $ENV{QT515})
 find_package(Qt5 COMPONENTS Core Quick 3DCore 3DRender 3DInput Quick3D 3DQuick 3DQuickExtras 3DExtras REQUIRED)
 
@@ -169,7 +170,11 @@ set(qt3d_LIBS Qt5::Core Qt5::Quick Qt5::Qml
 set(rcc_binary qml.rcc)
 set(rcc_source qml.qrc)
 
-add_executable(${PROJECT_NAME} src/main.cpp src/messageshub/messages_hub.cpp)
+add_executable(${PROJECT_NAME}
+    src/main.cpp
+    src/messageshub/messages_hub.cpp
+    src/messageshub/observer.cpp
+    src/uiupdater.cpp)
 
 add_custom_command(TARGET ${PROJECT_NAME}
                    POST_BUILD
