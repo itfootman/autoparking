@@ -3,6 +3,7 @@
 
 namespace hmi {
 MessagesHub::MessagesHub() {
+    qRegisterMetaType<CombinedData>();
 }
 
 MessagesHub::~MessagesHub() {
@@ -34,7 +35,7 @@ void MessagesHub::onVehicleMessage(const autoparking::vehicle_infoConstPtr& msg)
     double linearSpeedY = msg->linearSpeed.y;
     float vehicleSpeed = msg->vehicleSpeed;
     double yawSpeed = msg->accelStamped.accel.angular.z;
-    ROS_INFO("Vehicle info-timestamp:%ld, vehicleSpeed:%lf, linearSpeedY:%lf, yawSpeed:%lf",
+    ROS_DEBUG("Vehicle info-timestamp:%ld, vehicleSpeed:%lf, linearSpeedY:%lf, yawSpeed:%lf",
              msg->timestamp, vehicleSpeed, linearSpeedY, yawSpeed);
 
     combinedData_.yawSpeed = msg->accelStamped.accel.angular.z;
@@ -81,7 +82,7 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
         }
     }
 
-    ROS_INFO("Fusion-timestamp:%ld, num:%d, type:%d, state:%d,is_new:%d,"
+    ROS_DEBUG("Fusion-timestamp:%ld, num:%d, type:%d, state:%d,is_new:%d,"
              "slot_id:%d, count:%ld, target_id:%d, delay_time:%ld,"
              "points[(%lf, %lf), (%lf, %lf), (%lf, %lf)]",
              msg->timestamp, msg->num, msg->type.size() > 0 ? msg->type[0] : -1,
@@ -130,7 +131,9 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
 }
 
 void MessagesHub::onOneFrameReady(const CombinedData& combinedData) {
+    ROS_INFO("biwenyang:onOneFrameReady");
     for (const auto& o : observers_) {
+        ROS_INFO("biwenyang:onOneFrameReady, notify observer...");
         QMetaObject::invokeMethod(o.get() , "onUpdate" , Qt::AutoConnection
             , Q_ARG(CombinedData, combinedData));
     }

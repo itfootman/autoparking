@@ -1,7 +1,8 @@
 _Pragma("once")
 #include <cmath>
+#include <QMetaType>
 
-namespace hmi {
+//namespace hmi {
 uint16_t constexpr INITIAL_BASE () {
     return 0;
 }
@@ -39,4 +40,5 @@ struct CombinedData {
         readyFlag = INITIAL_BASE();
     }
 };
-}
+//}
+Q_DECLARE_METATYPE(CombinedData)

@@ -6,6 +6,7 @@
 #include <QQmlContext>
 #include "ros/ros.h"
 #include "messageshub/messages_hub.h"
+#include "uiupdater.h"
 
 int main(int argc, char *argv[])
 {
@@ -28,6 +29,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("applicationDirPath", app.applicationDirPath());
     engine.load(QUrl("qrc:/qml/main.qml"));
     MessagesHub messagesHub;
+    std::shared_ptr<UIUpdater> uiUpdater = std::make_shared<UIUpdater>();
+    messagesHub.addObserver(uiUpdater);
     messagesHub.plugIn();
 
     return app.exec();
