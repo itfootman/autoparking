@@ -68,6 +68,13 @@ Item {
         layer.enabled: true
         environment: sceneEnvironment
 
+        Connections {
+            target: uiupdater
+            onCombinedDataUpdated: (combinedData) => {
+                console.log("combinedData.timestamp" + combinedData.timestamp);
+            }
+        }
+
         HDRBloomTonemap {
             id: hDRBloomTonemap
             blurFalloff: 2

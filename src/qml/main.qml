@@ -24,12 +24,6 @@ import hmi.autoparking 1.0
             }
         }
 
-        UIUpdater {
-            id: uiupdater
-            onCombinedDataUpdated: (combinedData) => {
-                console.log("combinedData.timestamp" + combinedData.timestamp);
-            }
-        }
         Adas {
             id: adas
 //            x: 532
