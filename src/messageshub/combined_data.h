@@ -20,7 +20,7 @@ uint16_t constexpr SLOT_FUSION_INFO() {
 struct CombinedData {
     Q_PROPERTY(int64_t timestamp READ timestamp)
     Q_PROPERTY(float vehicleSpeed READ vehicleSpeed)
-    Q_PROPERTY(c yawSpeed READ yawSpeed)
+    Q_PROPERTY(double yawSpeed READ yawSpeed)
     Q_PROPERTY(int32_t num READ num)
     Q_PROPERTY(int32_t slotId READ slotId)
     Q_PROPERTY(float pointStartX READ pointStartX)

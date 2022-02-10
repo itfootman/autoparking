@@ -70,8 +70,8 @@ Item {
 
         Connections {
             target: uiupdater
-            onCombinedDataUpdated: (combinedData) => {
-                console.log("combinedData.timestamp" + combinedData.timestamp);
+            function onCombinedDataUpdated(combinedData) {
+                console.log("combinedData.timestamp:" + combinedData.timestamp + "slotid:" + combinedData.slotId);
             }
         }
 
