@@ -12,7 +12,7 @@ void UIUpdater::onUpdate(const CombinedData& combinedData) {
               << "," << combinedData.pointDepthEndX << "," << combinedData.pointDepthEndY << ")"
               << "," << "vehicleSpeed:" << combinedData.vehicleSpeed
               << "," << "yawSpeed:" << combinedData.yawSpeed;
-    emit combinedDataChanged(combinedData);
+    emit combinedDataUpdated(combinedData);
 
 }
 } /* namespace hmi */

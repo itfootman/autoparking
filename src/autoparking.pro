@@ -4,7 +4,10 @@ QT += quick quick3d 3drender 3dinput 3dquick 3dlogic qml quick 3dquickextras 3de
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        main.cpp
+        main.cpp \
+        messageshub/messages_hub.cpp \
+        messageshub/observer.cpp \
+        uiupdater.cpp
 
 RCC_BINARY_SOURCES += qml.qrc
 
@@ -47,3 +50,9 @@ QMAKE_EXTRA_COMPILERS += resource_build
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+HEADERS += \
+    messageshub/combined_data.h \
+    messageshub/messages_hub.h \
+    messageshub/observer.h \
+    uiupdater.h

@@ -11,6 +11,7 @@ import QtQuick3D.Effects 1.15
 import Quick3DAssets.Coupe 1.0
 
 import QtQuick.Controls 2.15
+import hmi.autoparking.uiupdater 1.0
 
 //import Quick3DAssets.CarShadowPlane 1.0
 Item {
@@ -62,6 +63,19 @@ Item {
         y: 312
         width: 856
         height: 408
+        property alias doorLight_R_EmissiveColor
+
+        UIUpdater {
+            combinedData: {
+                timestamp: 0
+
+            }
+
+            onCombinedDataUpdate: (combinedData) => {
+                // Add node to scene
+            }
+        }
+
 //        anchors.left: parent.left
 //        anchors.bottom: parent.bottom
 //        anchors.leftMargin: 0
