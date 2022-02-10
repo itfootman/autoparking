@@ -3,7 +3,6 @@
 
 namespace hmi {
 MessagesHub::MessagesHub() {
-    qRegisterMetaType<CombinedData>();
 }
 
 MessagesHub::~MessagesHub() {
@@ -131,7 +130,6 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
 }
 
 void MessagesHub::onOneFrameReady(const CombinedData& combinedData) {
-    ROS_INFO("biwenyang:onOneFrameReady");
     for (const auto& o : observers_) {
         ROS_INFO("biwenyang:onOneFrameReady, notify observer...");
         QMetaObject::invokeMethod(o.get() , "onUpdate" , Qt::AutoConnection

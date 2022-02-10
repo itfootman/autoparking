@@ -11,7 +11,7 @@ import QtQuick3D.Effects 1.15
 import Quick3DAssets.Coupe 1.0
 
 import QtQuick.Controls 2.15
-import hmi.autoparking.uiupdater 1.0
+import hmi.autoparking 1.0
 
 //import Quick3DAssets.CarShadowPlane 1.0
 Item {
@@ -63,23 +63,6 @@ Item {
         y: 312
         width: 856
         height: 408
-        property alias doorLight_R_EmissiveColor
-
-        UIUpdater {
-            combinedData: {
-                timestamp: 0
-
-            }
-
-            onCombinedDataUpdate: (combinedData) => {
-                // Add node to scene
-            }
-        }
-
-//        anchors.left: parent.left
-//        anchors.bottom: parent.bottom
-//        anchors.leftMargin: 0
-//        anchors.bottomMargin: 0
 
         anchors.horizontalCenter: parent.horizontalCenter
         layer.enabled: true
@@ -145,8 +128,6 @@ Item {
                 carPaintRoughness: 0.2
 
                 opacity: 1
-                interiorLightColor: Car3dControl.interiorHueColor
-                interiorLightPower: Car3dControl.interiorBrightness
                 interiorLightsVisible: true
                 specular: 0
 
@@ -169,8 +150,7 @@ Item {
                     z: -10.38797
 
                     y: 83.29
-                    color: Car3dControl.interiorHueColor
-                    brightness: 98 * Car3dControl.interiorBrightness
+
                     eulerRotation.z: -94.27788
                     eulerRotation.y: 93.69339
                     eulerRotation.x: -59.65046
@@ -180,36 +160,18 @@ Item {
                     x: 59.714
                     y: 86.446
                     z: -13.2774
-                    color: Car3dControl.interiorHueColor
-                    brightness: 118 * Car3dControl.interiorBrightness
                     eulerRotation.z: 89.99998
                     eulerRotation.x: -59.52864
                     eulerRotation.y: -89.99999
                 }
                 SpotLight {
                     id: interiorSpotLight2
-                    color: Car3dControl.interiorHueColor
-                    brightness: 35 * Car3dControl.interiorBrightness
                     eulerRotation.z: -179.99998
                     eulerRotation.y: 179.99998
                     x: -2.698
                     y: 67.368
-                    scope: coupe
                     eulerRotation.x: -50
                     z: 29.74187
-                }
-
-                SpotLight {
-                    id: batteryLight
-                    x: 9.111
-                    y: 50.452
-                    color: "#94c58f"
-                    scope: battery
-                    brightness: 0
-                    eulerRotation.z: 179.99988
-                    eulerRotation.y: -179.99988
-                    eulerRotation.x: -88.17738
-                    z: 1.75921
                 }
             }
 

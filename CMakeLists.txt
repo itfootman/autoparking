@@ -157,6 +157,7 @@ include_directories(
 set(CMAKE_AUTORCC OFF)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_PREFIX_PATH $ENV{QT515})
+
 find_package(Qt5 COMPONENTS Core Quick 3DCore 3DRender 3DInput Quick3D 3DQuick 3DQuickExtras 3DExtras REQUIRED)
 
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
@@ -176,11 +177,17 @@ add_executable(${PROJECT_NAME}
     src/messageshub/observer.cpp
     src/uiupdater.cpp)
 
-add_custom_command(TARGET ${PROJECT_NAME}
-                   POST_BUILD
+add_custom_target(
+    my_custom_target_that_always_runs ALL
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/__header.h
+)
+
+add_custom_command(OUTPUT
+                   ${CMAKE_CURRENT_BINARY_DIR}/__header.h  ${CMAKE_CURRENT_BINARY_DIR}/header.h    # real header, we write.
                    DEPENDS ${PROJECT_SOURCE_DIR}/src/${rcc_source}
-                   COMMAND $ENV{QT515}/bin/rcc -binary -no-compress
-                   ${PROJECT_SOURCE_DIR}/src/${rcc_source} -o ${CMAKE_SOURCE_DIR}/../devel/lib/${PROJECT_NAME}/qml.rcc
+                   COMMAND touch ${CMAKE_CURRENT_BINARY_DIR}/header.h
+                   COMMAND echo "Compile rcc file..."
+                   COMMAND $ENV{QT515}/bin/rcc -binary -no-compress ${PROJECT_SOURCE_DIR}/src/${rcc_source} -o ${CMAKE_SOURCE_DIR}/../devel/lib/${PROJECT_NAME}/qml.rcc
                    VERBATIM)
 
 #src/messageshub/messages_handler.cpp)

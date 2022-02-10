@@ -3,11 +3,13 @@ import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 //import Themes 1.0
 
-Window {
-    width: 1080
-    height: 720
-    visible: true
-    title: qsTr("autoparking")
+import hmi.autoparking 1.0
+
+//Window {
+//    width: 1080
+//    height: 720
+//    visible: true
+//    title: qsTr("autoparking")
     Item {
         id: autoparking
         width: 1080
@@ -19,6 +21,13 @@ Window {
                 id: background1
                 anchors.fill: parent
               //  source: Themes.backgroundImage
+            }
+        }
+
+        UIUpdater {
+            id: uiupdater
+            onCombinedDataUpdated: (combinedData) => {
+                console.log("combinedData.timestamp" + combinedData.timestamp);
             }
         }
         Adas {
@@ -40,5 +49,5 @@ Window {
             text: "开始泊车"
         }
     }
-}
+//}
 
