@@ -85,6 +85,33 @@ uint8 rosmsg_Chk_ESP                        #ESP State Det
 uint8 rosmsg_Brk_Ped_Psd                    #Brake Pedal State
                                             #0x00:NO, 0x01:Yes
 
+uint8 rosmsg_ParkManueInfoType
+        #0x00: Display all slot (Default)
+        #0x01: Display single direction target positon And  all slot
+        #0x02: Display single direction target positon And  target slot
+
+## Coordinate System:  original pt -- car rear axis center, logitunal front x+, laternal left y+
+int16 SigDirTagPos_P1_x                            #(val:-32767 ~ +32767 unit: mm)
+int16 SigDirTagPos_P1_y                            #(val:-32767 ~ +32767 unit: mm)
+int16 SigDirTagPos_P2_x                            #(val:-32767 ~ +32767 unit: mm)
+int16 SigDirTagPos_P2_y                            #(val:-32767 ~ +32767 unit: mm)
+int16 SigDirTagPos_P3_x                            #(val:-32767 ~ +32767 unit: mm)
+int16 SigDirTagPos_P3_y                            #(val:-32767 ~ +32767 unit: mm)
+int16 SigDirTagPos_P4_x                            #(val:-32767 ~ +32767 unit: mm)
+int16 SigDirTagPos_P4_y                            #(val:-32767 ~ +32767 unit: mm)
+
+uint8  rosmsg_ParkManueNotice
+        #0 "NoMessage"
+        #1 "KeepingDriveForward"
+        #2 "PleaseStopTheCar"
+        #3 "PressParkingActiveButton"
+        #4 "DriveBackward"
+        #5 "DriveForward"
+        #6 "ParkingComplete"
+uint8  rosmsg_ParkProcProgressPercentage
+        #  0 -- 100  only when ParkManueNotice is "DriveBackward" or "DriveForward"
+        #  This Value is valid
+
 ######################################### VOLVO VEHICLE INFORMATION END ################################################
 
 geometry_msgs/Vector3  APACarPar

@@ -18,11 +18,15 @@ uint16_t constexpr SLOT_FUSION_INFO() {
 
 
 struct CombinedData {
-    Q_PROPERTY(int64_t timestamp READ timestamp)
+private:
+    Q_GADGET
+
+    Q_PROPERTY(long long timestamp READ timestamp)
     Q_PROPERTY(float vehicleSpeed READ vehicleSpeed)
     Q_PROPERTY(double yawSpeed READ yawSpeed)
-    Q_PROPERTY(int32_t num READ num)
-    Q_PROPERTY(int32_t slotId READ slotId)
+    Q_PROPERTY(float carAngle READ carAngle)
+    Q_PROPERTY(int num READ num)
+    Q_PROPERTY(int slotId READ slotId)
     Q_PROPERTY(float pointStartX READ pointStartX)
     Q_PROPERTY(float pointStartY READ pointStartY)
     Q_PROPERTY(float pointEndX READ pointEndX)
@@ -35,7 +39,7 @@ struct CombinedData {
 public:
     uint16_t readyFlag = INITIAL_BASE();
 
-    bool isReady() {
+    bool isReady() const {
         return readyFlag == (VEHICLE_INFO() | SLOT_FUSION_INFO());
     }
 
@@ -43,19 +47,76 @@ public:
         readyFlag = INITIAL_BASE();
     }
 
-    int64_t timestamp = -1;
-    float vehicleSpeed = 0.0f;
-    float yawSpeed = 0.0f;
-    int32_t num = 0;
-    int32_t slotId = -1;
-    float pointStartX = std::nan("1");
-    float pointStartY = std::nan("1");
-    float pointEndX = std::nan("1");
-    float pointEndY = std::nan("1");
-    float pointDepthStartX = std::nan("1");
-    float pointDepthStartY = std::nan("1");
-    float pointDepthEndX = std::nan("1");
-    float pointDepthEndY = std::nan("1");
+    int64_t timestamp() const {
+        return timestamp_;
+    }
+
+    float vehicleSpeed() const {
+        return vehicleSpeed_;
+    }
+
+    float yawSpeed() const {
+        return yawSpeed_;
+    }
+
+    float carAngle() const {
+        return carAngle_;
+    }
+
+    int32_t num() const {
+        return num_;
+    }
+
+    int32_t slotId() const {
+        return slotId_;
+    }
+
+    float pointStartX() const {
+        return pointStartX_;
+    }
+
+    float pointStartY() const {
+        return pointStartY_;
+    }
+
+    float pointEndX() const {
+        return pointEndX_;
+    }
+
+    float pointEndY() const {
+        return pointEndY_;
+    }
+
+    float pointDepthStartX() const {
+        return pointDepthStartX_;
+    }
+
+    float pointDepthStartY() const {
+        return pointDepthStartY_;
+    }
+
+    float pointDepthEndX() const {
+        return pointDepthEndX_;
+    }
+
+    float pointDepthEndY() const {
+        return pointDepthEndY_;
+    }
+
+    int64_t timestamp_ = -1;
+    float vehicleSpeed_ = 0.0f;
+    float yawSpeed_ = 0.0f;
+    float carAngle_ = 0.0f;
+    int32_t num_ = 0;
+    int32_t slotId_ = -1;
+    float pointStartX_ = std::nan("1");
+    float pointStartY_ = std::nan("1");
+    float pointEndX_ = std::nan("1");
+    float pointEndY_ = std::nan("1");
+    float pointDepthStartX_ = std::nan("1");
+    float pointDepthStartY_ = std::nan("1");
+    float pointDepthEndX_ = std::nan("1");
+    float pointDepthEndY_ = std::nan("1");
 };
 //}
 Q_DECLARE_METATYPE(CombinedData)

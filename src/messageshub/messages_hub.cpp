@@ -37,9 +37,10 @@ void MessagesHub::onVehicleMessage(const autoparking::vehicle_infoConstPtr& msg)
     ROS_DEBUG("Vehicle info-timestamp:%ld, vehicleSpeed:%lf, linearSpeedY:%lf, yawSpeed:%lf",
              msg->timestamp, vehicleSpeed, linearSpeedY, yawSpeed);
 
-    combinedData_.yawSpeed = msg->accelStamped.accel.angular.z;
-    combinedData_.vehicleSpeed = msg->vehicleSpeed;
-    combinedData_.timestamp = msg->timestamp;
+    combinedData_.yawSpeed_ = msg->accelStamped.accel.angular.z;
+    combinedData_.vehicleSpeed_ = msg->vehicleSpeed;
+    combinedData_.timestamp_ = msg->timestamp;
+    combinedData_.carAngle_ = msg->APACarPar.z;
     combinedData_.readyFlag |= VEHICLE_INFO();
     if (combinedData_.isReady()) {
         onOneFrameReady(combinedData_);
@@ -93,35 +94,35 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
              point_depth_start.x, point_depth_start.y, point_depth_end.x, point_depth_end.y);
 
     int32_t slotId = msg->slot_id.size() > 0 ? msg->slot_id[0] : -1;
-    if (slotId == -1 || msg->num <= 0 || lastSlotId == slotId) {
-        return;
-    }
+//    if (slotId == -1 || msg->num <= 0 /*|| lastSlotId == slotId*/) {
+//        return;
+//    }
 
     lastSlotId = slotId;
-    combinedData_.num = msg->num;
-    combinedData_.slotId = slotId;
-    combinedData_.pointStartX = point_start.x;
-    combinedData_.pointStartY = point_start.y;
-    combinedData_.pointEndX = point_end.x;
-    combinedData_.pointEndY = point_end.y;
-    combinedData_.pointDepthStartX = point_depth_start.x;
-    combinedData_.pointDepthStartY = point_depth_start.y;
-    combinedData_.pointDepthEndX = point_depth_end.x;
-    combinedData_.pointDepthEndY = point_depth_end.y;
+    combinedData_.num_ = msg->num;
+    combinedData_.slotId_ = slotId;
+    combinedData_.pointStartX_ = point_start.x;
+    combinedData_.pointStartY_ = point_start.y;
+    combinedData_.pointEndX_ = point_end.x;
+    combinedData_.pointEndY_ = point_end.y;
+    combinedData_.pointDepthStartX_ = point_depth_start.x;
+    combinedData_.pointDepthStartY_ = point_depth_start.y;
+    combinedData_.pointDepthEndX_ = point_depth_end.x;
+    combinedData_.pointDepthEndY_ = point_depth_end.y;
     combinedData_.readyFlag |= SLOT_FUSION_INFO();
 
     static bool hasReported = false;
-    float epsilon = 0.01f;
+//    float epsilon = 0.01f;
 
-    if (combinedData_.isReady() && combinedData_.vehicleSpeed <= epsilon  && !hasReported) {
-        combinedData_.vehicleSpeed = 0.0f;
-        combinedData_.yawSpeed = 0.0f;
-        combinedData_.readyFlag |= VEHICLE_INFO();
-        onOneFrameReady(combinedData_);
-        combinedData_.clearReadyFlag();
-        hasReported = true;
-        return;
-    }
+//    if (combinedData_.isReady() /*&& combinedData_.vehicleSpeed <= epsilon*/  /*&& !hasReported*/) {
+//        combinedData_.vehicleSpeed = 0.0f;
+//        combinedData_.yawSpeed = 0.0f;
+//        combinedData_.readyFlag |= VEHICLE_INFO();
+//        onOneFrameReady(combinedData_);
+//        combinedData_.clearReadyFlag();
+//        hasReported = true;
+//        return;
+//    }
 
     if (combinedData_.isReady()) {
         onOneFrameReady(combinedData_);

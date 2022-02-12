@@ -71,7 +71,8 @@ Item {
         Connections {
             target: uiupdater
             function onCombinedDataUpdated(combinedData) {
-                console.log("combinedData.timestamp:" + combinedData.timestamp + "slotid:" + combinedData.slotId);
+                //console.log("combinedData:" + combinedData);
+                console.log("combinedData.timestamp:" + combinedData.timestamp + ",slotid:" + combinedData.slotId);
             }
         }
 

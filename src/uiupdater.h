@@ -14,6 +14,6 @@ public:
     void onUpdate(const CombinedData& combinedData) override;
 
 signals:
-    void combinedDataUpdated(const CombinedData& combinedData);
+    void combinedDataUpdated(CombinedData combinedData);
 };
 } /* namespace hmi */

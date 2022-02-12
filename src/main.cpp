@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<UIUpdater>("hmi.autoparking", 1, 0,
                                  "UIUpdater");
-    qRegisterMetaType<CombinedData>();
+    //qRegisterMetaType<CombinedData>("CombinedData");
     QQmlComponent component(view.engine(), QUrl("qrc:/qml/AutoParkingData.qml"));
     auto *uiupdater = qobject_cast<UIUpdater *>(component.create());
     view.engine()->rootContext()->setContextProperty("uiupdater", uiupdater);
