@@ -8,8 +8,6 @@ import Quick3DAssets.InteriorLights 1.0
 import Quick3DAssets.DoorLights_R 1.0
 import Quick3DAssets.DoorLights_L 1.0
 
-
-
 Node {
     id: rootNode
     property bool driverdoor: false

@@ -27,6 +27,9 @@ private:
     Q_PROPERTY(float carAngle READ carAngle)
     Q_PROPERTY(int num READ num)
     Q_PROPERTY(int slotId READ slotId)
+    Q_PROPERTY(int state READ state)
+    Q_PROPERTY(int type READ type)
+    Q_PROPERTY(int isNew READ isNew)
     Q_PROPERTY(float pointStartX READ pointStartX)
     Q_PROPERTY(float pointStartY READ pointStartY)
     Q_PROPERTY(float pointEndX READ pointEndX)
@@ -71,6 +74,18 @@ public:
         return slotId_;
     }
 
+    int32_t state() const {
+        return state_;
+    }
+
+    int32_t type() const {
+        return type_;
+    }
+
+    int32_t isNew() const {
+        return isNew_;
+    }
+
     float pointStartX() const {
         return pointStartX_;
     }
@@ -109,6 +124,9 @@ public:
     float carAngle_ = 0.0f;
     int32_t num_ = 0;
     int32_t slotId_ = -1;
+    int32_t state_ = -1;
+    int32_t type_ = -1;
+    int32_t isNew_ = -1;
     float pointStartX_ = std::nan("1");
     float pointStartY_ = std::nan("1");
     float pointEndX_ = std::nan("1");

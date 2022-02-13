@@ -82,18 +82,21 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
         }
     }
 
+    int32_t state = msg->state.size() > 0 ? msg->state[0] : -1;
+    int32_t type = msg->type.size() > 0 ? msg->type[0] : -1;
+    int32_t isNew = msg->is_new.size() > 0 ? msg->is_new[0] : -1;
+    int32_t slotId = msg->slot_id.size() > 0 ? msg->slot_id[0] : -1;
+
     ROS_DEBUG("Fusion-timestamp:%ld, num:%d, type:%d, state:%d,is_new:%d,"
              "slot_id:%d, count:%ld, target_id:%d, delay_time:%ld,"
              "points[(%lf, %lf), (%lf, %lf), (%lf, %lf)]",
-             msg->timestamp, msg->num, msg->type.size() > 0 ? msg->type[0] : -1,
-             msg->state.size() > 0 ? msg->state[0] : -1,
+             msg->timestamp, msg->num, type, state,
              msg->is_new.size() > 0 ? msg->is_new[0] : -1,
              msg->slot_id.size() > 0 ? msg->slot_id[0] : -1,
              msg->count, msg->target_id, msg->delay_time,
              point_start.x, point_start.y, point_end.x, point_end.y,
              point_depth_start.x, point_depth_start.y, point_depth_end.x, point_depth_end.y);
 
-    int32_t slotId = msg->slot_id.size() > 0 ? msg->slot_id[0] : -1;
 //    if (slotId == -1 || msg->num <= 0 /*|| lastSlotId == slotId*/) {
 //        return;
 //    }
@@ -101,6 +104,9 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
     lastSlotId = slotId;
     combinedData_.num_ = msg->num;
     combinedData_.slotId_ = slotId;
+    combinedData_.state_ = state;
+    combinedData_.type_ = type;
+    combinedData_.isNew_ = isNew;
     combinedData_.pointStartX_ = point_start.x;
     combinedData_.pointStartY_ = point_start.y;
     combinedData_.pointEndX_ = point_end.x;

@@ -146,5 +146,6 @@
         <file>qml/asset_imports/Quick3DAssets/InteriorLights/InteriorLights.qml</file>
         <file>qml/asset_imports/Quick3DAssets/InteriorLights/qmldir</file>
         <file>qml/AutoParkingData.qml</file>
+        <file>qml/Constants.qml</file>
     </qresource>
 </RCC>
