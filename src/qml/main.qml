@@ -12,8 +12,8 @@ import hmi.autoparking 1.0
 //    title: qsTr("autoparking")
     Item {
         id: autoparking
-        width: 1080
-        height: 720
+        width: Constants.width
+        height: Constants.height
         Item {
             id: background
             anchors.fill: parent

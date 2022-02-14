@@ -22,7 +22,7 @@ Item {
     property bool viewTopBot: true
     property int transitionDuration: 700
     property int roadTransitionDuration: 300
-    property int cmPerPixel:50
+    property int cmPerPixel:3
 
     View3D {
         id: view3D
@@ -30,81 +30,106 @@ Item {
         width: 856
         height: 408
 
-        property int lastSlotId: -1
-
         anchors.horizontalCenter: parent.horizontalCenter
         layer.enabled: true
         environment: sceneEnvironment
 
-        function dumpCombinedData(combinedData) {
-            console.log(
-                "combinedData: {",
-                                "\n  timestamp: ", combinedData.timestamp,
-                                "\n  vehicleSpeed: ", combinedData.vehicleSpeed,
-                                "\n  yawspeed: ", combinedData.yawSpeed,
-                                "\n  carAngle: ", combinedData.carAngle,
-                                "\n  num: ",combinedData.num,
-                                "\n  slotId: ",combinedData.slotId,
-                                "\n  state: ",combinedData.state,
-                                "\n  isNew: ",combinedData.isNew,
-                                "\n  type: ",combinedData.type,
-                                "\n  pointStartX: ",combinedData.pointStartX,
-                                "\n  pointStartY: ",combinedData.pointStartY,
-                                "\n  pointEndX: ",combinedData.pointEndX,
-                                "\n  pointEndY: ",combinedData.pointEndY,
-                                "\n  pointDepthStartX: ",combinedData.pointDepthStartX,
-                                "\n  pointDepthStartY: ",combinedData.pointDepthStartY,
-                                "\n  pointDepthEndX: ",combinedData.pointDepthEndX,
-                                "\n  pointDepthEndY: ",combinedData.pointDepthEndY,
-                              "\n}");
-        }
 
-        Connections {
-            target: uiupdater
-            function onCombinedDataUpdated(combinedData) {
-                view3D.dumpCombinedData(combinedData);
-                if (combinedData.num > 0 && combinedData.slotId !== -1 && combinedData.slotId !== view3D.lastSlogId) {
-                    view3D.lastSlotId = combinedData.slotId;
-                    if (combinedData.state === 0) {
-                       // view3D.addCar(combinedData);
+//        Component.onCompleted: {
+//             var carComponent = Qt.createComponent("qrc:/qml/asset_imports/Quick3DAssets/Car_NPC/Car_NPC.qml");
+//            let carObject = carComponent.createObject(view3D,
+//                {
+//                    //"position": Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ),
+//                    "position": Qt.vector3d(315, 0, 105),
+//                   // "id": "car1",
+//                    "opacity": 1,
+//                    "scale": Qt.vector3d(0.6, 1, 0.5),
+//                    "eulerRotation": Qt.vector3d(0, 90, 0)
+//                });
+//           // carObject.parent = view3D;
+//            console.log("Component.onComplete...");
+//            instances.push(carObject);
+//        }
+
+        Node{
+            property int lastSlotId: -1
+            property var instances: []
+            id: slotScene
+            Connections {
+                target: uiupdater
+                function onCombinedDataUpdated(combinedData) {
+                    slotScene.dumpCombinedData(combinedData);
+                   // console.log("combinedData.slotId:", combinedData.slotId, "view3D.lastSlogId:", view3D.lastSlotId);
+                    if (combinedData.num > 0 && combinedData.slotId !== -1 && combinedData.slotId !== slotScene.lastSlotId) {
+                        slotScene.lastSlotId = combinedData.slotId;
+                        if (combinedData.state === 0) {
+                           // view3D.addCar(combinedData);
+                        }
+
+                       slotScene.addCar(combinedData);
                     }
-
-                   view3D.addCar(combinedData);
                 }
             }
-        }
 
-        function convertCoordinate(combinedData) {
-            var width = combinedData.pointEndX - combinedData.pointStartX;
-            var depth = combinedData.pointDepthStartY - combinedData.pointStartY;
-            var pointStartX = -combinedData.pointStartY / 10 * cmPerPixel;
-            var pointStartY = 0;
-            var pointStartZ = -(combinedData.pointStartX / 10 * cmPerPixel + Math.abs(coupe.z));
-
-            return {
-                width: width,
-                depth: depth,
-                pointStartX: pointStartX,
-                pointStartY: pointStartY,
-                pointStartZ: pointStartZ
+            function dumpCombinedData(combinedData) {
+                console.log(
+                    "combinedData: {",
+                                    "\n  timestamp: ", combinedData.timestamp,
+                                    "\n  vehicleSpeed: ", combinedData.vehicleSpeed,
+                                    "\n  yawspeed: ", combinedData.yawSpeed,
+                                    "\n  carAngle: ", combinedData.carAngle,
+                                    "\n  num: ",combinedData.num,
+                                    "\n  slotId: ",combinedData.slotId,
+                                    "\n  state: ",combinedData.state,
+                                    "\n  isNew: ",combinedData.isNew,
+                                    "\n  type: ",combinedData.type,
+                                    "\n  pointStartX: ",combinedData.pointStartX,
+                                    "\n  pointStartY: ",combinedData.pointStartY,
+                                    "\n  pointEndX: ",combinedData.pointEndX,
+                                    "\n  pointEndY: ",combinedData.pointEndY,
+                                    "\n  pointDepthStartX: ",combinedData.pointDepthStartX,
+                                    "\n  pointDepthStartY: ",combinedData.pointDepthStartY,
+                                    "\n  pointDepthEndX: ",combinedData.pointDepthEndX,
+                                    "\n  pointDepthEndY: ",combinedData.pointDepthEndY,
+                                  "\n}");
             }
-        }
 
-        function addCar(combinedData) {
-            var pixelCoordinate = view3D.convertCoordinate(combinedData);
-            var carComponent = Qt.createComponent("Car_NPC.qml");
-            var positionX = pixelCoordinate.pointStartX + pixelCoordinate.depth / 2;
-            var positionZ = pixelCoordinate.pointStartZ + pixelCoordinate.width / 2;
-            console.log("positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
-            let carObject = carComponent.createObject(view3D,
-                {
-                    "position": Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ),
-                    "id": "car1",
-                    "opacity": 1,
-                    "scale": Qt.vector3d(0.6, 1, 0.5),
-                    "eulerRotation": Qt.vector3d(0, 90, 0)
+            function convertCoordinate(combinedData) {
+                var width = Math.abs(combinedData.pointEndX - combinedData.pointStartX);
+                var depth = Math.abs(combinedData.pointDepthStartY - combinedData.pointStartY);
+                var pointStartX = -combinedData.pointStartY / 10 * cmPerPixel;
+                var pointStartY = 0;
+                var pointStartZ = -(combinedData.pointStartX / 10 * cmPerPixel + Math.abs(coupe.z));
+
+                return {
+                    width: width,
+                    depth: depth,
+                    pointStartX: pointStartX,
+                    pointStartY: pointStartY,
+                    pointStartZ: pointStartZ
                 }
-             );
+            }
+
+            function addCar(combinedData) {
+                var pixelCoordinate = slotScene.convertCoordinate(combinedData);
+                var carComponent = Qt.createComponent("qrc:/qml/asset_imports/Quick3DAssets/Car_NPC/Car_NPC.qml");
+                var positionX = pixelCoordinate.pointStartX + pixelCoordinate.depth / 2;
+                var positionZ = pixelCoordinate.pointStartZ + pixelCoordinate.width / 2;
+                console.log("positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
+                let carObject = carComponent.createObject(slotScene,
+                    {
+                        "position": Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ),
+                        //"position": Qt.vector3d(315, 0, 105),
+                        "id": "car1",
+                        "opacity": 1,
+                        "scale": Qt.vector3d(0.6, 1, 0.5),
+                        "eulerRotation": Qt.vector3d(0, 90, 0)
+                    });
+                instances.push(carObject);
+                console.log("carObject", carObject);
+                console.log("Add a car to scene...");
+            }
+
         }
 
         HDRBloomTonemap {
