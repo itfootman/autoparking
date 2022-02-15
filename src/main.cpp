@@ -7,14 +7,19 @@
 #include <QQuickView>
 #include <QQuickItem>
 #include <QQmlComponent>
+#ifdef WITH_ROS
 #include "ros/ros.h"
+#endif
 #include "messageshub/messages_hub.h"
 #include "uiupdater.h"
 
 int main(int argc, char *argv[])
 {
     using namespace hmi;
+
+#ifdef WITH_ROS
     ros::init(argc, argv, "autoparking");
+#endif
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
@@ -53,4 +58,6 @@ int main(int argc, char *argv[])
 
     return app.exec();
     qDebug() << "Main exit...";
+
+    return 0;
 }

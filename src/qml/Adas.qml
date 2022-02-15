@@ -16,8 +16,8 @@ import hmi.autoparking 1.0
 //import Quick3DAssets.CarShadowPlane 1.0
 Item {
     id: adas
-    width: Constants.width
-    height: Constants.height
+    width: 1080
+    height: 720
 
     property bool viewTopBot: true
     property int transitionDuration: 700
@@ -27,8 +27,8 @@ Item {
     View3D {
         id: view3D
         y: 312
-        width: 856
-        height: 408
+        width: 1080
+        height: 720
 
         anchors.horizontalCenter: parent.horizontalCenter
         layer.enabled: true
@@ -153,30 +153,22 @@ Item {
             }
         }
 
-        Node {
-            id: scene
-            x: -0
+        Road {
+            id: road2
+            x: 0
             y: 0
+            z: 0.48822
+            scale.z: 0.8
+            scale.y: 0
+            scale.x: 1.5
             opacity: 1
-            z: 0
-
-            Road {
-                id: road2
-                x: 0
-                y: 0
-                z: 540.48822
-                scale.z: 1
-                scale.y: 0
-                scale.x: 1.8
-                opacity: 1
-            }
         }
 
         Coupe {
             id: coupe
             x: 0
             y: 0
-            z: -250
+            z: -3500
 
             metalness: 0.5
             specularTint: 0
@@ -279,11 +271,11 @@ Item {
         PerspectiveCamera {
             id: camera
             x: 0
-            y: 414.59
-            z: 560.86456
-            clipFar: 7000
+            y: 520.59
+            z: -1500
+            clipFar: 4000
             fieldOfView: 42
-            eulerRotation.x: -24
+            eulerRotation.x: -10
 
             SpotLight {
                 id: additionalLight

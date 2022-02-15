@@ -181,6 +181,8 @@ add_executable(${PROJECT_NAME}
     src/messageshub/combined_data.h
     src/uiupdater.cpp)
 
+add_definitions(WITH_ROS)
+
 add_custom_target(
     my_custom_target_that_always_runs ALL
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/__header.h

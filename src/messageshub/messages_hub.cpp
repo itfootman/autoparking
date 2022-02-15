@@ -1,4 +1,8 @@
 #include "messages_hub.h"
+#ifndef WITH_ROS
+#include <qthread.h>
+#include <qdatetime.h>
+#endif
 #include <QMetaObject>
 
 namespace hmi {
@@ -8,9 +12,11 @@ MessagesHub::MessagesHub() {
 MessagesHub::~MessagesHub() {
 }
 
+
 void MessagesHub::plugIn() {
     workThread_ = std::make_unique<std::thread>(&MessagesHub::workLoop, this);
 }
+
 
 void MessagesHub::addObserver(const std::shared_ptr<Observer>& observer) {
     std::lock_guard<std::mutex> l(observerMutex_);
@@ -22,6 +28,7 @@ void MessagesHub::removeObserver(const std::shared_ptr<Observer>& observer) {
     std::remove(observers_.begin(), observers_.end(), observer);
 }
 
+#ifdef WITH_ROS
 void MessagesHub::workLoop() {
     ros::NodeHandle n;
     ros::Subscriber fusion_info_sub = n.subscribe("fusion_info", 1000, &MessagesHub::onSlotFusionMessage, this);
@@ -135,10 +142,83 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
         combinedData_.clearReadyFlag();
     }
 }
+#else
+void MessagesHub::workLoop() {
+    combinedData_.vehicleSpeed_ = 0.4;
+    float pointStartVX = 3500;
+    float pointStartVY = -4600;
+    float pointEndVX = 5900;
+    float pointEndVY = -4600;
+    float pointDepthStartVX = 3500;
+    float pointDepthStartVY = -9600;
+    float pointDepthEndVX = 5900;
+    float pointDepthEndVY = -9600;
+
+
+    float pointStartHX = 3500;
+    float pointStartHY = 4600;
+    float pointEndHX = 8500;
+    float pointEndHY = 4600;
+    float pointDepthStartHX = 3500;
+    float pointDepthStartHY = 7000;
+    float pointDepthEndHX = 8500;
+    float pointDepthEndHY = 7000;
+    int loopCount = 0;
+    while (true) {
+        combinedData_.yawSpeed_ = 0;
+
+        combinedData_.timestamp_ = QDateTime::currentDateTime().currentMSecsSinceEpoch();
+        combinedData_.carAngle_ = 0;
+        srand((unsigned)time(NULL));
+        int num = rand() % 5 + 1;
+        if (loopCount % 3 == 0) {
+            combinedData_.vehicleSpeed_ += 0.1;
+        }
+
+        for (int i = 0; i < num; ++i) {
+            combinedData_.num_ = num;
+            combinedData_.slotId_ = i + 1;
+            if (loopCount % 2 == 0) {
+                combinedData_.state_ = (i + 1) % 2 == 0 ? 1 : 2;
+            } else {
+                combinedData_.state_ = (i + 1) % 2 == 0 ? 2 : 1;
+            }
+
+            combinedData_.type_ = (i + 1) % 2 == 0 ? 2 : 3;
+            combinedData_.isNew_ = 2;
+            if (combinedData_.type_ == 2) {
+                combinedData_.pointStartX_ = pointStartVX + i * 3000;
+                combinedData_.pointStartY_ = pointStartVY;
+                combinedData_.pointEndX_ = pointEndVX + i * 3000;
+                combinedData_.pointEndY_ = pointEndVY;
+                combinedData_.pointDepthStartX_ = pointDepthStartVX + i * 3000;
+                combinedData_.pointDepthStartY_ = pointDepthStartVY;
+                combinedData_.pointDepthEndX_ = pointDepthEndVX + i * 3000;
+                combinedData_.pointDepthEndY_ = pointDepthEndVY;
+            } else if (combinedData_.type_ == 3) {
+                combinedData_.pointStartX_ = pointStartHX + i * 6000;
+                combinedData_.pointStartY_ = pointStartHY;
+                combinedData_.pointEndX_ = pointEndHX + i * 6000;
+                combinedData_.pointEndY_ = pointEndHY;
+                combinedData_.pointDepthStartX_ = pointDepthStartHX + i * 6000;
+                combinedData_.pointDepthStartY_ = pointDepthStartHY;
+                combinedData_.pointDepthEndX_ = pointDepthEndHX + i * 6000;
+                combinedData_.pointDepthEndY_ = pointDepthEndHY;
+            }
+
+            combinedData_.readyFlag |= SLOT_FUSION_INFO();
+            combinedData_.readyFlag |= VEHICLE_INFO();
+            onOneFrameReady(combinedData_);
+            QThread::msleep(50);
+        }
+        loopCount++;
+    }
+}
+#endif
 
 void MessagesHub::onOneFrameReady(const CombinedData& combinedData) {
     for (const auto& o : observers_) {
-        ROS_INFO("biwenyang:onOneFrameReady, notify observer...");
+        qDebug() << "biwenyang:onOneFrameReady, notify observer...";
         QMetaObject::invokeMethod(o.get() , "onUpdate" , Qt::AutoConnection
             , Q_ARG(CombinedData, combinedData));
     }
