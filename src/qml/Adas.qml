@@ -16,19 +16,21 @@ import hmi.autoparking 1.0
 //import Quick3DAssets.CarShadowPlane 1.0
 Item {
     id: adas
-    width: 1080
-    height: 720
+    width: 800
+    height: 400
 
     property bool viewTopBot: true
     property int transitionDuration: 700
     property int roadTransitionDuration: 300
-    property int cmPerPixel:3
+    property real cmPerPixelX: 0.9
+    property real cmPerPixelZ: 1
+    property real carLength: 460
 
     View3D {
         id: view3D
         y: 312
-        width: 1080
-        height: 720
+        width: 800
+        height: 400
 
         anchors.horizontalCenter: parent.horizontalCenter
         layer.enabled: true
@@ -58,14 +60,14 @@ Item {
             Connections {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
-                    slotScene.dumpCombinedData(combinedData);
+
                    // console.log("combinedData.slotId:", combinedData.slotId, "view3D.lastSlogId:", view3D.lastSlotId);
                     if (combinedData.num > 0 && combinedData.slotId !== -1 && combinedData.slotId !== slotScene.lastSlotId) {
                         slotScene.lastSlotId = combinedData.slotId;
                         if (combinedData.state === 0) {
                            // view3D.addCar(combinedData);
                         }
-
+                    slotScene.dumpCombinedData(combinedData);
                        slotScene.addCar(combinedData);
                     }
                 }
@@ -95,11 +97,11 @@ Item {
             }
 
             function convertCoordinate(combinedData) {
-                var width = Math.abs(combinedData.pointEndX - combinedData.pointStartX);
-                var depth = Math.abs(combinedData.pointDepthStartY - combinedData.pointStartY);
-                var pointStartX = -combinedData.pointStartY / 10 * cmPerPixel;
+                var width = Math.abs(combinedData.pointEndX - combinedData.pointStartX) / 10 /cmPerPixelZ;
+                var depth = Math.abs(combinedData.pointDepthStartY - combinedData.pointStartY) / 10 / cmPerPixelX;
+                var pointStartX = -combinedData.pointStartY / 10 / cmPerPixelX;
                 var pointStartY = 0;
-                var pointStartZ = -(combinedData.pointStartX / 10 * cmPerPixel + Math.abs(coupe.z));
+                var pointStartZ = -(combinedData.pointStartX / 10 / cmPerPixelZ + Math.abs(coupe.z));
 
                 return {
                     width: width,
@@ -114,15 +116,15 @@ Item {
                 var pixelCoordinate = slotScene.convertCoordinate(combinedData);
                 var carComponent = Qt.createComponent("qrc:/qml/asset_imports/Quick3DAssets/Car_NPC/Car_NPC.qml");
                 var positionX = pixelCoordinate.pointStartX + pixelCoordinate.depth / 2;
-                var positionZ = pixelCoordinate.pointStartZ + pixelCoordinate.width / 2;
+                var positionZ = pixelCoordinate.pointStartZ - pixelCoordinate.width / 2 - carLength /  cmPerPixelZ / 2;
                 console.log("positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
                 let carObject = carComponent.createObject(slotScene,
                     {
                         "position": Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ),
-                        //"position": Qt.vector3d(315, 0, 105),
+                        //"position": Qt.vector3d(780, 0, -2200),
                         "id": "car1",
                         "opacity": 1,
-                        "scale": Qt.vector3d(0.6, 1, 0.5),
+                        "scale": Qt.vector3d(2, 3.5, 2),
                         "eulerRotation": Qt.vector3d(0, 90, 0)
                     });
                 instances.push(carObject);
@@ -157,10 +159,10 @@ Item {
             id: road2
             x: 0
             y: 0
-            z: 0.48822
+            z: 300
             scale.z: 0.8
             scale.y: 0
-            scale.x: 1.5
+            scale.x: 3
             opacity: 1
         }
 
@@ -168,7 +170,7 @@ Item {
             id: coupe
             x: 0
             y: 0
-            z: -3500
+            z: -2600
 
             metalness: 0.5
             specularTint: 0
@@ -185,9 +187,9 @@ Item {
             windowRoughness: 0
             windowMetalness: 0
             carBodyOpacity: 1
-            scale.z: 0.6
-            scale.y: 0.6
-            scale.x: 0.6
+            scale.z: 1.0
+            scale.y: 1.0
+            scale.x: 1.0
             eulerRotation.z: 0
             eulerRotation.y: 180
             eulerRotation.x: 0
@@ -271,11 +273,11 @@ Item {
         PerspectiveCamera {
             id: camera
             x: 0
-            y: 520.59
+            y: 480
             z: -1500
-            clipFar: 4000
-            fieldOfView: 42
-            eulerRotation.x: -10
+            clipFar: 5000
+            fieldOfView: 60
+            eulerRotation.x: -45
 
             SpotLight {
                 id: additionalLight
