@@ -146,13 +146,13 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
 void MessagesHub::workLoop() {
     combinedData_.vehicleSpeed_ = 0.4;
     float pointStartVX = 1500;
-    float pointStartVY = -4600;
+    float pointStartVY = -2000;
     float pointEndVX = 4000;
-    float pointEndVY = -4600;
+    float pointEndVY = -2000;
     float pointDepthStartVX = 1500;
-    float pointDepthStartVY = -9600;
+    float pointDepthStartVY = -7000;
     float pointDepthEndVX = 4000;
-    float pointDepthEndVY = -9600;
+    float pointDepthEndVY = -7000;
 
 
     float pointStartHX = 3500;
@@ -163,6 +163,7 @@ void MessagesHub::workLoop() {
     float pointDepthStartHY = 7000;
     float pointDepthEndHX = 8500;
     float pointDepthEndHY = 7000;
+    float distance = 2000;
     int loopCount = 0;
     while (true) {
         combinedData_.yawSpeed_ = 0;
@@ -170,7 +171,7 @@ void MessagesHub::workLoop() {
         combinedData_.timestamp_ = QDateTime::currentDateTime().currentMSecsSinceEpoch();
         combinedData_.carAngle_ = 0;
         srand((unsigned)time(NULL));
-        int num = rand() % 1 + 1;
+        int num = rand() % 3 + 1;
         if (loopCount % 3 == 0) {
             combinedData_.vehicleSpeed_ += 0.1;
         }
@@ -187,13 +188,13 @@ void MessagesHub::workLoop() {
             combinedData_.type_ = (i + 1) % 2 == 0 ? 3 : 2;
             combinedData_.isNew_ = 2;
             if (combinedData_.type_ == 2) {
-                combinedData_.pointStartX_ = pointStartVX + i * 3000;
+                combinedData_.pointStartX_ = pointStartVX + i * distance;
                 combinedData_.pointStartY_ = pointStartVY;
-                combinedData_.pointEndX_ = pointEndVX + i * 3000;
+                combinedData_.pointEndX_ = pointEndVX + i * distance;
                 combinedData_.pointEndY_ = pointEndVY;
-                combinedData_.pointDepthStartX_ = pointDepthStartVX + i * 3000;
+                combinedData_.pointDepthStartX_ = pointDepthStartVX + i * distance;
                 combinedData_.pointDepthStartY_ = pointDepthStartVY;
-                combinedData_.pointDepthEndX_ = pointDepthEndVX + i * 3000;
+                combinedData_.pointDepthEndX_ = pointDepthEndVX + i * distance;
                 combinedData_.pointDepthEndY_ = pointDepthEndVY;
             } else if (combinedData_.type_ == 3) {
                 combinedData_.pointStartX_ = pointStartHX + i * 6000;

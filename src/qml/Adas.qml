@@ -22,9 +22,10 @@ Item {
     property bool viewTopBot: true
     property int transitionDuration: 700
     property int roadTransitionDuration: 300
-    property real cmPerPixelX: 0.9
-    property real cmPerPixelZ: 1
+    property real cmPerPixelX: 1.8
+    property real cmPerPixelZ: 1.8
     property real carLength: 460
+    property real carWidth: 180
 
     View3D {
         id: view3D
@@ -60,14 +61,14 @@ Item {
             Connections {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
-
+                     slotScene.dumpCombinedData(combinedData);
                    // console.log("combinedData.slotId:", combinedData.slotId, "view3D.lastSlogId:", view3D.lastSlotId);
                     if (combinedData.num > 0 && combinedData.slotId !== -1 && combinedData.slotId !== slotScene.lastSlotId) {
                         slotScene.lastSlotId = combinedData.slotId;
                         if (combinedData.state === 0) {
                            // view3D.addCar(combinedData);
                         }
-                    slotScene.dumpCombinedData(combinedData);
+
                        slotScene.addCar(combinedData);
                     }
                 }
@@ -115,8 +116,10 @@ Item {
             function addCar(combinedData) {
                 var pixelCoordinate = slotScene.convertCoordinate(combinedData);
                 var carComponent = Qt.createComponent("qrc:/qml/asset_imports/Quick3DAssets/Car_NPC/Car_NPC.qml");
-                var positionX = pixelCoordinate.pointStartX + pixelCoordinate.depth / 2;
-                var positionZ = pixelCoordinate.pointStartZ - pixelCoordinate.width / 2 - carLength /  cmPerPixelZ / 2;
+
+                var positionX = pixelCoordinate.pointStartX > 0 ? pixelCoordinate.pointStartX + pixelCoordinate.depth / 2 + carLength / cmPerPixelX :
+                                                                  pixelCoordinate.pointStartX - (pixelCoordinate.depth / 2 + carWidth / cmPerPixelX);
+                var positionZ = pixelCoordinate.pointStartZ - pixelCoordinate.width / 2;
                 console.log("positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
                 let carObject = carComponent.createObject(slotScene,
                     {
@@ -124,12 +127,25 @@ Item {
                         //"position": Qt.vector3d(780, 0, -2200),
                         "id": "car1",
                         "opacity": 1,
-                        "scale": Qt.vector3d(2, 3.5, 2),
+                        "scale": Qt.vector3d(1, 1, 1),
                         "eulerRotation": Qt.vector3d(0, 90, 0)
                     });
+
+                if (combinedData.type === 3) {
+                    carObject.eulerRotation = Qt.vector3d(0, 0, 0);
+
+                }
+
                 instances.push(carObject);
+                var anim = Qt.createQmlObject ('import QtQuick 2.15; NumberAnimation  { }', slotScene);
+                anim.target = carObject;
+                anim.property = "z";
+                anim.to = 300;
+                anim.duration = 5000;
+                anim.restart();
                 console.log("carObject", carObject);
                 console.log("Add a car to scene...");
+
             }
 
         }
@@ -155,22 +171,22 @@ Item {
             }
         }
 
-        Road {
-            id: road2
-            x: 0
-            y: 0
-            z: 300
-            scale.z: 0.8
-            scale.y: 0
-            scale.x: 3
-            opacity: 1
-        }
+//        Road {
+//            id: road2
+//            x: 0
+//            y: 0
+//            z: 300
+//            scale.z: 0.8
+//            scale.y: 0
+//            scale.x: 3
+//            opacity: 1
+//        }
 
         Coupe {
             id: coupe
             x: 0
             y: 0
-            z: -2600
+            z: -1000
 
             metalness: 0.5
             specularTint: 0
@@ -187,9 +203,9 @@ Item {
             windowRoughness: 0
             windowMetalness: 0
             carBodyOpacity: 1
-            scale.z: 1.0
-            scale.y: 1.0
-            scale.x: 1.0
+            scale.z: 1
+            scale.y: 1
+            scale.x: 1
             eulerRotation.z: 0
             eulerRotation.y: 180
             eulerRotation.x: 0
@@ -272,12 +288,12 @@ Item {
 
         PerspectiveCamera {
             id: camera
-            x: 0
-            y: 480
-            z: -1500
+            y: 414.59
+            z: 527.86456
             clipFar: 5000
-            fieldOfView: 60
-            eulerRotation.x: -45
+            fieldOfView: 42
+            eulerRotation.x: -24
+
 
             SpotLight {
                 id: additionalLight
@@ -293,6 +309,10 @@ Item {
                 brightness: 35
                 z: -326.18591
             }
+
+//            Component.onCompleted: {
+//                camera.lookAt(Qt.vector3d(0, 100, -1500));
+//            }
         }
     }
 }

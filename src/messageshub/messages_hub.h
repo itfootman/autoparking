@@ -4,10 +4,10 @@ _Pragma("once");
 #include <mutex>
 
 #ifdef WITH_ROS
-    #include "ros/ros.h"
-    #include "geometry_msgs/Point32.h"
-    #include "autoparking/fusion_info.h"
-    #include "autoparking/vehicle_info.h"
+#include "ros/ros.h"
+#include "geometry_msgs/Point32.h"
+#include "autoparking/fusion_info.h"
+#include "autoparking/vehicle_info.h"
 #endif
 #include "combined_data.h"
 #include "observer.h"
