@@ -11,7 +11,7 @@ import Quick3DAssets.Coupe 1.0
 
 import QtQuick.Controls 2.15
 import hmi.autoparking 1.0
-import Constants 1.0
+import "qrc:/qml/imports_js/Constants.js" as Constants
 import "qrc:/qml/imports_js/SceneManager.js" as SceneManager
 import "qrc:/qml/imports_js/Logger.js" as Logger
 
