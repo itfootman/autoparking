@@ -12,6 +12,8 @@ import Quick3DAssets.Coupe 1.0
 import QtQuick.Controls 2.15
 import hmi.autoparking 1.0
 import Constants 1.0
+import "qrc:/qml/imports_js/SceneManager.js" as SceneManager
+import "qrc:/qml/imports_js/Logger.js" as Logger
 
 Item {
     id: adas
@@ -21,10 +23,6 @@ Item {
     property bool viewTopBot: true
     property int transitionDuration: 700
     property int roadTransitionDuration: 300
-    property real cmPerPixelX: 1
-    property real cmPerPixelZ: 1
-    property real carLength: 460
-    property real carWidth: 180
 
     View3D {
         id: view3D
@@ -37,100 +35,20 @@ Item {
         environment: sceneEnvironment
 
         Node {
-            property int lastSlotId: -1
-            property var instances: []
             id: slotScene
             Connections {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
-                     slotScene.dumpCombinedData(combinedData);
+                     Logger.dumpCombinedData(combinedData);
                     if (combinedData.num > 0 && combinedData.slotId !== -1 &&
-                        combinedData.slotId !== slotScene.lastSlotId &&
+                        combinedData.slotId !== SceneManager.lastSlotId &&
                         combinedData.isNew === 2) {
-                        slotScene.lastSlotId = combinedData.slotId;
+                        SceneManager.lastSlotId = combinedData.slotId;
                         if (combinedData.state === Constants.SlotState.OCCUPY) {
-                            slotScene.addCar(combinedData);
+                            SceneManager.addCar(slotScene, combinedData, Math.abs(coupe.z));
                         }
                     }
                 }
-            }
-
-            function dumpCombinedData(combinedData) {
-                console.log(
-                    "combinedData: {",
-                                    "\n  timestamp: ", combinedData.timestamp,
-                                    "\n  vehicleSpeed: ", combinedData.vehicleSpeed,
-                                    "\n  yawspeed: ", combinedData.yawSpeed,
-                                    "\n  carAngle: ", combinedData.carAngle,
-                                    "\n  num: ",combinedData.num,
-                                    "\n  slotId: ",combinedData.slotId,
-                                    "\n  state: ",combinedData.state,
-                                    "\n  isNew: ",combinedData.isNew,
-                                    "\n  type: ",combinedData.type,
-                                    "\n  pointStartX: ",combinedData.pointStartX,
-                                    "\n  pointStartY: ",combinedData.pointStartY,
-                                    "\n  pointEndX: ",combinedData.pointEndX,
-                                    "\n  pointEndY: ",combinedData.pointEndY,
-                                    "\n  pointDepthStartX: ",combinedData.pointDepthStartX,
-                                    "\n  pointDepthStartY: ",combinedData.pointDepthStartY,
-                                    "\n  pointDepthEndX: ",combinedData.pointDepthEndX,
-                                    "\n  pointDepthEndY: ",combinedData.pointDepthEndY,
-                                  "\n}");
-            }
-
-            function convertCoordinate(combinedData) {
-                var width = Math.abs(combinedData.pointEndX - combinedData.pointStartX) / 10 /cmPerPixelZ;
-                var depth = Math.abs(combinedData.pointDepthStartY - combinedData.pointStartY) / 10 / cmPerPixelX;
-                var pointStartX = -combinedData.pointStartY / 10 / cmPerPixelX;
-                var pointStartY = 0;
-                var pointStartZ = -(combinedData.pointStartX / 10 / cmPerPixelZ + Math.abs(coupe.z));
-
-                return {
-                    width: width,
-                    depth: depth,
-                    pointStartX: pointStartX,
-                    pointStartY: pointStartY,
-                    pointStartZ: pointStartZ
-                }
-            }
-
-            function addCar(combinedData) {
-                var pixelCoordinate = slotScene.convertCoordinate(combinedData);
-
-                var positionX = pixelCoordinate.pointStartX > 0 ?
-                            pixelCoordinate.pointStartX + pixelCoordinate.depth / 2 :
-                            pixelCoordinate.pointStartX - (pixelCoordinate.depth / 2);
-                var offset = 0;
-                var roation = Qt.vector3d(0, 0, 0);
-                if (combinedData.type === Constants.SlotType.PERPENDICULAR) {
-                    offset = pixelCoordinate.width / 2;
-                    roation = Qt.vector3d(0, 90, 0);
-                } else if (combinedData.type === Constants.SlotType.PARALLEL) {
-                    offset = pixelCoordinate.depth / 2;
-                } else {
-                    console.log("Slot type is not supported...");
-                }
-
-                var positionZ = pixelCoordinate.pointStartZ - offset;
-                console.log("positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
-                var carComponent = Qt.createComponent("qrc:/qml/asset_imports/Quick3DAssets/Car_NPC/Car_NPC.qml");
-                let carObject = carComponent.createObject(slotScene,
-                    {
-                        "position": Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ),
-                        "id": "car1",
-                        "opacity": 1,
-                        "scale": Qt.vector3d(1, 1, 1),
-                        "eulerRotation": roation
-                    });
-
-                //instances.push(carObject);
-                var anim = Qt.createQmlObject ('import QtQuick 2.15; NumberAnimation  { }', slotScene);
-                anim.target = carObject;
-                anim.property = "z";
-                anim.to = 300;
-                anim.duration = 5000;
-                anim.restart();
-                console.log("Add a car to scene...");
             }
         }
 
@@ -154,17 +72,6 @@ Item {
                 source: "assets/hdr/Studio_05e.hdr"
             }
         }
-
-//        Road {
-//            id: road2
-//            x: 0
-//            y: 0
-//            z: 300
-//            scale.z: 0.8
-//            scale.y: 0
-//            scale.x: 3
-//            opacity: 1
-//        }
 
         Coupe {
             id: coupe
@@ -225,50 +132,6 @@ Item {
                 z: 29.74187
             }
         }
-
-
-//        Car_NPC {
-//            position: Qt.vector3d(315, 50, 105)
-//            id: car_NPC0
-//            opacity: 1
-//            scale.z: 0.6
-//            scale.y: 1
-//            scale.x: 0.5
-//            eulerRotation.y: 90
-//        }
-
-
-//        Node {
-//            position: Qt.vector3d(265, 0, 80)
-
-//            eulerRotation.z: 0
-//            eulerRotation.y: 0
-//            eulerRotation.x: -90
-
-//            Rectangle {
-//                width: 200
-//                height: 100
-//                color: "#8b323e80"
-//                radius: 10
-//                border.width: 3
-//                border.color: "#2666CF"
-
-//                Text {
-//                    id: text0
-//                    width: 64
-//                    height: 33
-//                    anchors.verticalCenter: parent.verticalCenter
-//                    anchors.horizontalCenter: parent.horizontalCenter
-//                    color: "#233cc9"
-//                    text: qsTr("P")
-//                    font.pixelSize: 30
-//                    horizontalAlignment: Text.AlignHCenter
-//                    verticalAlignment: Text.AlignVCenter
-
-//                    font.bold: true
-//                }
-//            }
-//        }
 
         PerspectiveCamera {
             id: camera

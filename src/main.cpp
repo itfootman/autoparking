@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     QQuickView view;
     view.engine()->addImportPath("qrc:/qml/asset_imports");
     view.engine()->addImportPath("qrc:/qml/imports");
+    view.engine()->addImportPath("qrc:/qml/imports_js");
 
     bool result = QResource::registerResource(app.applicationDirPath() + "/qml.rcc");
     if (result) {

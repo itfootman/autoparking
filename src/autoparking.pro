@@ -13,7 +13,7 @@ SOURCES += \
 RCC_BINARY_SOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH = qml/asset_imports qml/imports
+QML_IMPORT_PATH = qml/asset_imports qml/imports qml/imports_js
 
 # Additional import path used to resolve QML modules just for Qt Quick Designer
 QML_DESIGNER_IMPORT_PATH =
