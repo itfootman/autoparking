@@ -12,7 +12,7 @@ import hmi.autoparking 1.0
 //    title: qsTr("autoparking")
     Item {
         id: autoparking
-        width: 800
+        width: 500
         height: 600
         Item {
             id: background
