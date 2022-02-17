@@ -155,15 +155,16 @@ void MessagesHub::workLoop() {
     float pointDepthEndVY = -7000;
 
 
-    float pointStartHX = 3500;
-    float pointStartHY = 4600;
-    float pointEndHX = 8500;
-    float pointEndHY = 4600;
-    float pointDepthStartHX = 3500;
-    float pointDepthStartHY = 7000;
-    float pointDepthEndHX = 8500;
-    float pointDepthEndHY = 7000;
-    float distance = 2000;
+    float pointStartHX = 1500;
+    float pointStartHY = 2000;
+    float pointEndHX = 6500;
+    float pointEndHY = 2000;
+    float pointDepthStartHX = 1500;
+    float pointDepthStartHY = 4400;
+    float pointDepthEndHX = 6500;
+    float pointDepthEndHY = 4400;
+    float distance = 1000;
+    float distanceV = 5500;
     int loopCount = 0;
     while (true) {
         combinedData_.yawSpeed_ = 0;
@@ -171,10 +172,10 @@ void MessagesHub::workLoop() {
         combinedData_.timestamp_ = QDateTime::currentDateTime().currentMSecsSinceEpoch();
         combinedData_.carAngle_ = 0;
         srand((unsigned)time(NULL));
-        int num = rand() % 3 + 1;
-        if (loopCount % 3 == 0) {
-            combinedData_.vehicleSpeed_ += 0.1;
-        }
+        int num = rand() % 4 + 1;
+//        if (loopCount % 3 == 0) {
+//            combinedData_.vehicleSpeed_ += 0.1;
+//        }
 
         for (int i = 0; i < num; ++i) {
             combinedData_.num_ = num;
@@ -185,9 +186,9 @@ void MessagesHub::workLoop() {
                 combinedData_.state_ = (i + 1) % 2 == 0 ? 2 : 1;
             }
 
-            combinedData_.type_ = (i + 1) % 2 == 0 ? 3 : 2;
+            combinedData_.type_ = (i + 1) % 2 == 0 ? 1 : 2;
             combinedData_.isNew_ = 2;
-            if (combinedData_.type_ == 2) {
+            if (combinedData_.type_ == 1) {
                 combinedData_.pointStartX_ = pointStartVX + i * distance;
                 combinedData_.pointStartY_ = pointStartVY;
                 combinedData_.pointEndX_ = pointEndVX + i * distance;
@@ -196,14 +197,14 @@ void MessagesHub::workLoop() {
                 combinedData_.pointDepthStartY_ = pointDepthStartVY;
                 combinedData_.pointDepthEndX_ = pointDepthEndVX + i * distance;
                 combinedData_.pointDepthEndY_ = pointDepthEndVY;
-            } else if (combinedData_.type_ == 3) {
-                combinedData_.pointStartX_ = pointStartHX + i * 6000;
+            } else if (combinedData_.type_ == 2) {
+                combinedData_.pointStartX_ = pointStartHX + i * distanceV;
                 combinedData_.pointStartY_ = pointStartHY;
-                combinedData_.pointEndX_ = pointEndHX + i * 6000;
+                combinedData_.pointEndX_ = pointEndHX + i * distanceV;
                 combinedData_.pointEndY_ = pointEndHY;
-                combinedData_.pointDepthStartX_ = pointDepthStartHX + i * 6000;
+                combinedData_.pointDepthStartX_ = pointDepthStartHX + i * distanceV;
                 combinedData_.pointDepthStartY_ = pointDepthStartHY;
-                combinedData_.pointDepthEndX_ = pointDepthEndHX + i * 6000;
+                combinedData_.pointDepthEndX_ = pointDepthEndHX + i * distanceV;
                 combinedData_.pointDepthEndY_ = pointDepthEndHY;
             }
 

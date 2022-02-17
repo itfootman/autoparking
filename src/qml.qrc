@@ -54,8 +54,6 @@
         <file>qml/assets/Studio4.hdr</file>
         <file>qml/Adas.qml</file>
         <file>qml/main.qml</file>
-        <file>qml/imports/Themes/Themes.qml</file>
-        <file>qml/imports/Themes/qmldir</file>
         <file>qml/asset_imports/Quick3DAssets/Car_NPC/_icons/Car_NPC_libicon</file>
         <file>qml/asset_imports/Quick3DAssets/Car_NPC/_icons/Car_NPC_libicon@2x</file>
         <file>qml/asset_imports/Quick3DAssets/Car_NPC/meshes/car.mesh</file>
@@ -146,6 +144,7 @@
         <file>qml/asset_imports/Quick3DAssets/InteriorLights/InteriorLights.qml</file>
         <file>qml/asset_imports/Quick3DAssets/InteriorLights/qmldir</file>
         <file>qml/AutoParkingData.qml</file>
-        <file>qml/Constants.qml</file>
+        <file>qml/imports/Constants/qmldir</file>
+        <file>qml/imports/Constants/Constants.qml</file>
     </qresource>
 </RCC>

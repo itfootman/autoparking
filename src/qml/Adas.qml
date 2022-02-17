@@ -4,7 +4,6 @@ import QtQuick3D 1.15
 import QtQuick 2.15
 import Quick3DAssets.Road 1.0
 
-//import Quick3DAssets.Car 1.0
 import Quick3DAssets.Car_NPC 1.0
 import QtQuick3D.Materials 1.15
 import QtQuick3D.Effects 1.15
@@ -12,8 +11,8 @@ import Quick3DAssets.Coupe 1.0
 
 import QtQuick.Controls 2.15
 import hmi.autoparking 1.0
+import Constants 1.0
 
-//import Quick3DAssets.CarShadowPlane 1.0
 Item {
     id: adas
     width: 800
@@ -22,8 +21,8 @@ Item {
     property bool viewTopBot: true
     property int transitionDuration: 700
     property int roadTransitionDuration: 300
-    property real cmPerPixelX: 1.8
-    property real cmPerPixelZ: 1.8
+    property real cmPerPixelX: 1
+    property real cmPerPixelZ: 1
     property real carLength: 460
     property real carWidth: 180
 
@@ -37,24 +36,7 @@ Item {
         layer.enabled: true
         environment: sceneEnvironment
 
-
-//        Component.onCompleted: {
-//             var carComponent = Qt.createComponent("qrc:/qml/asset_imports/Quick3DAssets/Car_NPC/Car_NPC.qml");
-//            let carObject = carComponent.createObject(view3D,
-//                {
-//                    //"position": Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ),
-//                    "position": Qt.vector3d(315, 0, 105),
-//                   // "id": "car1",
-//                    "opacity": 1,
-//                    "scale": Qt.vector3d(0.6, 1, 0.5),
-//                    "eulerRotation": Qt.vector3d(0, 90, 0)
-//                });
-//           // carObject.parent = view3D;
-//            console.log("Component.onComplete...");
-//            instances.push(carObject);
-//        }
-
-        Node{
+        Node {
             property int lastSlotId: -1
             property var instances: []
             id: slotScene
@@ -62,14 +44,13 @@ Item {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
                      slotScene.dumpCombinedData(combinedData);
-                   // console.log("combinedData.slotId:", combinedData.slotId, "view3D.lastSlogId:", view3D.lastSlotId);
-                    if (combinedData.num > 0 && combinedData.slotId !== -1 && combinedData.slotId !== slotScene.lastSlotId) {
+                    if (combinedData.num > 0 && combinedData.slotId !== -1 &&
+                        combinedData.slotId !== slotScene.lastSlotId &&
+                        combinedData.isNew === 2) {
                         slotScene.lastSlotId = combinedData.slotId;
-                        if (combinedData.state === 0) {
-                           // view3D.addCar(combinedData);
+                        if (combinedData.state === Constants.SlotState.OCCUPY) {
+                            slotScene.addCar(combinedData);
                         }
-
-                       slotScene.addCar(combinedData);
                     }
                 }
             }
@@ -115,39 +96,42 @@ Item {
 
             function addCar(combinedData) {
                 var pixelCoordinate = slotScene.convertCoordinate(combinedData);
-                var carComponent = Qt.createComponent("qrc:/qml/asset_imports/Quick3DAssets/Car_NPC/Car_NPC.qml");
 
-                var positionX = pixelCoordinate.pointStartX > 0 ? pixelCoordinate.pointStartX + pixelCoordinate.depth / 2 + carLength / cmPerPixelX :
-                                                                  pixelCoordinate.pointStartX - (pixelCoordinate.depth / 2 + carWidth / cmPerPixelX);
-                var positionZ = pixelCoordinate.pointStartZ - pixelCoordinate.width / 2;
+                var positionX = pixelCoordinate.pointStartX > 0 ?
+                            pixelCoordinate.pointStartX + pixelCoordinate.depth / 2 :
+                            pixelCoordinate.pointStartX - (pixelCoordinate.depth / 2);
+                var offset = 0;
+                var roation = Qt.vector3d(0, 0, 0);
+                if (combinedData.type === Constants.SlotType.PERPENDICULAR) {
+                    offset = pixelCoordinate.width / 2;
+                    roation = Qt.vector3d(0, 90, 0);
+                } else if (combinedData.type === Constants.SlotType.PARALLEL) {
+                    offset = pixelCoordinate.depth / 2;
+                } else {
+                    console.log("Slot type is not supported...");
+                }
+
+                var positionZ = pixelCoordinate.pointStartZ - offset;
                 console.log("positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
+                var carComponent = Qt.createComponent("qrc:/qml/asset_imports/Quick3DAssets/Car_NPC/Car_NPC.qml");
                 let carObject = carComponent.createObject(slotScene,
                     {
                         "position": Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ),
-                        //"position": Qt.vector3d(780, 0, -2200),
                         "id": "car1",
                         "opacity": 1,
                         "scale": Qt.vector3d(1, 1, 1),
-                        "eulerRotation": Qt.vector3d(0, 90, 0)
+                        "eulerRotation": roation
                     });
 
-                if (combinedData.type === 3) {
-                    carObject.eulerRotation = Qt.vector3d(0, 0, 0);
-
-                }
-
-                instances.push(carObject);
+                //instances.push(carObject);
                 var anim = Qt.createQmlObject ('import QtQuick 2.15; NumberAnimation  { }', slotScene);
                 anim.target = carObject;
                 anim.property = "z";
                 anim.to = 300;
                 anim.duration = 5000;
                 anim.restart();
-                console.log("carObject", carObject);
                 console.log("Add a car to scene...");
-
             }
-
         }
 
         HDRBloomTonemap {
