@@ -6,7 +6,25 @@ var lastSlotId =  -1;
 var instances = [];
 var initZ = 0;
 
+function addSlot(parent, combinedData, carOffset) {
+    var pixelCoordinate = Utils.convertCoordinate(combinedData, carOffset);
+    var positionX = pixelCoordinate.pointStartX > 0 ?
+                pixelCoordinate.pointStartX + pixelCoordinate.depth / 2 :
+                pixelCoordinate.pointStartX - (pixelCoordinate.depth / 2);
+    var offset = 0;
+    var roation = Qt.vector3d(0, 0, 0);
+    if (combinedData.type === Constants.SlotType.PERPENDICULAR) {
+        offset = pixelCoordinate.width / 2 - Constants.carWidth / 2 / 10 / Constants.cmPerPixelZ;
+        roation = Qt.vector3d(0, 90, 0);
+    } else if (combinedData.type === Constants.SlotType.PARALLEL) {
+        offset = pixelCoordinate.width / 2 - Constants.carLength / 2 / 10 / Constants.cmPerPixelZ;
+    } else {
+        console.log("Slot type is not supported...");
+    }
+}
+
 function addCar(parent, combinedData, carOffset) {
+    addSlot(parent, combinedData, carOffset);
     var pixelCoordinate = Utils.convertCoordinate(combinedData, carOffset);
 
     var positionX = pixelCoordinate.pointStartX > 0 ?
@@ -36,6 +54,8 @@ function addCar(parent, combinedData, carOffset) {
             "eulerRotation": roation
         });
 
+
+
     //instances.push(carObject);
 
 //    var anim = Qt.createQmlObject ('import QtQuick 2.15; NumberAnimation  { }', slotScene);
@@ -55,20 +75,32 @@ function addCar(parent, combinedData, carOffset) {
     console.log("Add a car to scene...");
 }
 
-function moveScene(vehicleSpeed, sceneAnim, movingAnim) {
-    movingAnim.duration = Qt.binding(function() {
+function moveScene(vehicleSpeed, goStraightAnim) {
+    goStraightAnim.duration = Qt.binding(function() {
         var pixelSpeed = vehicleSpeed * Constants.cmPerMeter / Constants.cmPerPixelZ;
         pixelSpeed *= Constants.movingSpeedFactor;
         console.log("APA:Pixel moving speed is ", pixelSpeed);
 
-        var duration = (movingAnim.to - initZ) / pixelSpeed * Constants.millseccondsPerSecond;
-        console.log("APA:slotScene.z is ", slotScene.z, "movingAnim.to is ", movingAnim.to, "Moving duration is ", duration);
+        var duration = (goStraightAnim.to - initZ) / pixelSpeed * Constants.millseccondsPerSecond;
+        console.log("APA:slotScene.z is ", slotScene.z, "movingAnim.to is ", goStraightAnim.to, "Moving duration is ", duration);
         return duration;
     });
 
-    sceneAnim.restart();
+    goStraightAnim.restart();
 }
 
 function clearObjects(slotScene){
 
+}
+
+function rotateScene(carAngle, yawSpeed, turingAnim) {
+    turingAnim.restart();
+}
+
+function stopRotation(roationAnim) {
+    roationAnim.stop();
+}
+
+function pauseGoStraightAnim(goStraightAnim) {
+    goStraightAnim.pause();
 }

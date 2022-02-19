@@ -1,10 +1,25 @@
 .import "Constants.js" as Constants
+// Here need complicate linear algera calculation. Please see readme.
 function convertCoordinate(combinedData, carOffset) {
-    var width = Math.abs(combinedData.pointEndX - combinedData.pointStartX) / 10 / Constants.cmPerPixelZ;
-    var depth = Math.abs(combinedData.pointDepthStartY - combinedData.pointStartY) / 10 / Constants.cmPerPixelX;
-    var pointStartX = -combinedData.pointStartY / 10 / Constants.cmPerPixelX;
-    var pointStartY = 0;
-    var pointStartZ = -(combinedData.pointStartX / 10 / Constants.cmPerPixelZ + carOffset);
+    var wxx = (combinedData.pointEndX - combinedData.pointStartX) * (combinedData.pointEndX - combinedData.pointStartX);
+    var wyy = (combinedData.pointEndY - combinedData.pointStartY) * (combinedData.pointEndY - combinedData.pointStartY);
+    var width = Math.sqrt(wxx + wyy);
+    var dxx = (combinedData.pointDepthStartX - combinedData.pointStartX) * (combinedData.pointDepthStartX - combinedData.pointStartX);
+    var dyy = (combinedData.pointDepthStartY - combinedData.pointStartY) * (combinedData.pointDepthStartY - combinedData.pointStartY);
+    var depth = Math.sqrt(dxx + dyy);
+
+    width = width / Constants.mmPerCm / Constants.cmPerPixelZ;
+    depth = depth / Constants.mmPerCm / Constants.cmPerPixelX;
+
+    // convert to 3D coordinate in mm unit.
+    var pointStartX = -combinedData.pointStartX * Math.sin(combinedData.carAngle) - combinedData.pointStartY * Math.cos(combinedData.carAngle);
+    pointStartX = pointStartX / Constants.mmPerCm / Constants.cmPerPixelX; // pixel in 3D coordinate
+    var pointStartY = 0; // z is zero in vehicle coordinate.
+
+    // convert to 3D coordinate in mm unit.
+    var pointStartZ = -combinedData.pointStartX * Math.cos(combinedData.carAngle) +
+            combinedData.pointStartY * Math.sin(combinedData.carAngle) - carOffset * Constants.cmPerPixelZ * Constants.mmPerCm;
+    pointStartZ = pointStartZ / Constants.mmPerCm / Constants.cmPerPixelZ;
 
     return {
         width: width,

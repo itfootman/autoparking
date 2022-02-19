@@ -17,8 +17,8 @@ import "qrc:/qml/imports_js/Logger.js" as Logger
 
 Item {
     id: adas
-    width: 650
-    height: 500
+    width: 500
+    height: 650
 
     property bool viewTopBot: true
     property int transitionDuration: 700
@@ -27,8 +27,8 @@ Item {
     View3D {
         id: view3D
         y: 50
-        width: 650
-        height: 500
+        width: 500
+        height: 650
 
         anchors.horizontalCenter: parent.horizontalCenter
         layer.enabled: true
@@ -36,25 +36,47 @@ Item {
 
         Node {
             z: 0
-            ParallelAnimation {
-                id: sceneAnim
+//            ParallelAnimation {
+//                id: turningAnim
+//                running: false
+//                loops: Animation.Infinite
+
+//                NumberAnimation {
+//                    id:movingAnim
+//                    target: slotScene
+//                    property: "z"
+//                    to: Constants.slotSceneMovingTo
+//                    easing.type: Easing.Linear
+//                }
+
+//                NumberAnimation {
+//                    id:roationAnim
+//                    target: slotScene
+//                    property: "eulerRotation.y"
+//                    to:360
+//                    duration: 20000
+//                    easing.type: Easing.Linear
+//                }
+//            }
+
+            NumberAnimation {
+                id:goStraightAnim
+                target: slotScene
                 running: false
-                loops: Animation.Infinite
+                property: "z"
+                to: Constants.slotSceneMovingTo
+                easing.type: Easing.Linear
+            }
 
-                NumberAnimation {
-                    id:movingAnim
-                    target: slotScene
-                    property: "z"
-                    to: Constants.slotSceneMovingTo
-                    easing.type: Easing.Linear
-                }
-
-                NumberAnimation {
-                    id:roationAnim
-                    target: slotScene
-                    property: "eulerRotation.y"
-                    easing.type: Easing.Linear
-                }
+            NumberAnimation {
+                id:turningAnim
+                running: false
+                target: slotScene
+                loops: 1
+                property: "eulerRotation.y"
+                to:90
+                duration: 30000
+                easing.type: Easing.Linear
             }
 
             id: slotScene
@@ -62,8 +84,15 @@ Item {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
                      Logger.dumpCombinedData(combinedData);
-                    if (combinedData.vehicleSpeed > 0 && !sceneAnim.running) {
-                        SceneManager.moveScene(combinedData.vehicleSpeed, sceneAnim, movingAnim);
+                    if (combinedData.vehicleSpeed > 0 && !goStraightAnim.running) {
+                        SceneManager.moveScene(combinedData.vehicleSpeed, goStraightAnim);
+                        if (Math.abs(combinedData.yawSpeed) > 0 && !turningAnim.running ) {
+                           SceneManager.rotateScene(combinedData.carAngle, combinedData.yawSpeed, turningAnim)
+                        } else {
+                           SceneManager.stopRotation(turningAnim);
+                        }
+                    } else if (combinedData.vehicleSpeed <= 0)  {
+                        SceneManager.pauseGoStraight(goStraightAnim);
                     }
 
                     if (combinedData.num > 0 && combinedData.slotId !== -1 &&
@@ -202,10 +231,10 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         text: "开始泊车"
         onClicked: {
-            if (!sceneAnim.running) {
-                sceneAnim.restart();
+            if (!turningAnim.running) {
+                turningAnim.restart();
             } else {
-                sceneAnim.stop();
+                turningAnim.stop();
             }
         }
     }
