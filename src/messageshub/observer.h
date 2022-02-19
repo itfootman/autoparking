@@ -12,5 +12,5 @@ public:
 public slots:
    virtual void onUpdate(const CombinedData& combinedData) = 0;
 };
-    
+
 } /* namespace hmi */
