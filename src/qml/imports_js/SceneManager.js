@@ -3,7 +3,6 @@
 
 var lastSlotId =  -1;
 var instances = [];
-var parentMoved = 0;
 function addCar(parent, combinedData, carOffset) {
     var pixelCoordinate = Utils.convertCoordinate(combinedData, carOffset);
 
@@ -24,10 +23,9 @@ function addCar(parent, combinedData, carOffset) {
     var positionZ = pixelCoordinate.pointStartZ - offset;
     console.log("positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
     var carComponent = Qt.createComponent("qrc:/qml/asset_imports/Quick3DAssets/Car_NPC/Car_NPC.qml");
-    var localVec = parent.mapPositionFromScene(Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ))
     let carObject = carComponent.createObject(parent,
         {
-            "position": localVec,
+            "position": Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ),
             "id": "car1",
             "opacity": 1,
             "scale": Qt.vector3d(1, 1, 1),
@@ -35,24 +33,11 @@ function addCar(parent, combinedData, carOffset) {
         });
 
     //instances.push(carObject);
-
-//    var anim = Qt.createQmlObject ('import QtQuick 2.15; NumberAnimation  { }', slotScene);
-//    anim.target = carObject;
-//    anim.property = "z";
-//    anim.to = 2000;
-//    anim.duration = 10000;
-//    anim.restart();
-
-//    var roatateAnim = Qt.createQmlObject ('import QtQuick 2.15; NumberAnimation  { }', slotScene);
-//    roatateAnim.target = parent;
-//    roatateAnim.property = "eulerRotation.y";
-//    roatateAnim.to = -90;
-//    roatateAnim.duration = 15000;
-//    roatateAnim.restart();
-
+    var anim = Qt.createQmlObject ('import QtQuick 2.15; NumberAnimation  { }', slotScene);
+    anim.target = carObject;
+    anim.property = "z";
+    anim.to = 300;
+    anim.duration = 5000;
+    anim.restart();
     console.log("Add a car to scene...");
-}
-
-function moveScene(vehicleSpeed, movingAnim) {
-    movingAnm.duration = Qt.binding(function() { return vehicleSpeed * 100  })
 }

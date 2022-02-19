@@ -12,10 +12,18 @@ import hmi.autoparking 1.0
 //    title: qsTr("autoparking")
     Item {
         id: autoparking
-        width: 500
-        height: 650
+        width: 800
+        height: 600
+        Item {
+            id: background
+            anchors.fill: parent
+            Image {
+                id: background1
+                anchors.fill: parent
+              //  source: Themes.backgroundImage
+            }
+        }
 
-       signal signalAddObject()
         Adas {
             id: adas
 //            x: 532
@@ -30,14 +38,9 @@ import hmi.autoparking 1.0
         }
 
         Button {
-            id: add
-            anchors.right: parent.right
-           // anchors.margins: 10
-            text: "add"
-            onClicked: {
-                console.log("emit add object signal...")
-                signalAddObject();
-            }
+            id: button
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "开始泊车"
         }
     }
 //}

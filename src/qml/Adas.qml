@@ -17,8 +17,8 @@ import "qrc:/qml/imports_js/Logger.js" as Logger
 
 Item {
     id: adas
-    width: 650
-    height: 500
+    width: 800
+    height: 400
 
     property bool viewTopBot: true
     property int transitionDuration: 700
@@ -26,38 +26,20 @@ Item {
 
     View3D {
         id: view3D
-        y: 50
-        width: 650
-        height: 500
+        y: 312
+        width: 800
+        height: 400
 
         anchors.horizontalCenter: parent.horizontalCenter
         layer.enabled: true
         environment: sceneEnvironment
 
         Node {
-            SequentialAnimation {
-                id: sceneAnim
-                running: false
-
-                NumberAnimation {
-                    id:movingAnim
-                    target: slotScene
-                    property: "z"
-                    duration: 15000
-                    to: 2000
-                    easing.type: Easing.InOutQuad
-                }
-            }
-
             id: slotScene
             Connections {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
                      Logger.dumpCombinedData(combinedData);
-                    if (combinedData.vehicleSpeed > 0) {
-                        SceneManager.moveScene(vehicleSpeed, movingAnim);
-                    }
-
                     if (combinedData.num > 0 && combinedData.slotId !== -1 &&
                         combinedData.slotId !== SceneManager.lastSlotId &&
                         combinedData.isNew === 2) {
@@ -154,10 +136,11 @@ Item {
         PerspectiveCamera {
             id: camera
             y: 414.59
-            z: 450.86456
+            z: 527.86456
             clipFar: 5000
             fieldOfView: 42
             eulerRotation.x: -24
+
 
             SpotLight {
                 id: additionalLight
@@ -178,24 +161,7 @@ Item {
 //                camera.lookAt(Qt.vector3d(0, 100, -1500));
 //            }
         }
-    } // View3D
-
-
-    Button {
-        id: button
-        anchors.horizontalCenter: parent.horizontalCenter
-        text: "开始泊车"
-        onClicked: {
-            if (!sceneAnim.running) {
-                sceneAnim.start();
-            } else {
-                sceneAnim.stop();
-            }
-        }
     }
-
-
-
 }
 
 /*##^##

@@ -46,7 +46,8 @@ int main(int argc, char *argv[])
 
     view.setSource(QUrl("qrc:/qml/main.qml"));
     view.show();
-
+//    QQuickItem* object = view.rootObject();
+//    UIUpdater* uiUpdater = object->findChild<UIUpdater*>("uiupdater");
 //    if (uiUpdater != nullptr) {
         MessagesHub messagesHub;
         std::shared_ptr<UIUpdater> uiUpdater(uiupdater);
@@ -56,15 +57,8 @@ int main(int argc, char *argv[])
 //        qDebug() << "No UIUpdater found...";
 //    }
 
-
-        QQuickItem* object = view.rootObject();
-        //auto* adas = object->findChild<QQuickItem*>("adas");
-
-        //if (adas != nullptr) {
-        qDebug() << "Connect signal...";
-        QObject::connect(object, SIGNAL(signalAddObject()),
-                         &messagesHub, SLOT(addOneObject()));
-       // }
     return app.exec();
     qDebug() << "Main exit...";
+
+    return 0;
 }

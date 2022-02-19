@@ -20,9 +20,3 @@ const SlotType = {
 }
 
 Object.freeze(SlotType);
-
-
-const cmPerPixelX = 1
-const cmPerPixelZ = 1
-const carLength = 460
-const carWidth = 180
