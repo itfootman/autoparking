@@ -3,7 +3,6 @@
 
 var lastSlotId =  -1;
 var instances = [];
-var parentMoved = 0;
 function addCar(parent, combinedData, carOffset) {
     var pixelCoordinate = Utils.convertCoordinate(combinedData, carOffset);
 
@@ -34,20 +33,11 @@ function addCar(parent, combinedData, carOffset) {
         });
 
     //instances.push(carObject);
-
     var anim = Qt.createQmlObject ('import QtQuick 2.15; NumberAnimation  { }', slotScene);
     anim.target = carObject;
     anim.property = "z";
-    anim.to = 2000;
-    anim.duration = 10000;
+    anim.to = 300;
+    anim.duration = 5000;
     anim.restart();
-
-//    var roatateAnim = Qt.createQmlObject ('import QtQuick 2.15; NumberAnimation  { }', slotScene);
-//    roatateAnim.target = parent;
-//    roatateAnim.property = "eulerRotation.y";
-//    roatateAnim.to = -90;
-//    roatateAnim.duration = 15000;
-//    roatateAnim.restart();
-
     console.log("Add a car to scene...");
 }

@@ -17,8 +17,8 @@ import "qrc:/qml/imports_js/Logger.js" as Logger
 
 Item {
     id: adas
-    width: 500
-    height: 600
+    width: 800
+    height: 400
 
     property bool viewTopBot: true
     property int transitionDuration: 700
@@ -26,44 +26,16 @@ Item {
 
     View3D {
         id: view3D
-        y: 0
-        width: 500
-        height: 600
+        y: 312
+        width: 800
+        height: 400
 
         anchors.horizontalCenter: parent.horizontalCenter
         layer.enabled: true
         environment: sceneEnvironment
 
-//        NumberAnimation {
-//            id: rotation
-//            target:view3D
-//            to: -90
-//            duration: 10000
-//            property: "eulerRotation.y"
-//        }
-
         Node {
             id: slotScene
-
-//            Road {
-//                id: road2
-//                x: 0
-//                y: 0
-//                z: 1500.48822
-//                scale.z: 1
-//                scale.y: 0
-//                scale.x: 1.4
-//                opacity: 1
-//            }
-            pivot: Qt.vector3d(0, 0, 4000)
-            SequentialAnimation on eulerRotation.y {
-                loops: Animation.Infinite
-                PropertyAnimation {
-                    duration: 10000
-                    from: 0
-                    to: 90
-                }
-            }
             Connections {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
@@ -74,10 +46,6 @@ Item {
                         SceneManager.lastSlotId = combinedData.slotId;
                         if (combinedData.state === Constants.SlotState.OCCUPY) {
                             SceneManager.addCar(slotScene, combinedData, Math.abs(coupe.z));
-                        }
-
-                        if (rotation.running === false) {
-                            rotation.start();
                         }
                     }
                 }
@@ -109,7 +77,7 @@ Item {
             id: coupe
             x: 0
             y: 0
-            z: -2000
+            z: -1000
 
             metalness: 0.5
             specularTint: 0
@@ -167,11 +135,12 @@ Item {
 
         PerspectiveCamera {
             id: camera
-            y: 600.59
-            z: 100.86456
-            clipFar: 4000
-            fieldOfView: 45
-            eulerRotation.x: -25
+            y: 414.59
+            z: 527.86456
+            clipFar: 5000
+            fieldOfView: 42
+            eulerRotation.x: -24
+
 
             SpotLight {
                 id: additionalLight
