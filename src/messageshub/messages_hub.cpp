@@ -4,7 +4,6 @@
 #include <qdatetime.h>
 #endif
 #include <QMetaObject>
-
 namespace hmi {
 MessagesHub::MessagesHub() {
 }
@@ -155,36 +154,40 @@ void MessagesHub::workLoop() {
     float pointDepthEndVY = -7000;
 
 
-    float pointStartHX = 1500;
+    float pointStartHX = -2500;
     float pointStartHY = 2000;
-    float pointEndHX = 6500;
+    float pointEndHX = 2500;
     float pointEndHY = 2000;
-    float pointDepthStartHX = 1500;
+    float pointDepthStartHX = -2500;
     float pointDepthStartHY = 4400;
-    float pointDepthEndHX = 6500;
+    float pointDepthEndHX = 2500;
     float pointDepthEndHY = 4400;
-    float distance = 1000;
-    float distanceV = 5500;
+    float distance = -2000;
+    float distanceV = -2000;
     int loopCount = 0;
-    while (true) {
+  //  while (true) {
         combinedData_.yawSpeed_ = 0;
 
         combinedData_.timestamp_ = QDateTime::currentDateTime().currentMSecsSinceEpoch();
         combinedData_.carAngle_ = 0;
         srand((unsigned)time(NULL));
-        int num = rand() % 4 + 1;
+      //  int num = rand() % 4 + 1;
 //        if (loopCount % 3 == 0) {
 //            combinedData_.vehicleSpeed_ += 0.1;
 //        }
 
+        int num = 10;
+
         for (int i = 0; i < num; ++i) {
             combinedData_.num_ = num;
             combinedData_.slotId_ = i + 1;
-            if (loopCount % 2 == 0) {
-                combinedData_.state_ = (i + 1) % 2 == 0 ? 1 : 2;
-            } else {
-                combinedData_.state_ = (i + 1) % 2 == 0 ? 2 : 1;
-            }
+//            if (loopCount % 2 == 0) {
+//                combinedData_.state_ = (i + 1) % 2 == 0 ? 1 : 2;
+//            } else {
+//                combinedData_.state_ = (i + 1) % 2 == 0 ? 2 : 1;
+//            }
+
+            combinedData_.state_ = 2;
 
             combinedData_.type_ = (i + 1) % 2 == 0 ? 1 : 2;
             combinedData_.isNew_ = 2;
@@ -210,14 +213,39 @@ void MessagesHub::workLoop() {
 
             combinedData_.readyFlag |= SLOT_FUSION_INFO();
             combinedData_.readyFlag |= VEHICLE_INFO();
-            onOneFrameReady(combinedData_);
-            QThread::msleep(1000);
+           // onOneFrameReady(combinedData_);
+         //   QThread::msleep(1000);
         }
         loopCount++;
-    }
+   // }
+
+        loopCount = 20;
+        while (true) {
+            std::unique_lock<std::mutex> lk(sigMutex);
+            cond.wait(lk);
+            combinedData_.slotId_ = loopCount;
+            combinedData_.yawSpeed_ = 0;
+            combinedData_.carAngle_ = 0;
+            combinedData_.state_ = 2;
+            combinedData_.type_ = 1;
+            combinedData_.pointStartX_ = pointStartVX ;
+            combinedData_.pointStartY_ = pointStartVY;
+            combinedData_.pointEndX_ = pointEndVX;
+            combinedData_.pointEndY_ = pointEndVY;
+            combinedData_.pointDepthStartX_ = pointDepthStartVX;
+            combinedData_.pointDepthStartY_ = pointDepthStartVY;
+            combinedData_.pointDepthEndX_ = pointDepthEndVX;
+            combinedData_.pointDepthEndY_ = pointDepthEndVY;
+            loopCount++;
+            onOneFrameReady(combinedData_);
+        }
 }
 #endif
-
+void MessagesHub::addOneObject() {
+    qDebug() << "Signal add one object...";
+    std::lock_guard<std::mutex> lk(sigMutex);
+    cond.notify_one();
+}
 void MessagesHub::onOneFrameReady(const CombinedData& combinedData) {
     for (const auto& o : observers_) {
         qDebug() << "biwenyang:onOneFrameReady, notify observer...";

@@ -20,3 +20,24 @@ const SlotType = {
 }
 
 Object.freeze(SlotType);
+
+const IsNew = {
+        INVALID : -1,
+        UNKOWN : 0,
+        OLD : 1,
+        NEW : 2,
+        LOST : 3
+}
+
+Object.freeze(IsNew);
+
+
+const cmPerPixelX = 1;
+const cmPerPixelZ = 1;
+const carLength = 4600; // mm
+const carWidth = 1800; // mm
+const cmPerMeter = 100;
+const millseccondsPerSecond = 1000;
+const slotSceneMovingTo = 20000000;
+const movingSpeedFactor = 6;
+const slotIdSTart = 1;

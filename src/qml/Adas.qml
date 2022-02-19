@@ -17,8 +17,8 @@ import "qrc:/qml/imports_js/Logger.js" as Logger
 
 Item {
     id: adas
-    width: 800
-    height: 400
+    width: 650
+    height: 500
 
     property bool viewTopBot: true
     property int transitionDuration: 700
@@ -26,29 +26,63 @@ Item {
 
     View3D {
         id: view3D
-        y: 312
-        width: 800
-        height: 400
+        y: 50
+        width: 650
+        height: 500
 
         anchors.horizontalCenter: parent.horizontalCenter
         layer.enabled: true
         environment: sceneEnvironment
 
         Node {
+            z: 0
+            ParallelAnimation {
+                id: sceneAnim
+                running: false
+                loops: Animation.Infinite
+
+                NumberAnimation {
+                    id:movingAnim
+                    target: slotScene
+                    property: "z"
+                    to: Constants.slotSceneMovingTo
+                    easing.type: Easing.Linear
+                }
+
+                NumberAnimation {
+                    id:roationAnim
+                    target: slotScene
+                    property: "eulerRotation.y"
+                    easing.type: Easing.Linear
+                }
+            }
+
             id: slotScene
             Connections {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
                      Logger.dumpCombinedData(combinedData);
+                    if (combinedData.vehicleSpeed > 0 && !sceneAnim.running) {
+                        SceneManager.moveScene(combinedData.vehicleSpeed, sceneAnim, movingAnim);
+                    }
+
                     if (combinedData.num > 0 && combinedData.slotId !== -1 &&
                         combinedData.slotId !== SceneManager.lastSlotId &&
-                        combinedData.isNew === 2) {
+                        combinedData.isNew === Constants.IsNew.NEW) {
                         SceneManager.lastSlotId = combinedData.slotId;
+                        if (combinedData.slotId === Constants.slotIdStart) {
+                            SceneManager.clearObjects();
+                        }
+
                         if (combinedData.state === Constants.SlotState.OCCUPY) {
                             SceneManager.addCar(slotScene, combinedData, Math.abs(coupe.z));
                         }
                     }
                 }
+            }
+
+            Component.onCompleted: {
+                SceneManager.initZ = slotScene.z;
             }
         }
 
@@ -136,11 +170,10 @@ Item {
         PerspectiveCamera {
             id: camera
             y: 414.59
-            z: 527.86456
+            z: 450.86456
             clipFar: 5000
             fieldOfView: 42
             eulerRotation.x: -24
-
 
             SpotLight {
                 id: additionalLight
@@ -161,7 +194,24 @@ Item {
 //                camera.lookAt(Qt.vector3d(0, 100, -1500));
 //            }
         }
+    } // View3D
+
+
+    Button {
+        id: button
+        anchors.horizontalCenter: parent.horizontalCenter
+        text: "开始泊车"
+        onClicked: {
+            if (!sceneAnim.running) {
+                sceneAnim.restart();
+            } else {
+                sceneAnim.stop();
+            }
+        }
     }
+
+
+
 }
 
 /*##^##
