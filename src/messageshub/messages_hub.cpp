@@ -161,10 +161,10 @@ void MessagesHub::workLoop() {
     float pointDepthStartHY = 4400;
     float pointDepthEndHX = 2500;
     float pointDepthEndHY = 4400;
-    float distance = -2000;
-    float distanceV = -2000;
+    float distance = 500;
+    float distanceV = 500;
     int loopCount = 0;
- #if 0
+ #if 1
     combinedData_.vehicleSpeed_ = 0.4;
     while (true) {
         combinedData_.yawSpeed_ = 0;
