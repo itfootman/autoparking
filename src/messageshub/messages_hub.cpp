@@ -165,7 +165,7 @@ void MessagesHub::workLoop() {
     float distance = -2000;
     float distanceV = -2000;
     int loopCount = 0;
-  //  while (true) {
+    while (true) {
         combinedData_.yawSpeed_ = 0;
 
         combinedData_.timestamp_ = QDateTime::currentDateTime().currentMSecsSinceEpoch();
@@ -181,13 +181,11 @@ void MessagesHub::workLoop() {
         for (int i = 0; i < num; ++i) {
             combinedData_.num_ = num;
             combinedData_.slotId_ = i + 1;
-//            if (loopCount % 2 == 0) {
-//                combinedData_.state_ = (i + 1) % 2 == 0 ? 1 : 2;
-//            } else {
-//                combinedData_.state_ = (i + 1) % 2 == 0 ? 2 : 1;
-//            }
-
-            combinedData_.state_ = 2;
+            if (loopCount % 2 == 0) {
+                combinedData_.state_ = (i + 1) % 2 == 0 ? 1 : 2;
+            } else {
+                combinedData_.state_ = (i + 1) % 2 == 0 ? 2 : 1;
+            }
 
             combinedData_.type_ = (i + 1) % 2 == 0 ? 1 : 2;
             combinedData_.isNew_ = 2;
@@ -213,11 +211,11 @@ void MessagesHub::workLoop() {
 
             combinedData_.readyFlag |= SLOT_FUSION_INFO();
             combinedData_.readyFlag |= VEHICLE_INFO();
-           // onOneFrameReady(combinedData_);
-         //   QThread::msleep(1000);
+            onOneFrameReady(combinedData_);
+            QThread::msleep(1000);
         }
         loopCount++;
-   // }
+    }
 
         loopCount = 20;
         while (true) {

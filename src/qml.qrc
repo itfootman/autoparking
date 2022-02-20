@@ -1,19 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/asset_imports/Quick3DAssets/Road/_icons/Road_libicon</file>
-        <file>qml/asset_imports/Quick3DAssets/Road/_icons/Road_libicon@2x</file>
-        <file>qml/asset_imports/Quick3DAssets/Road/meshes/road.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Road/source scene/Road.fbx</file>
-        <file>qml/asset_imports/Quick3DAssets/Road/qmldir</file>
-        <file>qml/asset_imports/Quick3DAssets/Road/Road.hints</file>
-        <file>qml/asset_imports/Quick3DAssets/Road/Road.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Road/Road.qml</file>
-        <file>qml/asset_imports/Quick3DAssets/Road/roadBackground.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Road/roadBackground_Dark.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Road/roadWarningLeft.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Road/roadWarningLeft_Black.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Road/roadWarningRight.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Road/roadWarningRight_Black.png</file>
         <file>qml/assets/hdr/city01.hdr</file>
         <file>qml/assets/hdr/hdr1.hdr</file>
         <file>qml/assets/hdr/hdr2.hdr</file>
@@ -54,99 +40,114 @@
         <file>qml/assets/Studio4.hdr</file>
         <file>qml/Adas.qml</file>
         <file>qml/main.qml</file>
-        <file>qml/asset_imports/Quick3DAssets/Car_NPC/_icons/Car_NPC_libicon</file>
-        <file>qml/asset_imports/Quick3DAssets/Car_NPC/_icons/Car_NPC_libicon@2x</file>
-        <file>qml/asset_imports/Quick3DAssets/Car_NPC/meshes/car.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Car_NPC/source scene/Car_NPC.fbx</file>
-        <file>qml/asset_imports/Quick3DAssets/Car_NPC/Car_Complete_Map.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Car_NPC/Car_NPC.hints</file>
-        <file>qml/asset_imports/Quick3DAssets/Car_NPC/Car_NPC.qml</file>
-        <file>qml/asset_imports/Quick3DAssets/Car_NPC/Car_Shadow.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Car_NPC/qmldir</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/_icons/Coupe_libicon</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/_icons/Coupe_libicon@2x</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/maps/0.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/maps/1.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/maps/2.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/maps/3.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/maps/4.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/maps/5.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/maps/b_dotted.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/maps/b_Leather.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/maps/brakes_02.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/maps/d_buttons.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/maps/d_carbon_f.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/maps/d_screen.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/body_underpanel.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/carbonFiberParts.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/center_seperator_wall_upper.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/fL_caliper_body.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/fR_caliper_body.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/l_door_main_panel.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/left_seat_base.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/lights.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/p_FL_Tire.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/p_FR_Tire.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/p_RL_Tire.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/p_RR_Tire.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/r_door_main_panel.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/rear_body_panel.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/rear_boot_door.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/rL_caliper_body.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/meshes/rR_caliper_body.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/source scene/Coupe.FBX</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/_importdata.json</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/Coupe.hints</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/Coupe.qml</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/d_buttons.png</file>
-        <file>qml/asset_imports/Quick3DAssets/Coupe/qmldir</file>
-        <file>qml/asset_imports/Quick3DAssets/CarShadowPlane/_icons/CarShadowPlane_libicon</file>
-        <file>qml/asset_imports/Quick3DAssets/CarShadowPlane/_icons/CarShadowPlane_libicon@2x</file>
-        <file>qml/asset_imports/Quick3DAssets/CarShadowPlane/maps/0.png</file>
-        <file>qml/asset_imports/Quick3DAssets/CarShadowPlane/maps/CarShadow.png</file>
-        <file>qml/asset_imports/Quick3DAssets/CarShadowPlane/meshes/plane003.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/CarShadowPlane/source scene/CarShadowPlane.FBX</file>
-        <file>qml/asset_imports/Quick3DAssets/CarShadowPlane/CarShadowPlane.hints</file>
-        <file>qml/asset_imports/Quick3DAssets/CarShadowPlane/CarShadowPlane.qml</file>
-        <file>qml/asset_imports/Quick3DAssets/CarShadowPlane/qmldir</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_L/_icons/DoorLights_L_libicon</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_L/_icons/DoorLights_L_libicon@2x</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_L/meshes/doorLights_Left.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_L/source scene/DoorLights_L.FBX</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_L/DoorLights_L.hints</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_L/DoorLights_L.qml</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_L/qmldir</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_R/_icons/DoorLights_R_libicon</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_R/_icons/DoorLights_R_libicon@2x</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_R/meshes/doorLights_Right.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_R/source scene/DoorLights_R.FBX</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_R/DoorLights_R.hints</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_R/DoorLights_R.qml</file>
-        <file>qml/asset_imports/Quick3DAssets/DoorLights_R/qmldir</file>
-        <file>qml/asset_imports/Quick3DAssets/Drivetrain/_icons/Drivetrain_libicon</file>
-        <file>qml/asset_imports/Quick3DAssets/Drivetrain/_icons/Drivetrain_libicon@2x</file>
-        <file>qml/asset_imports/Quick3DAssets/Drivetrain/meshes/backMotor.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Drivetrain/meshes/cable005.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Drivetrain/meshes/cable006.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Drivetrain/meshes/eCU.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Drivetrain/meshes/frontMotors.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Drivetrain/meshes/line001.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/Drivetrain/source scene/Drivetrain.FBX</file>
-        <file>qml/asset_imports/Quick3DAssets/Drivetrain/_importdata.json</file>
-        <file>qml/asset_imports/Quick3DAssets/Drivetrain/Drivetrain.hints</file>
-        <file>qml/asset_imports/Quick3DAssets/Drivetrain/Drivetrain.qml</file>
-        <file>qml/asset_imports/Quick3DAssets/Drivetrain/qmldir</file>
-        <file>qml/asset_imports/Quick3DAssets/InteriorLights/_icons/InteriorLights_libicon</file>
-        <file>qml/asset_imports/Quick3DAssets/InteriorLights/_icons/InteriorLights_libicon@2x</file>
-        <file>qml/asset_imports/Quick3DAssets/InteriorLights/meshes/interiorLigts.mesh</file>
-        <file>qml/asset_imports/Quick3DAssets/InteriorLights/source scene/InteriorLights.FBX</file>
-        <file>qml/asset_imports/Quick3DAssets/InteriorLights/InteriorLights.hints</file>
-        <file>qml/asset_imports/Quick3DAssets/InteriorLights/InteriorLights.qml</file>
-        <file>qml/asset_imports/Quick3DAssets/InteriorLights/qmldir</file>
         <file>qml/AutoParkingData.qml</file>
         <file>qml/imports_js/Logger.js</file>
         <file>qml/imports_js/SceneManager.js</file>
         <file>qml/imports_js/Utils.js</file>
         <file>qml/imports_js/Constants.js</file>
+        <file>qml/asset_imports/Car_NPC/_icons/Car_NPC_libicon</file>
+        <file>qml/asset_imports/Car_NPC/_icons/Car_NPC_libicon@2x</file>
+        <file>qml/asset_imports/Car_NPC/meshes/car.mesh</file>
+        <file>qml/asset_imports/Car_NPC/source scene/Car_NPC.fbx</file>
+        <file>qml/asset_imports/Car_NPC/Car_Complete_Map.png</file>
+        <file>qml/asset_imports/Car_NPC/Car_NPC.hints</file>
+        <file>qml/asset_imports/Car_NPC/Car_NPC.qml</file>
+        <file>qml/asset_imports/Car_NPC/Car_Shadow.png</file>
+        <file>qml/asset_imports/Car_NPC/qmldir</file>
+        <file>qml/asset_imports/CarShadowPlane/_icons/CarShadowPlane_libicon</file>
+        <file>qml/asset_imports/CarShadowPlane/_icons/CarShadowPlane_libicon@2x</file>
+        <file>qml/asset_imports/CarShadowPlane/maps/0.png</file>
+        <file>qml/asset_imports/CarShadowPlane/maps/CarShadow.png</file>
+        <file>qml/asset_imports/CarShadowPlane/meshes/plane003.mesh</file>
+        <file>qml/asset_imports/CarShadowPlane/source scene/CarShadowPlane.FBX</file>
+        <file>qml/asset_imports/CarShadowPlane/CarShadowPlane.hints</file>
+        <file>qml/asset_imports/CarShadowPlane/CarShadowPlane.qml</file>
+        <file>qml/asset_imports/CarShadowPlane/qmldir</file>
+        <file>qml/asset_imports/Coupe/_icons/Coupe_libicon</file>
+        <file>qml/asset_imports/Coupe/_icons/Coupe_libicon@2x</file>
+        <file>qml/asset_imports/Coupe/maps/0.png</file>
+        <file>qml/asset_imports/Coupe/maps/1.png</file>
+        <file>qml/asset_imports/Coupe/maps/2.png</file>
+        <file>qml/asset_imports/Coupe/maps/3.png</file>
+        <file>qml/asset_imports/Coupe/maps/4.png</file>
+        <file>qml/asset_imports/Coupe/maps/5.png</file>
+        <file>qml/asset_imports/Coupe/maps/b_dotted.png</file>
+        <file>qml/asset_imports/Coupe/maps/b_Leather.png</file>
+        <file>qml/asset_imports/Coupe/maps/brakes_02.png</file>
+        <file>qml/asset_imports/Coupe/maps/d_buttons.png</file>
+        <file>qml/asset_imports/Coupe/maps/d_carbon_f.png</file>
+        <file>qml/asset_imports/Coupe/maps/d_screen.png</file>
+        <file>qml/asset_imports/Coupe/meshes/body_underpanel.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/carbonFiberParts.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/center_seperator_wall_upper.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/fL_caliper_body.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/fR_caliper_body.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/l_door_main_panel.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/left_seat_base.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/lights.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/p_FL_Tire.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/p_FR_Tire.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/p_RL_Tire.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/p_RR_Tire.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/r_door_main_panel.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/rear_body_panel.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/rear_boot_door.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/rL_caliper_body.mesh</file>
+        <file>qml/asset_imports/Coupe/meshes/rR_caliper_body.mesh</file>
+        <file>qml/asset_imports/Coupe/source scene/Coupe.FBX</file>
+        <file>qml/asset_imports/Coupe/_importdata.json</file>
+        <file>qml/asset_imports/Coupe/Coupe.hints</file>
+        <file>qml/asset_imports/Coupe/Coupe.qml</file>
+        <file>qml/asset_imports/Coupe/d_buttons.png</file>
+        <file>qml/asset_imports/Coupe/qmldir</file>
+        <file>qml/asset_imports/DoorLights_L/_icons/DoorLights_L_libicon</file>
+        <file>qml/asset_imports/DoorLights_L/_icons/DoorLights_L_libicon@2x</file>
+        <file>qml/asset_imports/DoorLights_L/meshes/doorLights_Left.mesh</file>
+        <file>qml/asset_imports/DoorLights_L/source scene/DoorLights_L.FBX</file>
+        <file>qml/asset_imports/DoorLights_L/DoorLights_L.hints</file>
+        <file>qml/asset_imports/DoorLights_L/DoorLights_L.qml</file>
+        <file>qml/asset_imports/DoorLights_L/qmldir</file>
+        <file>qml/asset_imports/DoorLights_R/_icons/DoorLights_R_libicon</file>
+        <file>qml/asset_imports/DoorLights_R/_icons/DoorLights_R_libicon@2x</file>
+        <file>qml/asset_imports/DoorLights_R/meshes/doorLights_Right.mesh</file>
+        <file>qml/asset_imports/DoorLights_R/source scene/DoorLights_R.FBX</file>
+        <file>qml/asset_imports/DoorLights_R/DoorLights_R.hints</file>
+        <file>qml/asset_imports/DoorLights_R/DoorLights_R.qml</file>
+        <file>qml/asset_imports/DoorLights_R/qmldir</file>
+        <file>qml/asset_imports/Drivetrain/_icons/Drivetrain_libicon</file>
+        <file>qml/asset_imports/Drivetrain/_icons/Drivetrain_libicon@2x</file>
+        <file>qml/asset_imports/Drivetrain/meshes/backMotor.mesh</file>
+        <file>qml/asset_imports/Drivetrain/meshes/cable005.mesh</file>
+        <file>qml/asset_imports/Drivetrain/meshes/cable006.mesh</file>
+        <file>qml/asset_imports/Drivetrain/meshes/eCU.mesh</file>
+        <file>qml/asset_imports/Drivetrain/meshes/frontMotors.mesh</file>
+        <file>qml/asset_imports/Drivetrain/meshes/line001.mesh</file>
+        <file>qml/asset_imports/Drivetrain/source scene/Drivetrain.FBX</file>
+        <file>qml/asset_imports/Drivetrain/_importdata.json</file>
+        <file>qml/asset_imports/Drivetrain/Drivetrain.hints</file>
+        <file>qml/asset_imports/Drivetrain/Drivetrain.qml</file>
+        <file>qml/asset_imports/Drivetrain/qmldir</file>
+        <file>qml/asset_imports/InteriorLights/_icons/InteriorLights_libicon</file>
+        <file>qml/asset_imports/InteriorLights/_icons/InteriorLights_libicon@2x</file>
+        <file>qml/asset_imports/InteriorLights/meshes/interiorLigts.mesh</file>
+        <file>qml/asset_imports/InteriorLights/source scene/InteriorLights.FBX</file>
+        <file>qml/asset_imports/InteriorLights/InteriorLights.hints</file>
+        <file>qml/asset_imports/InteriorLights/InteriorLights.qml</file>
+        <file>qml/asset_imports/InteriorLights/qmldir</file>
+        <file>qml/asset_imports/Road/_icons/Road_libicon</file>
+        <file>qml/asset_imports/Road/_icons/Road_libicon@2x</file>
+        <file>qml/asset_imports/Road/meshes/road.mesh</file>
+        <file>qml/asset_imports/Road/source scene/Road.fbx</file>
+        <file>qml/asset_imports/Road/qmldir</file>
+        <file>qml/asset_imports/Road/Road.hints</file>
+        <file>qml/asset_imports/Road/Road.png</file>
+        <file>qml/asset_imports/Road/Road.qml</file>
+        <file>qml/asset_imports/Road/roadBackground.png</file>
+        <file>qml/asset_imports/Road/roadBackground_Dark.png</file>
+        <file>qml/asset_imports/Road/roadWarningLeft.png</file>
+        <file>qml/asset_imports/Road/roadWarningLeft_Black.png</file>
+        <file>qml/asset_imports/Road/roadWarningRight.png</file>
+        <file>qml/asset_imports/Road/roadWarningRight_Black.png</file>
+        <file>qml/asset_imports/Slot/Slot.qml</file>
     </qresource>
 </RCC>

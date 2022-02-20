@@ -7,3 +7,4 @@ release
 debug
 *.rcc
 *.swp
+*.orig

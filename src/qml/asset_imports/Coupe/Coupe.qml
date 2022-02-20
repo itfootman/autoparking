@@ -1,12 +1,12 @@
 import QtQuick 2.15
 import QtQuick3D 1.15
 import QtQuick.Timeline 1.0
-import Quick3DAssets.CarShadowPlane 1.0
+import CarShadowPlane 1.0
 //import DigitalCluster 1.0
 import QtQuick3D.Materials 1.14
-import Quick3DAssets.InteriorLights 1.0
-import Quick3DAssets.DoorLights_R 1.0
-import Quick3DAssets.DoorLights_L 1.0
+import InteriorLights 1.0
+import DoorLights_R 1.0
+import DoorLights_L 1.0
 
 Node {
     id: rootNode

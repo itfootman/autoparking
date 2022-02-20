@@ -2,12 +2,11 @@ import QtQuick 2.8
 import QtQuick.Timeline 1.0
 import QtQuick3D 1.15
 import QtQuick 2.15
-import Quick3DAssets.Road 1.0
 
-import Quick3DAssets.Car_NPC 1.0
+import Car_NPC 1.0
 import QtQuick3D.Materials 1.15
 import QtQuick3D.Effects 1.15
-import Quick3DAssets.Coupe 1.0
+import Coupe 1.0
 
 import QtQuick.Controls 2.15
 import hmi.autoparking 1.0
@@ -105,6 +104,10 @@ Item {
 
                         if (combinedData.state === Constants.SlotState.OCCUPY) {
                             SceneManager.addCar(slotScene, combinedData, Math.abs(coupe.z));
+                        } else if (combinedData.state === Constants.SlotState.FREE) {
+                            SceneManager.addSlot(slotScene, combinedData, Math.abs(coupe.z));
+                        } else {
+                            console.log("Do not process temporarily.");
                         }
                     }
                 }
