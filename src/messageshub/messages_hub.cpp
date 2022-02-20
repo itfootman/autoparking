@@ -143,7 +143,6 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
 }
 #else
 void MessagesHub::workLoop() {
-    combinedData_.vehicleSpeed_ = 0.4;
     float pointStartVX = 1500;
     float pointStartVY = -2000;
     float pointEndVX = 4000;
@@ -165,16 +164,18 @@ void MessagesHub::workLoop() {
     float distance = -2000;
     float distanceV = -2000;
     int loopCount = 0;
+ #if 0
+    combinedData_.vehicleSpeed_ = 0.4;
     while (true) {
         combinedData_.yawSpeed_ = 0;
 
         combinedData_.timestamp_ = QDateTime::currentDateTime().currentMSecsSinceEpoch();
         combinedData_.carAngle_ = 0;
         srand((unsigned)time(NULL));
-      //  int num = rand() % 4 + 1;
-//        if (loopCount % 3 == 0) {
-//            combinedData_.vehicleSpeed_ += 0.1;
-//        }
+       // int num = rand() % 4 + 1;
+        if (loopCount % 3 == 0) {
+            combinedData_.vehicleSpeed_ += 0.1;
+        }
 
         int num = 10;
 
@@ -216,16 +217,22 @@ void MessagesHub::workLoop() {
         }
         loopCount++;
     }
-
+#else
         loopCount = 20;
+        combinedData_.vehicleSpeed_ = 0.4f;
+        combinedData_.timestamp_ = QDateTime::currentDateTime().currentMSecsSinceEpoch();
+        combinedData_.carAngle_ = 0;
+        combinedData_.num_ = 1;
         while (true) {
             std::unique_lock<std::mutex> lk(sigMutex);
             cond.wait(lk);
             combinedData_.slotId_ = loopCount;
             combinedData_.yawSpeed_ = 0;
+
             combinedData_.carAngle_ = 0;
             combinedData_.state_ = 2;
             combinedData_.type_ = 1;
+            combinedData_.isNew_ = 2;
             combinedData_.pointStartX_ = pointStartVX ;
             combinedData_.pointStartY_ = pointStartVY;
             combinedData_.pointEndX_ = pointEndVX;
@@ -237,6 +244,7 @@ void MessagesHub::workLoop() {
             loopCount++;
             onOneFrameReady(combinedData_);
         }
+#endif
 }
 #endif
 void MessagesHub::addOneObject() {

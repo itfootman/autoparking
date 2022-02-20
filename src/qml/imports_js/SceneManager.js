@@ -46,7 +46,7 @@ function addCar(parent, combinedData, carOffset) {
     }
 
     var positionZ = pixelCoordinate.pointStartZ - offset;
-    console.log("positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
+    console.log("APA: Add car, positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
     var carComponent = Qt.createComponent("qrc:/qml/asset_imports/Car_NPC/Car_NPC.qml");
     var localVec = parent.mapPositionFromScene(Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ))
     let carObject = carComponent.createObject(parent,
@@ -86,7 +86,7 @@ function moveScene(vehicleSpeed, goStraightAnim) {
         console.log("APA:Pixel moving speed is ", pixelSpeed);
 
         var duration = (goStraightAnim.to - initZ) / pixelSpeed * Constants.millseccondsPerSecond;
-        console.log("APA:slotScene.z is ", slotScene.z, "movingAnim.to is ", goStraightAnim.to, "Moving duration is ", duration);
+       // console.log("APA:slotScene.z is ", slotScene.z, "movingAnim.to is ", goStraightAnim.to, "Moving duration is ", duration);
         return duration;
     });
 
