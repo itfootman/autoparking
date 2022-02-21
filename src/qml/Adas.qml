@@ -30,7 +30,7 @@ Item {
         height: 650
 
         anchors.horizontalCenter: parent.horizontalCenter
-        layer.enabled: true
+        //layer.enabled: true
         environment: sceneEnvironment
 
         Node {

@@ -1,2 +1,2 @@
-module Quick3DAssets.CarShadowPlane
+module CarShadowPlane
 CarShadowPlane 1.0 CarShadowPlane.qml

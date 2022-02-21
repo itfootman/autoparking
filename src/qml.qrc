@@ -149,5 +149,6 @@
         <file>qml/asset_imports/Road/roadWarningRight.png</file>
         <file>qml/asset_imports/Road/roadWarningRight_Black.png</file>
         <file>qml/asset_imports/Slot/Slot.qml</file>
+        <file>qml/asset_imports/Slot/qmldir</file>
     </qresource>
 </RCC>

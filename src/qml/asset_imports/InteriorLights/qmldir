@@ -1,2 +1,2 @@
-module Quick3DAssets.InteriorLights
+module InteriorLights
 InteriorLights 1.0 InteriorLights.qml

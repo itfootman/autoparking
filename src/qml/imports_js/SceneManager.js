@@ -15,16 +15,38 @@ function addSlot(parent, combinedData, carOffset) {
     var roation = Qt.vector3d(0, 0, 0);
     if (combinedData.type === Constants.SlotType.PERPENDICULAR) {
         offset = pixelCoordinate.width / 2 - Constants.carWidth / 2 / Constants.mmPerCm / Constants.cmPerPixelZ;
-        roation = Qt.vector3d(0, 90, 0);
+        roation = Qt.vector3d(-90, 0, 0);
     } else if (combinedData.type === Constants.SlotType.PARALLEL) {
         offset = pixelCoordinate.width / 2 - Constants.carLength / 2 / Constants.mmPerCm / Constants.cmPerPixelZ;
+         roation = Qt.vector3d(-90, 90, 0);
     } else {
         console.log("Slot type is not supported...");
         return;
     }
 
+    var color = "#FFFF0000";
+    if (combinedData.state === Constants.SlotState.FREE) {
+        color = "#FF00FF00";
+    } else if (combinedData.state === Constants.SlotState.OCCUPY) {
+        color = "#FFFF0000";
+    }
+
     var positionZ = pixelCoordinate.pointStartZ - offset;
     console.log("APA:Add slot, positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
+
+    var slotComponent = Qt.createComponent("qrc:/qml/asset_imports/Slot/Slot.qml");
+    var localVec = parent.mapPositionFromScene(Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ));
+    let slotObject = slotComponent.createObject(parent,
+        {
+            "position": localVec,
+            "id": "slot1",
+            "eulerRotation": roation
+        });
+
+    slotObject.changeBackgroundColor(color);
+    console.log("APA:children is ", slotObject.children[0].width);
+
+    console.log("APA: Add slot ", slotObject, "to scene successfully.");
 }
 
 function addCar(parent, combinedData, carOffset) {
