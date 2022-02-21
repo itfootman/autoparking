@@ -78,6 +78,10 @@ Item {
                 easing.type: Easing.Linear
             }
 
+            Node {
+
+            }
+
             id: slotScene
             Connections {
                 target: uiupdater
@@ -111,7 +115,7 @@ Item {
                         }
                     }
                 }
-            }
+            } // Connections
 
             Component.onCompleted: {
                 SceneManager.initZ = slotScene.z;

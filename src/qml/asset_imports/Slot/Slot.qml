@@ -9,14 +9,19 @@ Node {
         slotFrame.color = color;
     }
 
+    function changeSize(width, height) {
+        slotFrame.width = width;
+        slotFrame.height = height;
+    }
+
     Rectangle {
       // layer.enabled: true
         id: slotFrame
-        width: 200
-        height: 100
         radius: 10
+        z: 100
+     //   layer.enabled: true
         border.width: 3
-        border.color: "#2666CF"
+        border.color: "#00000000"
       //  color: "#FF00FF00"
 
 //        Text {

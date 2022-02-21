@@ -145,24 +145,24 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
 void MessagesHub::workLoop() {
     float pointStartVX = 1500;
     float pointStartVY = -2000;
-    float pointEndVX = 4000;
+    float pointEndVX = 4800;
     float pointEndVY = -2000;
     float pointDepthStartVX = 1500;
     float pointDepthStartVY = -7000;
-    float pointDepthEndVX = 4000;
+    float pointDepthEndVX = 3500;
     float pointDepthEndVY = -7000;
 
 
     float pointStartHX = -2500;
     float pointStartHY = 2000;
-    float pointEndHX = 2500;
+    float pointEndHX = 2000;
     float pointEndHY = 2000;
     float pointDepthStartHX = -2500;
-    float pointDepthStartHY = 4400;
-    float pointDepthEndHX = 2500;
-    float pointDepthEndHY = 4400;
+    float pointDepthStartHY = 4000;
+    float pointDepthEndHX = 2000;
+    float pointDepthEndHY = 4000;
     float distance = 500;
-    float distanceV = 500;
+    float distanceV = 1000;
     int loopCount = 0;
  #if 1
     combinedData_.vehicleSpeed_ = 0.4;
@@ -213,7 +213,7 @@ void MessagesHub::workLoop() {
             combinedData_.readyFlag |= SLOT_FUSION_INFO();
             combinedData_.readyFlag |= VEHICLE_INFO();
             onOneFrameReady(combinedData_);
-            QThread::msleep(1000);
+            QThread::msleep(2000);
         }
         loopCount++;
     }

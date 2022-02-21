@@ -32,9 +32,9 @@ const IsNew = {
 Object.freeze(IsNew);
 
 
-const cmPerPixelX = 1;
+const cmPerPixelX = 1.1;
 const cmPerPixelZ = 1;
-const carLength = 4600; // mm
+const carLength = 3000; // mm
 const carWidth = 1800; // mm
 const cmPerMeter = 100;
 const mmPerCm = 10;
@@ -43,4 +43,5 @@ const slotSceneMovingTo = 20000000;
 const movingSpeedFactor = 6;
 const slotIdSTart = 1;
 const roationThreshold = 0.001;
+const carHeight = 50; // pixel
 //const movingThreshold = 0.01;//m/s
