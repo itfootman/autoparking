@@ -18,6 +18,7 @@ Item {
     id: adas
     width: 500
     height: 650
+    signal signalAddObject()
 
     property bool viewTopBot: true
     property int transitionDuration: 700
@@ -73,47 +74,15 @@ Item {
                 target: slotScene
                 loops: 1
                 property: "eulerRotation.y"
-                to:90
-                duration: 30000
+                to:360
                 easing.type: Easing.Linear
-            }
-
-            Node {
-
             }
 
             id: slotScene
             Connections {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
-                     Logger.dumpCombinedData(combinedData);
-                    if (combinedData.vehicleSpeed > 0 && !goStraightAnim.running) {
-                        SceneManager.moveScene(combinedData.vehicleSpeed, goStraightAnim);
-                        if (Math.abs(combinedData.yawSpeed) > 0 && !turningAnim.running ) {
-                           SceneManager.rotateScene(combinedData.carAngle, combinedData.yawSpeed, turningAnim)
-                        } else {
-                           SceneManager.stopRotation(turningAnim);
-                        }
-                    } else if (combinedData.vehicleSpeed <= 0)  {
-                        SceneManager.pauseGoStraight(goStraightAnim);
-                    }
-
-                    if (combinedData.num > 0 && combinedData.slotId !== -1 &&
-                        combinedData.slotId !== SceneManager.lastSlotId &&
-                        combinedData.isNew === Constants.IsNew.NEW) {
-                        SceneManager.lastSlotId = combinedData.slotId;
-                        if (combinedData.slotId === Constants.slotIdStart) {
-                            SceneManager.clearObjects();
-                        }
-
-                        if (combinedData.state === Constants.SlotState.OCCUPY) {
-                            SceneManager.addCar(slotScene, combinedData, Math.abs(coupe.z));
-                        } else if (combinedData.state === Constants.SlotState.FREE) {
-                            SceneManager.addSlot(slotScene, combinedData, Math.abs(coupe.z));
-                        } else {
-                            console.log("Do not process temporarily.");
-                        }
-                    }
+                    SceneManager.controlScene(slotScene, combinedData, goStraightAnim, turningAnim);
                 }
             } // Connections
 
@@ -207,7 +176,7 @@ Item {
             id: camera
             y: 414.59
             z: 450.86456
-            clipFar: 5000
+            clipFar: 2000
             fieldOfView: 42
             eulerRotation.x: -24
 
@@ -245,9 +214,6 @@ Item {
             }
         }
     }
-
-
-
 }
 
 /*##^##

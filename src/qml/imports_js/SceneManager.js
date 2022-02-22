@@ -1,12 +1,52 @@
 .import "Utils.js" as Utils
 .import "Constants.js" as Constants
-
+.import "Logger.js" as Logger
 
 var lastSlotId =  -1;
-var instances = [];
+var instances = new Map();
 var initZ = 0;
 
-function addSlot(parent, combinedData, carOffset) {
+function isInScene(slotId) {
+    return instances.has(slotId);
+}
+
+function controlScene(slotScene, combinedData, goStraightAnim, turningAnim) {
+    Logger.dumpCombinedData(combinedData);
+    // Init initial rotation degree of car.
+    slotScene.eulerRotation.y = -combinedData.carAngle;
+
+    if (Math.abs(combinedData.vehicleSpeed) > 0 && !goStraightAnim.running) {
+        moveScene(combinedData.vehicleSpeed, goStraightAnim);
+        if (Math.abs(combinedData.yawSpeed) > 0 && !turningAnim.running ) {
+           rotateScene(slotScene, combinedData.carAngle, combinedData.yawSpeed, turningAnim)
+        } else {
+           stopRotation(turningAnim);
+        }
+    } else if (Math.abs(combinedData.vehicleSpeed) <= 0)  {
+        pauseGoStraight(goStraightAnim);
+        pauseRotation(turningAnim);
+    }
+
+    if (combinedData.slotId === Constants.slotIdStart) {
+        clearObjects();
+    }
+
+    if (combinedData.num > 0 && combinedData.slotId !== -1 &&
+        !isInScene(combinedData.slotId) &&
+        combinedData.isNew === Constants.IsNew.NEW) {
+        lastSlotId = combinedData.slotId;
+
+        if (combinedData.state === Constants.SlotState.OCCUPY) {
+            addCar(slotScene, combinedData, Math.abs(coupe.z));
+        } else if (combinedData.state === Constants.SlotState.FREE) {
+            addSlot(slotScene, combinedData, Math.abs(coupe.z), true);
+        } else {
+            console.log("APA: Do not process temporarily.");
+        }
+    }
+}
+
+function addSlot(parent, combinedData, carOffset, isShowText) {
     var pixelCoordinate = Utils.convertCoordinate(combinedData, carOffset);
     var positionX = pixelCoordinate.pointStartX > 0 ?
                 pixelCoordinate.pointStartX + pixelCoordinate.depth / 2 :
@@ -17,13 +57,13 @@ function addSlot(parent, combinedData, carOffset) {
     } else if (combinedData.type === Constants.SlotType.PARALLEL) {
          roation = Qt.vector3d(-90, 90, 0);
     } else {
-        console.log("Slot type is not supported...");
+        console.log("APA: Slot type is not supported...");
         return;
     }
 
     var offsetz = pixelCoordinate.width / 2;
     var positionZ = pixelCoordinate.pointStartZ - offsetz;
-    console.log("APA:Add slot, positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
+    console.log("APA: Add slot, positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
 
     var slotComponent = Qt.createComponent("qrc:/qml/asset_imports/Slot/Slot.qml");
     var localVec = parent.mapPositionFromScene(Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ));
@@ -41,17 +81,22 @@ function addSlot(parent, combinedData, carOffset) {
         slotObject.changeBackgroundColor("#10FF0000");
     }
 
+    slotObject.showText(isShowText);
+
     if (combinedData.type === Constants.SlotType.PERPENDICULAR) {
         slotObject.changeSize(pixelCoordinate.depth, pixelCoordinate.width);
     } else if (combinedData.type === Constants.SlotType.PARALLEL) {
         slotObject.changeSize(pixelCoordinate.width, pixelCoordinate.depth);
     }
 
-    console.log("APA: Add slot ", slotObject, "to scene successfully.");
+    instances[combinedData.slotId] = slotObject;
+
+    console.log("APA: Add slot ", slotObject, " to scene successfully.");
 }
 
 function addCar(parent, combinedData, carOffset) {
-    addSlot(parent, combinedData, carOffset);
+    addSlot(parent, combinedData, carOffset, false);
+
     var pixelCoordinate = Utils.convertCoordinate(combinedData, carOffset);
 
     var positionX = pixelCoordinate.pointStartX > 0 ?
@@ -67,7 +112,7 @@ function addCar(parent, combinedData, carOffset) {
                                      -Constants.carLength / 2 / Constants.mmPerCm / Constants.cmPerPixelX;
     } else if (combinedData.type === Constants.SlotType.PARALLEL) {
     } else {
-        console.log("Slot type is not supported...");
+        console.log("APA: Slot type is not supported...");
     }
 
     var positionZ = pixelCoordinate.pointStartZ - offsetz;
@@ -87,25 +132,7 @@ function addCar(parent, combinedData, carOffset) {
             "eulerRotation": roation
         });
 
-
-
-    //instances.push(carObject);
-
-//    var anim = Qt.createQmlObject ('import QtQuick 2.15; NumberAnimation  { }', slotScene);
-//    anim.target = carObject;
-//    anim.property = "z";
-//    anim.to = 2000;
-//    anim.duration = 10000;
-//    anim.restart();
-
-//    var roatateAnim = Qt.createQmlObject ('import QtQuick 2.15; NumberAnimation  { }', slotScene);
-//    roatateAnim.target = parent;
-//    roatateAnim.property = "eulerRotation.y";
-//    roatateAnim.to = -90;
-//    roatateAnim.duration = 15000;
-//    roatateAnim.restart();
-
-    console.log("Add a car to scene...");
+    console.log("APA: Add a car ", carObject, " to scene successfully...");
 }
 
 function moveScene(vehicleSpeed, goStraightAnim) {
@@ -123,17 +150,31 @@ function moveScene(vehicleSpeed, goStraightAnim) {
 }
 
 function clearObjects(slotScene){
-
+    console.log("APA: Clear all slots in cache...");
+    instances.clear();
 }
 
-function rotateScene(carAngle, yawSpeed, turingAnim) {
-    turingAnim.restart();
+function rotateScene(slotScene, carAngle, yawSpeed, turingAnim) {
+    turingAnim.duration = Qt.binding(function() {
+        var degreeSpeed = yawSpeed * 180 / Constants.pi * Constants.yawSpeedFactor;
+        return Math.abs(turingAnim.to - slotScene.eulerRotation.y) / degreeSpeed;
+    });
 }
 
-function stopRotation(roationAnim) {
-    roationAnim.stop();
+function pauseRotation(roationAnim) {
+    if (rotationAnim.running) {
+        roationAnim.pause();
+    }
+}
+
+function stopRotation(rotationAnim) {
+    if (rotationAnim.running) {
+        roationAnim.pause();
+    }
 }
 
 function pauseGoStraightAnim(goStraightAnim) {
-    goStraightAnim.pause();
+    if (goStraightAnim.running) {
+        goStraightAnim.pause();
+    }
 }

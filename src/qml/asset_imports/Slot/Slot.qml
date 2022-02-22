@@ -14,30 +14,38 @@ Node {
         slotFrame.height = height;
     }
 
+    function showText(isShowText) {
+        if (isShowText) {
+            text0.visible = true;
+        } else {
+            text0.visible = false;
+        }
+    }
+
     Rectangle {
       // layer.enabled: true
         id: slotFrame
         radius: 10
-        z: 100
      //   layer.enabled: true
         border.width: 3
         border.color: "#00000000"
       //  color: "#FF00FF00"
 
-//        Text {
-//            id: text0
-//            width: 64
-//            height: 33
-//            anchors.verticalCenter: parent.verticalCenter
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            color: "#233cc9"
-//            text: qsTr("P")
-//            font.pixelSize: 30
-//            horizontalAlignment: Text.AlignHCenter
-//            verticalAlignment: Text.AlignVCenter
+        Text {
+            id: text0
+            visible: false
+            width: 64
+            height: 33
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "#233cc9"
+            text: qsTr("P")
+            font.pixelSize: 70
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
 
-//            font.bold: true
-//        }
+            font.bold: true
+        }
     }
 
 //    Text {

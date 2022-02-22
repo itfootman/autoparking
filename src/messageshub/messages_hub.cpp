@@ -145,11 +145,11 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
 void MessagesHub::workLoop() {
     float pointStartVX = 1500;
     float pointStartVY = -2000;
-    float pointEndVX = 4800;
+    float pointEndVX = 4000;
     float pointEndVY = -2000;
     float pointDepthStartVX = 1500;
     float pointDepthStartVY = -7000;
-    float pointDepthEndVX = 3500;
+    float pointDepthEndVX = 4000;
     float pointDepthEndVY = -7000;
 
 
@@ -161,8 +161,8 @@ void MessagesHub::workLoop() {
     float pointDepthStartHY = 4000;
     float pointDepthEndHX = 2000;
     float pointDepthEndHY = 4000;
-    float distance = 500;
-    float distanceV = 1000;
+    float distance = 3500;
+    float distanceV = 5500;
     int loopCount = 0;
  #if 1
     combinedData_.vehicleSpeed_ = 0.4;
@@ -171,50 +171,60 @@ void MessagesHub::workLoop() {
 
         combinedData_.timestamp_ = QDateTime::currentDateTime().currentMSecsSinceEpoch();
         combinedData_.carAngle_ = 0;
-        srand((unsigned)time(NULL));
+      //  srand((unsigned)time(NULL));
        // int num = rand() % 4 + 1;
         if (loopCount % 3 == 0) {
             combinedData_.vehicleSpeed_ += 0.1;
         }
 
-        int num = 10;
+        int numleft = 5;
 
-        for (int i = 0; i < num; ++i) {
-            combinedData_.num_ = num;
+        for (int i = 0; i < numleft; ++i) {
+            combinedData_.num_ = numleft;
             combinedData_.slotId_ = i + 1;
-            if (loopCount % 2 == 0) {
-                combinedData_.state_ = (i + 1) % 2 == 0 ? 1 : 2;
-            } else {
-                combinedData_.state_ = (i + 1) % 2 == 0 ? 2 : 1;
-            }
-
-            combinedData_.type_ = (i + 1) % 2 == 0 ? 1 : 2;
+            combinedData_.state_ = (i + 1) % 2 == 0 ? 1 : 2;
+            combinedData_.type_ =  2;
             combinedData_.isNew_ = 2;
-            if (combinedData_.type_ == 1) {
-                combinedData_.pointStartX_ = pointStartVX + i * distance;
-                combinedData_.pointStartY_ = pointStartVY;
-                combinedData_.pointEndX_ = pointEndVX + i * distance;
-                combinedData_.pointEndY_ = pointEndVY;
-                combinedData_.pointDepthStartX_ = pointDepthStartVX + i * distance;
-                combinedData_.pointDepthStartY_ = pointDepthStartVY;
-                combinedData_.pointDepthEndX_ = pointDepthEndVX + i * distance;
-                combinedData_.pointDepthEndY_ = pointDepthEndVY;
-            } else if (combinedData_.type_ == 2) {
-                combinedData_.pointStartX_ = pointStartHX + i * distanceV;
-                combinedData_.pointStartY_ = pointStartHY;
-                combinedData_.pointEndX_ = pointEndHX + i * distanceV;
-                combinedData_.pointEndY_ = pointEndHY;
-                combinedData_.pointDepthStartX_ = pointDepthStartHX + i * distanceV;
-                combinedData_.pointDepthStartY_ = pointDepthStartHY;
-                combinedData_.pointDepthEndX_ = pointDepthEndHX + i * distanceV;
-                combinedData_.pointDepthEndY_ = pointDepthEndHY;
-            }
+
+            combinedData_.pointStartX_ = pointStartHX + i * distanceV;
+            combinedData_.pointStartY_ = pointStartHY;
+            combinedData_.pointEndX_ = pointEndHX + i * distanceV;
+            combinedData_.pointEndY_ = pointEndHY;
+            combinedData_.pointDepthStartX_ = pointDepthStartHX + i * distanceV;
+            combinedData_.pointDepthStartY_ = pointDepthStartHY;
+            combinedData_.pointDepthEndX_ = pointDepthEndHX + i * distanceV;
+            combinedData_.pointDepthEndY_ = pointDepthEndHY;
 
             combinedData_.readyFlag |= SLOT_FUSION_INFO();
             combinedData_.readyFlag |= VEHICLE_INFO();
             onOneFrameReady(combinedData_);
-            QThread::msleep(2000);
         }
+
+        int numright = 5;
+
+        for (int i = 0; i < numright; ++i) {
+            combinedData_.num_ = numright;
+            combinedData_.slotId_ = i + numleft + 1;
+            combinedData_.state_ = (i + 1) % 2 == 0 ? 1 : 2;
+            combinedData_.type_ =  1;
+            combinedData_.isNew_ = 2;
+
+            combinedData_.pointStartX_ = pointStartVX + i * distance;
+            combinedData_.pointStartY_ = pointStartVY;
+            combinedData_.pointEndX_ = pointEndVX + i * distance;
+            combinedData_.pointEndY_ = pointEndVY;
+            combinedData_.pointDepthStartX_ = pointDepthStartVX + i * distance;
+            combinedData_.pointDepthStartY_ = pointDepthStartVY;
+            combinedData_.pointDepthEndX_ = pointDepthEndVX + i * distance;
+            combinedData_.pointDepthEndY_ = pointDepthEndVY;
+
+            combinedData_.readyFlag |= SLOT_FUSION_INFO();
+            combinedData_.readyFlag |= VEHICLE_INFO();
+            onOneFrameReady(combinedData_);
+        }
+
+        QThread::msleep(10000);
+
         loopCount++;
     }
 #else
