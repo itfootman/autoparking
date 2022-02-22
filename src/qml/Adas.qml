@@ -36,29 +36,6 @@ Item {
 
         Node {
             z: 0
-//            ParallelAnimation {
-//                id: turningAnim
-//                running: false
-//                loops: Animation.Infinite
-
-//                NumberAnimation {
-//                    id:movingAnim
-//                    target: slotScene
-//                    property: "z"
-//                    to: Constants.slotSceneMovingTo
-//                    easing.type: Easing.Linear
-//                }
-
-//                NumberAnimation {
-//                    id:roationAnim
-//                    target: slotScene
-//                    property: "eulerRotation.y"
-//                    to:360
-//                    duration: 20000
-//                    easing.type: Easing.Linear
-//                }
-//            }
-
             NumberAnimation {
                 id:goStraightAnim
                 target: slotScene
@@ -176,7 +153,7 @@ Item {
             id: camera
             y: 414.59
             z: 450.86456
-            clipFar: 2000
+            clipFar: 1500
             fieldOfView: 42
             eulerRotation.x: -24
 
@@ -222,4 +199,3 @@ Designer {
 D{i:29}
 }
 ##^##*/
-

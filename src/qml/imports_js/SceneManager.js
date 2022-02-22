@@ -5,6 +5,8 @@
 var lastSlotId =  -1;
 var instances = new Map();
 var initZ = 0;
+var carCount = 0;
+var slotCount = 0;
 
 function isInScene(slotId) {
     return instances.has(slotId);
@@ -61,6 +63,7 @@ function addSlot(parent, combinedData, carOffset, isShowText) {
         return;
     }
 
+    slotCount++;
     var offsetz = pixelCoordinate.width / 2;
     var positionZ = pixelCoordinate.pointStartZ - offsetz;
     console.log("APA: Add slot, positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
@@ -68,10 +71,11 @@ function addSlot(parent, combinedData, carOffset, isShowText) {
     var slotComponent = Qt.createComponent("qrc:/qml/asset_imports/Slot/Slot.qml");
     var localVec = parent.mapPositionFromScene(Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ));
     localVec.y = -Constants.carHeight;
+    var slotId = "slot" + slotCount;
     let slotObject = slotComponent.createObject(parent,
         {
             "position": localVec,
-            "id": "slot1",
+            "id": slotId,
             "eulerRotation": roation
         });
 
@@ -113,8 +117,10 @@ function addCar(parent, combinedData, carOffset) {
     } else if (combinedData.type === Constants.SlotType.PARALLEL) {
     } else {
         console.log("APA: Slot type is not supported...");
+        return;
     }
 
+    carCount++;
     var positionZ = pixelCoordinate.pointStartZ - offsetz;
     if (combinedData.type === Constants.SlotType.PARALLEL) {
         positionZ += Constants.carLength / 2 / Constants.mmPerCm / Constants.cmPerPixelZ;
@@ -122,11 +128,12 @@ function addCar(parent, combinedData, carOffset) {
 
     console.log("APA: Add car, positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
     var carComponent = Qt.createComponent("qrc:/qml/asset_imports/Car_NPC/Car_NPC.qml");
-    var localVec = parent.mapPositionFromScene(Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ))
+    var localVec = parent.mapPositionFromScene(Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ));
+    var carId = "car" + carCount;
     let carObject = carComponent.createObject(parent,
         {
             "position": localVec,
-            "id": "car1",
+            "id": carId,
             "opacity": 1,
             "scale": Qt.vector3d(1.1, 1.1, 1.1),
             "eulerRotation": roation
