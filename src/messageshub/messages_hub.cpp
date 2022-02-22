@@ -166,15 +166,15 @@ void MessagesHub::workLoop() {
     int loopCount = 0;
  #if 1
     combinedData_.vehicleSpeed_ = 0.4;
+    combinedData_.yawSpeed_ = 0;
     while (true) {
-        combinedData_.yawSpeed_ = 0;
-
         combinedData_.timestamp_ = QDateTime::currentDateTime().currentMSecsSinceEpoch();
         combinedData_.carAngle_ = 0;
       //  srand((unsigned)time(NULL));
        // int num = rand() % 4 + 1;
-        if (loopCount % 3 == 0) {
-            combinedData_.vehicleSpeed_ += 0.1;
+        if (loopCount >= 2) {
+            combinedData_.yawSpeed_ = 0.3;
+            combinedData_.carAngle_ += 0.3;
         }
 
         int numleft = 5;

@@ -9,6 +9,7 @@ Item {
     id: autoparking
     width: 500
     height: 650
+    signal signalAddObject()
 
     Adas {
         id: adas

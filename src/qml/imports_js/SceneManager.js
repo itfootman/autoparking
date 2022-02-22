@@ -13,16 +13,21 @@ function isInScene(slotId) {
 }
 
 function controlScene(slotScene, combinedData, goStraightAnim, turningAnim) {
-    Logger.dumpCombinedData(combinedData);
+   // Logger.dumpCombinedData(combinedData);
     // Init initial rotation degree of car.
     slotScene.eulerRotation.y = -combinedData.carAngle;
 
-    if (Math.abs(combinedData.vehicleSpeed) > 0 && !goStraightAnim.running) {
-        moveScene(combinedData.vehicleSpeed, goStraightAnim);
-        if (Math.abs(combinedData.yawSpeed) > 0 && !turningAnim.running ) {
-           rotateScene(slotScene, combinedData.carAngle, combinedData.yawSpeed, turningAnim)
+    if (Math.abs(combinedData.vehicleSpeed) > 0) {
+        if (!goStraightAnim.running) {
+            moveScene(combinedData.vehicleSpeed, goStraightAnim);
+        }
+
+        if (Math.abs(combinedData.yawSpeed) > 0) {
+            if (!turningAnim.running) {
+                rotateScene(slotScene, combinedData.carAngle, combinedData.yawSpeed, turningAnim)
+            }
         } else {
-           stopRotation(turningAnim);
+            stopRotation(turningAnim);
         }
     } else if (Math.abs(combinedData.vehicleSpeed) <= 0)  {
         pauseGoStraight(goStraightAnim);
@@ -70,6 +75,7 @@ function addSlot(parent, combinedData, carOffset, isShowText) {
 
     var slotComponent = Qt.createComponent("qrc:/qml/asset_imports/Slot/Slot.qml");
     var localVec = parent.mapPositionFromScene(Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ));
+    console.log("APA: Add slot, local position:" + localVec);
     localVec.y = -Constants.carHeight;
     var slotId = "slot" + slotCount;
     let slotObject = slotComponent.createObject(parent,
@@ -129,6 +135,7 @@ function addCar(parent, combinedData, carOffset) {
     console.log("APA: Add car, positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
     var carComponent = Qt.createComponent("qrc:/qml/asset_imports/Car_NPC/Car_NPC.qml");
     var localVec = parent.mapPositionFromScene(Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ));
+    console.log("APA: Add car, local position:", localVec);
     var carId = "car" + carCount;
     let carObject = carComponent.createObject(parent,
         {
@@ -161,22 +168,37 @@ function clearObjects(slotScene){
     instances.clear();
 }
 
-function rotateScene(slotScene, carAngle, yawSpeed, turingAnim) {
-    turingAnim.duration = Qt.binding(function() {
+function rotateScene(slotScene, carAngle, yawSpeed, turningAnim) {
+    turningAnim.duration = Qt.binding(function() {
         var degreeSpeed = yawSpeed * 180 / Constants.pi * Constants.yawSpeedFactor;
-        return Math.abs(turingAnim.to - slotScene.eulerRotation.y) / degreeSpeed;
+        // return carAngle / yawSpeed;
+        return Math.abs(turningAnim.to - slotScene.eulerRotation.y) / degreeSpeed;
     });
+
+    var localPivot = slotScene.mapPositionFromScene(Qt.vector3d(0, 0, -1000));
+
+//    slotScene.pivot = localPivot;
+//    slotScene.changePivotShow(localPivot);
+
+//    //turingAnim.duration = 200000;
+//    //slotScene.eulerRotation.y = 90;
+//    //turingAnim.start();
+    slotScene.rotation.y = carAngle * 180 / Constants.pi;
+
+    console.log("APA: Begin to turn...");
 }
 
 function pauseRotation(roationAnim) {
+    console.log("APA: Pause turning...");
     if (rotationAnim.running) {
         roationAnim.pause();
     }
 }
 
 function stopRotation(rotationAnim) {
+    console.log("APA: Stop turning...");
     if (rotationAnim.running) {
-        roationAnim.pause();
+        rotationAnim.stop();
     }
 }
 

@@ -18,7 +18,6 @@ Item {
     id: adas
     width: 500
     height: 650
-    signal signalAddObject()
 
     property bool viewTopBot: true
     property int transitionDuration: 700
@@ -36,6 +35,7 @@ Item {
 
         Node {
             z: 0
+            pivot: -3000
             NumberAnimation {
                 id:goStraightAnim
                 target: slotScene
@@ -51,15 +51,37 @@ Item {
                 target: slotScene
                 loops: 1
                 property: "eulerRotation.y"
-                to:360
+                to:90
                 easing.type: Easing.Linear
             }
+
+            Behavior on rotation {
+                id:turningAnim1
+                SmoothedAnimation {
+                    velocity: 4
+                }
+            }
+
+//            function changePivotShow (localPivot) {
+//                console.log("APA: pivot local position:", localPivot);
+//                mytest.position = localPivot;
+//            }
+
+//            Node {
+//                id: mytest
+//              //  position: Qt.vector3d(0, 0, -800)
+//                Rectangle {
+//                    width: 100
+//                    height: 100
+//                    color: 'red'
+//                }
+//            }
 
             id: slotScene
             Connections {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
-                    SceneManager.controlScene(slotScene, combinedData, goStraightAnim, turningAnim);
+                    SceneManager.controlScene(slotScene, combinedData, goStraightAnim, turningAnim1);
                 }
             } // Connections
 
