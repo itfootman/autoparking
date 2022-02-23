@@ -55,12 +55,12 @@ Item {
                 easing.type: Easing.Linear
             }
 
-            Behavior on rotation {
-                id:turningAnim1
-                SmoothedAnimation {
-                    velocity: 4
-                }
-            }
+//            Behavior on rotation {
+//                id:turningAnim1
+//                SmoothedAnimation {
+//                    velocity: 4
+//                }
+//            }
 
 //            function changePivotShow (localPivot) {
 //                console.log("APA: pivot local position:", localPivot);
@@ -81,7 +81,7 @@ Item {
             Connections {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
-                    SceneManager.controlScene(slotScene, combinedData, goStraightAnim, turningAnim1);
+                    SceneManager.controlScene(slotScene, combinedData, goStraightAnim, turningAnim);
                 }
             } // Connections
 

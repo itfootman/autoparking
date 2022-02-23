@@ -1,6 +1,6 @@
 const SlotState = {
     INVALID : -1,
-    UNKOWN : 0,
+    UNKNOWN : 0,
     FREE : 1,
     OCCUPY : 2,
     SPECIAL : 3,
@@ -11,7 +11,7 @@ Object.freeze(SlotState);
 
 const SlotType = {
         INVALID : -1,
-        UNKOWN : 0,
+        UNKNOWN : 0,
         PERPENDICULAR : 1,
         PARALLEL : 2,
         OBLIQUE_30 : 3,
@@ -23,7 +23,7 @@ Object.freeze(SlotType);
 
 const IsNew = {
         INVALID : -1,
-        UNKOWN : 0,
+        UNKNOWN : 0,
         OLD : 1,
         NEW : 2,
         LOST : 3

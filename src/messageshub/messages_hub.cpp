@@ -2,6 +2,7 @@
 #ifndef WITH_ROS
 #include <qthread.h>
 #include <qdatetime.h>
+#include <fstream>
 #endif
 #include <QMetaObject>
 namespace hmi {
@@ -164,7 +165,23 @@ void MessagesHub::workLoop() {
     float distance = 3500;
     float distanceV = 5500;
     int loopCount = 0;
- #if 1
+ #if 0
+    std::ifstream dataFile("d:\\temp\\log.data", std::ios::binary | std::ios::in);
+    if (dataFile) {
+        while (dataFile.read((char*)&combinedData_, sizeof(CombinedData))) {
+            combinedData_.readyFlag |= SLOT_FUSION_INFO();
+            combinedData_.readyFlag |= VEHICLE_INFO();
+            onOneFrameReady(combinedData_);
+            if (combinedData_.slotId_ != -1  && combinedData_.pointStartX_ != -1) {
+                QThread::msleep(1000);
+            }
+        }
+
+        dataFile.close();
+    }
+#endif
+
+#if 1
     combinedData_.vehicleSpeed_ = 0.4;
     combinedData_.yawSpeed_ = 0;
     while (true) {
@@ -173,8 +190,9 @@ void MessagesHub::workLoop() {
       //  srand((unsigned)time(NULL));
        // int num = rand() % 4 + 1;
         if (loopCount >= 2) {
-            combinedData_.yawSpeed_ = 0.3;
-            combinedData_.carAngle_ += 0.3;
+//            combinedData_.yawSpeed_ = 0.3;
+//            combinedData_.carAngle_ += 0.3;
+            combinedData_.vehicleSpeed_ += 0.1;
         }
 
         int numleft = 5;
@@ -227,6 +245,7 @@ void MessagesHub::workLoop() {
 
         loopCount++;
     }
+
 #else
         loopCount = 20;
         combinedData_.vehicleSpeed_ = 0.4f;

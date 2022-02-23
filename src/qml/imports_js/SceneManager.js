@@ -13,14 +13,12 @@ function isInScene(slotId) {
 }
 
 function controlScene(slotScene, combinedData, goStraightAnim, turningAnim) {
-   // Logger.dumpCombinedData(combinedData);
+    Logger.dumpCombinedData(combinedData);
     // Init initial rotation degree of car.
     slotScene.eulerRotation.y = -combinedData.carAngle;
 
     if (Math.abs(combinedData.vehicleSpeed) > 0) {
-        if (!goStraightAnim.running) {
-            moveScene(combinedData.vehicleSpeed, goStraightAnim);
-        }
+        moveScene(slotScene, combinedData.vehicleSpeed, goStraightAnim);
 
         if (Math.abs(combinedData.yawSpeed) > 0) {
             if (!turningAnim.running) {
@@ -40,12 +38,12 @@ function controlScene(slotScene, combinedData, goStraightAnim, turningAnim) {
 
     if (combinedData.num > 0 && combinedData.slotId !== -1 &&
         !isInScene(combinedData.slotId) &&
-        combinedData.isNew === Constants.IsNew.NEW) {
+        (combinedData.isNew !== Constants.IsNew.INVALID)) {
         lastSlotId = combinedData.slotId;
 
         if (combinedData.state === Constants.SlotState.OCCUPY) {
             addCar(slotScene, combinedData, Math.abs(coupe.z));
-        } else if (combinedData.state === Constants.SlotState.FREE) {
+        } else if (combinedData.state === Constants.SlotState.FREE || combinedData.state === Constants.SlotState.UNKNOWN) {
             addSlot(slotScene, combinedData, Math.abs(coupe.z), true);
         } else {
             console.log("APA: Do not process temporarily.");
@@ -149,17 +147,14 @@ function addCar(parent, combinedData, carOffset) {
     console.log("APA: Add a car ", carObject, " to scene successfully...");
 }
 
-function moveScene(vehicleSpeed, goStraightAnim) {
-    goStraightAnim.duration = Qt.binding(function() {
-        var pixelSpeed = vehicleSpeed * Constants.cmPerMeter / Constants.cmPerPixelZ;
-        pixelSpeed *= Constants.movingSpeedFactor;
-        console.log("APA:Pixel moving speed is ", pixelSpeed);
+function moveScene(slotScene, vehicleSpeed, goStraightAnim) {
+    var pixelSpeed = vehicleSpeed * Constants.cmPerMeter / Constants.cmPerPixelZ;
+    pixelSpeed *= Constants.movingSpeedFactor;
+    console.log("APA:Pixel moving speed is ", pixelSpeed);
 
-        var duration = (goStraightAnim.to - initZ) / pixelSpeed * Constants.millseccondsPerSecond;
-       // console.log("APA:slotScene.z is ", slotScene.z, "movingAnim.to is ", goStraightAnim.to, "Moving duration is ", duration);
-        return duration;
-    });
-
+    goStraightAnim.duration = (goStraightAnim.to - initZ) / pixelSpeed * Constants.millseccondsPerSecond;
+   // console.log("APA:slotScene.z is ", slotScene.z, "movingAnim.to is ", goStraightAnim.to, "Moving duration is ", duration);
+    goStraightAnim.from = slotScene.z;
     goStraightAnim.restart();
 }
 
@@ -169,13 +164,13 @@ function clearObjects(slotScene){
 }
 
 function rotateScene(slotScene, carAngle, yawSpeed, turningAnim) {
-    turningAnim.duration = Qt.binding(function() {
-        var degreeSpeed = yawSpeed * 180 / Constants.pi * Constants.yawSpeedFactor;
-        // return carAngle / yawSpeed;
-        return Math.abs(turningAnim.to - slotScene.eulerRotation.y) / degreeSpeed;
-    });
+//    turningAnim.duration = Qt.binding(function() {
+//        var degreeSpeed = yawSpeed * 180 / Constants.pi * Constants.yawSpeedFactor;
+//        // return carAngle / yawSpeed;
+//        return Math.abs(turningAnim.to - slotScene.eulerRotation.y) / degreeSpeed;
+//    });
 
-    var localPivot = slotScene.mapPositionFromScene(Qt.vector3d(0, 0, -1000));
+//    var localPivot = slotScene.mapPositionFromScene(Qt.vector3d(0, 0, -1000));
 
 //    slotScene.pivot = localPivot;
 //    slotScene.changePivotShow(localPivot);
@@ -183,26 +178,26 @@ function rotateScene(slotScene, carAngle, yawSpeed, turningAnim) {
 //    //turingAnim.duration = 200000;
 //    //slotScene.eulerRotation.y = 90;
 //    //turingAnim.start();
-    slotScene.rotation.y = carAngle * 180 / Constants.pi;
+//    slotScene.rotation.y = carAngle * 180 / Constants.pi;
 
-    console.log("APA: Begin to turn...");
+//    console.log("APA: Begin to turn...");
 }
 
-function pauseRotation(roationAnim) {
-    console.log("APA: Pause turning...");
+function pauseRotation(rotationAnim) {
     if (rotationAnim.running) {
-        roationAnim.pause();
+        console.log("APA: Pause turning...");
+        rotationAnim.pause();
     }
 }
 
 function stopRotation(rotationAnim) {
-    console.log("APA: Stop turning...");
     if (rotationAnim.running) {
+        console.log("APA: Stop turning...");
         rotationAnim.stop();
     }
 }
 
-function pauseGoStraightAnim(goStraightAnim) {
+function pauseGoStraight(goStraightAnim) {
     if (goStraightAnim.running) {
         goStraightAnim.pause();
     }
