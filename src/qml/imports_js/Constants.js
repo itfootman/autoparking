@@ -12,8 +12,8 @@ Object.freeze(SlotState);
 const SlotType = {
         INVALID : -1,
         UNKNOWN : 0,
-        PERPENDICULAR : 1,
-        PARALLEL : 2,
+        PERPENDICULAR : 2,
+        PARALLEL : 1,
         OBLIQUE_30 : 3,
         OBLIQUE_45 : 4,
         OBLIQUE_60 : 5
@@ -46,4 +46,6 @@ const roationThreshold = 0.001;
 const carHeight = 50; // pixel
 const pi = 3.1415926;
 const yawSpeedFactor = 1;
+const sceneWidth = 600;
+const sceneHeight = 800;
 //const movingThreshold = 0.01;//m/s

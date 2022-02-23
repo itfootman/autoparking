@@ -16,8 +16,8 @@ import "qrc:/qml/imports_js/Logger.js" as Logger
 
 Item {
     id: adas
-    width: 500
-    height: 650
+    width: Constants.sceneWidth
+    height: Constants.sceneHeight
 
     property bool viewTopBot: true
     property int transitionDuration: 700
@@ -26,8 +26,8 @@ Item {
     View3D {
         id: view3D
         y: 50
-        width: 500
-        height: 650
+        width: Constants.sceneWidth
+        height: Constants.sceneHeight
 
         anchors.horizontalCenter: parent.horizontalCenter
         //layer.enabled: true

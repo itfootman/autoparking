@@ -5,6 +5,7 @@
 #include <fstream>
 #endif
 #include <QMetaObject>
+#include <QtCore>
 namespace hmi {
 MessagesHub::MessagesHub() {
 }
@@ -282,6 +283,7 @@ void MessagesHub::addOneObject() {
     cond.notify_one();
 }
 void MessagesHub::onOneFrameReady(const CombinedData& combinedData) {
+ //          QThread::msleep(1000);
     for (const auto& o : observers_) {
         qDebug() << "biwenyang:onOneFrameReady, notify observer...";
         QMetaObject::invokeMethod(o.get() , "onUpdate" , Qt::AutoConnection

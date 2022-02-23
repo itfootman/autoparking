@@ -40,11 +40,11 @@ Node {
             anchors.horizontalCenter: parent.horizontalCenter
             color: "#233cc9"
             text: qsTr("P")
-            font.pixelSize: 70
+            font.pixelSize: 50
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
 
-            font.bold: true
+            font.bold: false
         }
     }
 
