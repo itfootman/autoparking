@@ -35,7 +35,7 @@ Item {
 
         Node {
             z: 0
-            pivot: -3000
+         //   pivot: Qt.vector3d(0, 0, 1000);
             NumberAnimation {
                 id:goStraightAnim
                 target: slotScene
@@ -45,15 +45,35 @@ Item {
                 easing.type: Easing.Linear
             }
 
-            NumberAnimation {
-                id:turningAnim
-                running: false
-                target: slotScene
-                loops: 1
-                property: "eulerRotation.y"
-                to:90
-                easing.type: Easing.Linear
+//            NumberAnimation {
+//                id:turningAnim
+//                running: false
+//                target: slotScene
+//                loops: 1
+//                duration: 20000
+//                property: "eulerRotation.y"
+//                to:360
+//                easing.type: Easing.Linear
+//            }
+
+            Behavior on eulerRotation.y  {
+
+                SmoothedAnimation { velocity: 1 }
             }
+
+//            transform: Rotation  {
+//                 id: needleRotation
+//                 angle : value
+//                 origin.x: root.width / 2    // here!
+//                 origin.y: root.height / 2
+
+//                 running: true
+
+//                 Behavior on angle  {
+
+//                     SmoothedAnimation { velocity: 50 }
+//                 }
+//             }
 
 //            Behavior on rotation {
 //                id:turningAnim1
@@ -67,21 +87,23 @@ Item {
 //                mytest.position = localPivot;
 //            }
 
-//            Node {
-//                id: mytest
-//              //  position: Qt.vector3d(0, 0, -800)
-//                Rectangle {
-//                    width: 100
-//                    height: 100
-//                    color: 'red'
-//                }
-//            }
+            Node {
+                id: mytest
+                visible: true
+                position: Qt.vector3d(0, 0, -500)
+                eulerRotation: Qt.vector3d(-90, 0, 0);
+                Rectangle {
+                    width: 200
+                    height: 1500
+                    color: 'red'
+                }
+            }
 
             id: slotScene
             Connections {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
-                    SceneManager.controlScene(slotScene, combinedData, goStraightAnim, turningAnim);
+                    SceneManager.controlScene(slotScene, combinedData, goStraightAnim, goStraightAnim);
                 }
             } // Connections
 
@@ -115,7 +137,7 @@ Item {
             id: coupe
             x: 0
             y: 0
-            z: -1000
+            z: -1500
 
             metalness: 0.5
             specularTint: 0
@@ -175,7 +197,7 @@ Item {
             id: camera
             y: 414.59
             z: 450.86456
-            clipFar: 1500
+            clipFar: 5000
             fieldOfView: 42
             eulerRotation.x: -24
 

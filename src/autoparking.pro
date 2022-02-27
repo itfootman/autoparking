@@ -26,7 +26,7 @@ OTHER_FILES += $$RCC_BINARY_SOURCES
 
 resource_build.input = OTHER_FILES
 resource_build.output = qml.rcc
-resource_build.depends = $$PWD/qml.qrc
+resource_build.depends = $$PWD/qml.qrc FORCE
 resource_build.CONFIG += target_predeps no_link
 
 unix:!macx{

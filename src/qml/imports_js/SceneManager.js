@@ -21,9 +21,7 @@ function controlScene(slotScene, combinedData, goStraightAnim, turningAnim) {
         moveScene(slotScene, combinedData.vehicleSpeed, goStraightAnim);
 
         if (Math.abs(combinedData.yawSpeed) > 0) {
-            if (!turningAnim.running) {
-                rotateScene(slotScene, combinedData.carAngle, combinedData.yawSpeed, turningAnim)
-            }
+            rotateScene(slotScene, combinedData.carAngle, combinedData.yawSpeed, turningAnim);
         } else {
             stopRotation(turningAnim);
         }
@@ -97,9 +95,9 @@ function addSlot(parent, combinedData, carOffset, isShowText) {
         slotObject.changeSize(pixelCoordinate.width, pixelCoordinate.depth);
     }
 
-    instances[combinedData.slotId] = slotObject;
+    instances.set(combinedData.slotId, slotObject);
 
-    console.log("APA: Add slot ", slotObject, " to scene successfully.");
+    console.log("APA: Add slot ", slotObject, " to scene successfully, instances size:", instances.size);
 }
 
 function addCar(parent, combinedData, carOffset) {
@@ -116,8 +114,8 @@ function addCar(parent, combinedData, carOffset) {
 
     if (combinedData.type === Constants.SlotType.PERPENDICULAR) {
         roation = Qt.vector3d(0, 90, 0);
-        positionX += positionX > 0 ? Constants.carLength / 2 / Constants.mmPerCm / Constants.cmPerPixelX:
-                                     -Constants.carLength / 2 / Constants.mmPerCm / Constants.cmPerPixelX;
+        positionX += positionX > 0 ? Constants.carLength / 4 / Constants.mmPerCm / Constants.cmPerPixelX:
+                                     -Constants.carLength / 4 / Constants.mmPerCm / Constants.cmPerPixelX;
     } else if (combinedData.type === Constants.SlotType.PARALLEL) {
     } else {
         console.log("APA: Slot type is not supported...");
@@ -140,7 +138,7 @@ function addCar(parent, combinedData, carOffset) {
             "position": localVec,
             "id": carId,
             "opacity": 1,
-            "scale": Qt.vector3d(1.1, 1.1, 1.1),
+            "scale": Qt.vector3d(1, 1, 1),
             "eulerRotation": roation
         });
 
@@ -155,32 +153,36 @@ function moveScene(slotScene, vehicleSpeed, goStraightAnim) {
     goStraightAnim.duration = (goStraightAnim.to - initZ) / pixelSpeed * Constants.millseccondsPerSecond;
    // console.log("APA:slotScene.z is ", slotScene.z, "movingAnim.to is ", goStraightAnim.to, "Moving duration is ", duration);
     goStraightAnim.from = slotScene.z;
-    goStraightAnim.restart();
+    //goStraightAnim.restart();
 }
 
 function clearObjects(slotScene){
     console.log("APA: Clear all slots in cache...");
-    instances.clear();
+  //  instances.clear();
 }
 
 function rotateScene(slotScene, carAngle, yawSpeed, turningAnim) {
-//    turningAnim.duration = Qt.binding(function() {
-//        var degreeSpeed = yawSpeed * 180 / Constants.pi * Constants.yawSpeedFactor;
-//        // return carAngle / yawSpeed;
-//        return Math.abs(turningAnim.to - slotScene.eulerRotation.y) / degreeSpeed;
-//    });
 
-//    var localPivot = slotScene.mapPositionFromScene(Qt.vector3d(0, 0, -1000));
+//    var degreeSpeed = yawSpeed * 180 / Constants.pi * Constants.yawSpeedFactor;
 
-//    slotScene.pivot = localPivot;
-//    slotScene.changePivotShow(localPivot);
+//    turningAnim.duration = Math.abs(turningAnim.to - slotScene.eulerRotation.y) / degreeSpeed * Constants.millseccondsPerSecond * 1000;
+//    console.log("APA: turning duration is", turningAnim.duration);
 
-//    //turingAnim.duration = 200000;
-//    //slotScene.eulerRotation.y = 90;
-//    //turingAnim.start();
-//    slotScene.rotation.y = carAngle * 180 / Constants.pi;
+   // var localPivot = slotScene.mapPositionFromScene(Qt.vector3d(0, 0, -800));
 
-//    console.log("APA: Begin to turn...");
+    slotScene.pivot = Qt.vector3d(0, 0, -1000);
+   // slotScene.changePivotShow(localPivot);
+
+    //turingAnim.duration = 200000;
+//    slotScene.eulerRotation.y = carAngle;
+//    if (!turningAnim.running) {
+//        turningAnim.restart();
+//    }
+
+    slotScene.eulerRotation.y = carAngle * 180 / Constants.pi;
+   // slotScene.rotate(carAngle * 180 / Constants.pi, Qt.vector3d(0, 0, -1000), slotScene.SceneSpace)
+
+    console.log("APA: Begin to turn...");
 }
 
 function pauseRotation(rotationAnim) {
