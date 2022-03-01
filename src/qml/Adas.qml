@@ -34,10 +34,23 @@ Item {
         environment: sceneEnvironment
 
         Node {
-            z: 0
-         //   pivot: Qt.vector3d(0, 0, 1000);
+            z: -3000
+            pivot: Qt.vector3d(0, 0, -3000);
+//            Behavior on z {
+//                id: moveSceneBehavior
+
+//                function changeVelocity(v) {
+//                    moveSceneAnim.velocity = v;
+//                }
+
+//                SmoothedAnimation {
+//                    id: moveSceneAnim
+//                    easing.type: Easing.Linear
+//                }
+//            }
+
             NumberAnimation {
-                id:goStraightAnim
+                id: goStraightAnim
                 target: slotScene
                 running: false
                 property: "z"
@@ -46,56 +59,25 @@ Item {
             }
 
 //            NumberAnimation {
-//                id:turningAnim
+//                id: rotateSceneAnim
 //                running: false
 //                target: slotScene
-//                loops: 1
+//                loops: Animation.Infinite
 //                duration: 20000
 //                property: "eulerRotation.y"
-//                to:360
 //                easing.type: Easing.Linear
 //            }
 
             Behavior on eulerRotation.y  {
+                id: rotateSceneBehavior
+                function changeVelocity(v) {
+                    rotateSceneAnim.velocity = v;
+                }
 
-                SmoothedAnimation { velocity: 1 }
-            }
-
-//            transform: Rotation  {
-//                 id: needleRotation
-//                 angle : value
-//                 origin.x: root.width / 2    // here!
-//                 origin.y: root.height / 2
-
-//                 running: true
-
-//                 Behavior on angle  {
-
-//                     SmoothedAnimation { velocity: 50 }
-//                 }
-//             }
-
-//            Behavior on rotation {
-//                id:turningAnim1
-//                SmoothedAnimation {
-//                    velocity: 4
-//                }
-//            }
-
-//            function changePivotShow (localPivot) {
-//                console.log("APA: pivot local position:", localPivot);
-//                mytest.position = localPivot;
-//            }
-
-            Node {
-                id: mytest
-                visible: true
-                position: Qt.vector3d(0, 0, -500)
-                eulerRotation: Qt.vector3d(-90, 0, 0);
-                Rectangle {
-                    width: 200
-                    height: 1500
-                    color: 'red'
+                SmoothedAnimation {
+                    id: rotateSceneAnim
+                    velocity: 2
+                    easing.type: Easing.Linear
                 }
             }
 
@@ -103,7 +85,7 @@ Item {
             Connections {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
-                    SceneManager.controlScene(slotScene, combinedData, goStraightAnim, goStraightAnim);
+                    SceneManager.controlScene(slotScene, combinedData, goStraightAnim, rotateSceneAnim);
                 }
             } // Connections
 

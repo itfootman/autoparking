@@ -163,8 +163,8 @@ void MessagesHub::workLoop() {
     float pointDepthStartHY = 4000;
     float pointDepthEndHX = 2000;
     float pointDepthEndHY = 4000;
-    float distance = 3500;
-    float distanceV = 5500;
+    float distance = -3500;
+    float distanceV = -5500;
     int loopCount = 0;
  #if 0
     std::ifstream dataFile("d:\\temp\\log.data", std::ios::binary | std::ios::in);
@@ -185,10 +185,10 @@ void MessagesHub::workLoop() {
 #if 1
     combinedData_.vehicleSpeed_ = 0.4;
     combinedData_.yawSpeed_ = 0;
-    bool added = false;
+    combinedData_.carAngle_ = 0;
     while (true) {
         combinedData_.timestamp_ = QDateTime::currentDateTime().currentMSecsSinceEpoch();
-        combinedData_.carAngle_ = 0;
+
       //  srand((unsigned)time(NULL));
        // int num = rand() % 4 + 1;
         if (loopCount >= 2) {
@@ -198,10 +198,7 @@ void MessagesHub::workLoop() {
         }
 
         int numleft = 5;
-
-        if (!added) {
-          int i = 0;
-       // for (int i = 0; i < numleft; ++i) {
+        for (int i = 0; i < numleft; ++i) {
             combinedData_.num_ = numleft;
             combinedData_.slotId_ = i + 1;
             combinedData_.state_ = (i + 1) % 2 == 0 ? 1 : 2;
@@ -219,38 +216,33 @@ void MessagesHub::workLoop() {
 
             combinedData_.readyFlag |= SLOT_FUSION_INFO();
             combinedData_.readyFlag |= VEHICLE_INFO();
-
-      //  }
-
- //       int numright = 5;
-
-       // for (int i = 0; i < numright; ++i) {
-//            combinedData_.num_ = numright;
-//            combinedData_.slotId_ = i + numleft + 1;
-//            combinedData_.state_ = (i + 1) % 2 == 0 ? 1 : 2;
-//            combinedData_.type_ =  1;
-//            combinedData_.isNew_ = 2;
-
-//            combinedData_.pointStartX_ = pointStartVX + i * distance;
-//            combinedData_.pointStartY_ = pointStartVY;
-//            combinedData_.pointEndX_ = pointEndVX + i * distance;
-//            combinedData_.pointEndY_ = pointEndVY;
-//            combinedData_.pointDepthStartX_ = pointDepthStartVX + i * distance;
-//            combinedData_.pointDepthStartY_ = pointDepthStartVY;
-//            combinedData_.pointDepthEndX_ = pointDepthEndVX + i * distance;
-//            combinedData_.pointDepthEndY_ = pointDepthEndVY;
-
-//            combinedData_.readyFlag |= SLOT_FUSION_INFO();
-//            combinedData_.readyFlag |= VEHICLE_INFO();
-//            onOneFrameReady(combinedData_);
-       // }
-
-            added = true;
-
+            onOneFrameReady(combinedData_);
         }
 
-        onOneFrameReady(combinedData_);
-        QThread::msleep(100);
+        int numright = 5;
+
+        for (int i = 0; i < numright; ++i) {
+            combinedData_.num_ = numright;
+            combinedData_.slotId_ = i + numleft + 1;
+            combinedData_.state_ = (i + 1) % 2 == 0 ? 1 : 2;
+            combinedData_.type_ =  1;
+            combinedData_.isNew_ = 2;
+
+            combinedData_.pointStartX_ = pointStartVX + i * distance;
+            combinedData_.pointStartY_ = pointStartVY;
+            combinedData_.pointEndX_ = pointEndVX + i * distance;
+            combinedData_.pointEndY_ = pointEndVY;
+            combinedData_.pointDepthStartX_ = pointDepthStartVX + i * distance;
+            combinedData_.pointDepthStartY_ = pointDepthStartVY;
+            combinedData_.pointDepthEndX_ = pointDepthEndVX + i * distance;
+            combinedData_.pointDepthEndY_ = pointDepthEndVY;
+
+            combinedData_.readyFlag |= SLOT_FUSION_INFO();
+            combinedData_.readyFlag |= VEHICLE_INFO();
+            onOneFrameReady(combinedData_);
+        }
+
+        QThread::msleep(10000);
 
         loopCount++;
     }
