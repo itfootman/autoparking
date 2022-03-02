@@ -166,15 +166,15 @@ void MessagesHub::workLoop() {
     float distance = -3500;
     float distanceV = -5500;
     int loopCount = 0;
- #if 0
-    std::ifstream dataFile("d:\\temp\\log.data", std::ios::binary | std::ios::in);
+ #if 1
+    std::ifstream dataFile("d:\\temp\\log_0227.data", std::ios::binary | std::ios::in);
     if (dataFile) {
         while (dataFile.read((char*)&combinedData_, sizeof(CombinedData))) {
             combinedData_.readyFlag |= SLOT_FUSION_INFO();
             combinedData_.readyFlag |= VEHICLE_INFO();
             onOneFrameReady(combinedData_);
             if (combinedData_.slotId_ != -1  && combinedData_.pointStartX_ != -1) {
-                QThread::msleep(1000);
+                QThread::msleep(100);
             }
         }
 
@@ -182,7 +182,7 @@ void MessagesHub::workLoop() {
     }
 #endif
 
-#if 1
+#if 0
     combinedData_.vehicleSpeed_ = 0.4;
     combinedData_.yawSpeed_ = 0;
     combinedData_.carAngle_ = 0;
@@ -191,13 +191,17 @@ void MessagesHub::workLoop() {
 
       //  srand((unsigned)time(NULL));
        // int num = rand() % 4 + 1;
-        if (loopCount >= 2) {
+        if (loopCount >= 2 && combinedData_.carAngle_ < 3.14 / 3) {
             combinedData_.yawSpeed_ = 0.3;
             combinedData_.carAngle_ += 0.3;
            // combinedData_.vehicleSpeed_ += 0.1;
+        } else if (combinedData_.carAngle_ >= 3.14 / 3) {
+            combinedData_.yawSpeed_ = 0;
+            combinedData_.carAngle_ = 0;
         }
 
-        int numleft = 5;
+
+        int numleft = 1;
         for (int i = 0; i < numleft; ++i) {
             combinedData_.num_ = numleft;
             combinedData_.slotId_ = i + 1;
@@ -219,7 +223,7 @@ void MessagesHub::workLoop() {
             onOneFrameReady(combinedData_);
         }
 
-        int numright = 5;
+        int numright = 1;
 
         for (int i = 0; i < numright; ++i) {
             combinedData_.num_ = numright;
@@ -242,7 +246,7 @@ void MessagesHub::workLoop() {
             onOneFrameReady(combinedData_);
         }
 
-        QThread::msleep(10000);
+        QThread::msleep(5000);
 
         loopCount++;
     }

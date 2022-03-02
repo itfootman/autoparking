@@ -29,13 +29,26 @@ Item {
         width: Constants.sceneWidth
         height: Constants.sceneHeight
 
-        anchors.horizontalCenter: parent.horizontalCenter
+        //anchors.horizontalCenter: parent.horizontalCenter
+        anchors.fill: parent
         //layer.enabled: true
         environment: sceneEnvironment
 
         Node {
-            z: -3000
-            pivot: Qt.vector3d(0, 0, -3000);
+            id: wrapperNode
+            z: -1500
+            eulerRotation.y: 0
+
+            Behavior on eulerRotation.y  {
+                id: rotateSceneBehavior
+                SmoothedAnimation {
+                    id: rotateSceneAnim
+                    velocity: 2
+                    easing.type: Easing.Linear
+                }
+            }
+        Node {
+ //           pivot: Qt.vector3d(0, 0, -3000);
 //            Behavior on z {
 //                id: moveSceneBehavior
 
@@ -68,24 +81,13 @@ Item {
 //                easing.type: Easing.Linear
 //            }
 
-            Behavior on eulerRotation.y  {
-                id: rotateSceneBehavior
-                function changeVelocity(v) {
-                    rotateSceneAnim.velocity = v;
-                }
 
-                SmoothedAnimation {
-                    id: rotateSceneAnim
-                    velocity: 2
-                    easing.type: Easing.Linear
-                }
-            }
 
             id: slotScene
             Connections {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
-                    SceneManager.controlScene(slotScene, combinedData, goStraightAnim, rotateSceneAnim);
+                    SceneManager.controlScene(wrapperNode, slotScene, combinedData, goStraightAnim, rotateSceneAnim);
                 }
             } // Connections
 
@@ -93,6 +95,7 @@ Item {
                 SceneManager.initZ = slotScene.z;
             }
         }
+        } // node wrapper
 
         HDRBloomTonemap {
             id: hDRBloomTonemap

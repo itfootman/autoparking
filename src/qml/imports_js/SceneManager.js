@@ -7,27 +7,39 @@ var instances = new Map();
 var initZ = 0;
 var carCount = 0;
 var slotCount = 0;
+var deltaAngle = 0;
+var lastCarAngle = 0;
 
 function isInScene(slotId) {
     return instances.has(slotId);
 }
 
-function controlScene(slotScene, combinedData, goStraightAnim, rotateAnim) {
-    Logger.dumpCombinedData(combinedData);
+function controlScene(wrapperNode, slotScene, combinedData, goStraightAnim, rotateAnim) {
+    if (!isInScene(combinedData.slotId) && combinedData.slotId !== -1) {
+        if(combinedData.pointStartX !== -1) {
+            Logger.dumpCombinedData(combinedData);
+        }
+    }
+    if (combinedData.carAngle !== -1) {
+        deltaAngle = combinedData.carAngle - lastCarAngle;
+        lastCarAngle = combinedData.carAngle;
+    }
+
     // Init initial rotation degree of car.
-    slotScene.eulerRotation.y = -combinedData.carAngle;
+
+   // slotScene.eulerRotation.y = -combinedData.carAngle;
 
     if (Math.abs(combinedData.vehicleSpeed) > 0) {
         moveScene(slotScene, combinedData.vehicleSpeed, goStraightAnim);
 
         if (Math.abs(combinedData.yawSpeed) > 0) {
-            rotateScene(slotScene, combinedData.carAngle, combinedData.yawSpeed, rotateAnim);
+            rotateScene(wrapperNode, combinedData.carAngle, combinedData.yawSpeed, rotateAnim);
         } else {
-            stopRotation(rotateAnim);
+            stopRotation(wrapperNode, rotateAnim);
         }
     } else if (Math.abs(combinedData.vehicleSpeed) <= 0)  {
         pauseGoStraight(goStraightAnim);
-        pauseRotation(rotateAnim);
+        stopRotation(wrapperNode, rotateAnim);
     }
 
     if (combinedData.slotId === Constants.slotIdStart) {
@@ -37,7 +49,6 @@ function controlScene(slotScene, combinedData, goStraightAnim, rotateAnim) {
     if (combinedData.num > 0 && combinedData.slotId !== -1 &&
         !isInScene(combinedData.slotId) &&
         (combinedData.isNew !== Constants.IsNew.INVALID)) {
-        lastSlotId = combinedData.slotId;
 
         if (combinedData.state === Constants.SlotState.OCCUPY) {
             addCar(slotScene, combinedData, Math.abs(coupe.z));
@@ -50,10 +61,10 @@ function controlScene(slotScene, combinedData, goStraightAnim, rotateAnim) {
 }
 
 function addSlot(parent, combinedData, carOffset, isShowText) {
-    var pixelCoordinate = Utils.convertCoordinate(combinedData, carOffset);
+    var pixelCoordinate = Utils.convertCoordinate(combinedData, carOffset, deltaAngle);
     var positionX = pixelCoordinate.pointStartX > 0 ?
-                pixelCoordinate.pointStartX + pixelCoordinate.depth / 2 :
-                pixelCoordinate.pointStartX - (pixelCoordinate.depth / 2);
+                pixelCoordinate.pointStartX + pixelCoordinate.depth / 2  - Constants.offsetX:
+                pixelCoordinate.pointStartX - (pixelCoordinate.depth / 2) + Constants.offsetX;
     var roation = Qt.vector3d(0, 0, 0);
     if (combinedData.type === Constants.SlotType.PERPENDICULAR) {
         roation = Qt.vector3d(-90, 0, 0);
@@ -81,7 +92,7 @@ function addSlot(parent, combinedData, carOffset, isShowText) {
             "eulerRotation": roation
         });
 
-    if (combinedData.state === Constants.SlotState.FREE) {
+    if (combinedData.state === Constants.SlotState.FREE || combinedData.state === Constants.SlotState.UNKNOWN) {
         slotObject.changeBackgroundColor("#1000FF00");
     } else if (combinedData.state === Constants.SlotState.OCCUPY) {
         slotObject.changeBackgroundColor("#10FF0000");
@@ -103,7 +114,7 @@ function addSlot(parent, combinedData, carOffset, isShowText) {
 function addCar(parent, combinedData, carOffset) {
     addSlot(parent, combinedData, carOffset, false);
 
-    var pixelCoordinate = Utils.convertCoordinate(combinedData, carOffset);
+    var pixelCoordinate = Utils.convertCoordinate(combinedData, carOffset, deltaAngle);
 
     var positionX = pixelCoordinate.pointStartX > 0 ?
                 pixelCoordinate.pointStartX + pixelCoordinate.depth / 2 :
@@ -163,31 +174,42 @@ function clearObjects(slotScene){
 
 function rotateScene(slotScene, carAngle, yawSpeed, rotateSceneAnim) {
 
-//    var degreeSpeed = yawSpeed * 180 / Constants.pi * Constants.yawSpeedFactor;
+    var degreeSpeed = yawSpeed * 180 / Constants.pi * Constants.yawSpeedFactor;
+   // slotScene.pivot = Qt.vector3d(0, 0, slotScene.z);
 
-//    rotateSceneAnim.duration = Math.abs(rotateSceneAnim.to - slotScene.eulerRotation.y) / degreeSpeed * Constants.millseccondsPerSecond * 1000;
-//    console.log("APA: turning duration is", rotateSceneAnim.duration);
-//    if (!rotateSceneAnim.running) {
-//        rotateSceneAnim.restart();
-//    }
+   // rotateSceneAnim.duration = Math.abs(rotateSceneAnim.to - slotScene.eulerRotation.y) / degreeSpeed * Constants.millseccondsPerSecond * 1000;
+    if (yawSpeed <= 0.01) {
+        rotateSceneAnim.velocity = 10000;
+        slotScene.eulerRotation.y = 0;
+    } else {
+        rotateSceneAnim.velocity = 2;
+        slotScene.eulerRotation.y = carAngle * 180 / Constants.pi;
+    }
+
+   // console.log("APA: turning duration is", rotateSceneAnim.duration);
+
+   // rotateSceneAnim.restart();
 
 
-    slotScene.eulerRotation.y = carAngle * 180 / Constants.pi;
+
     console.log("APA: Begin to turn...");
 }
 
 function pauseRotation(rotateSceneAnim) {
-    if (rotateSceneAnim.running) {
-        console.log("APA: Pause turning...");
-        rotateSceneAnim.pause();
-    }
+//    if (rotateSceneAnim.running) {
+//        console.log("APA: Pause turning...");
+//        rotateSceneAnim.pause();
+//    }
 }
 
-function stopRotation(rotateSceneAnim) {
-    if (rotateSceneAnim.running) {
-        console.log("APA: Stop turning...");
-        rotateSceneAnim.stop();
-    }
+function stopRotation(wrapperNode, rotateSceneAnim) {
+//    if (rotateSceneAnim.running) {
+//        console.log("APA: Stop turning...");
+//        rotateSceneAnim.stop();
+//    }
+
+    rotateSceneAnim.velocity = 10000;
+    wrapperNode.eulerRotation.y = 0;
 }
 
 function pauseGoStraight(movingSceneBehavior) {

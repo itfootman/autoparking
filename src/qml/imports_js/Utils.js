@@ -1,6 +1,6 @@
 .import "Constants.js" as Constants
 // Here need complicate linear algera calculation. Please see readme.
-function convertCoordinate(combinedData, carOffset) {
+function convertCoordinate(combinedData, carOffset, deltaAngle) {
     var wxx = (combinedData.pointEndX - combinedData.pointStartX) * (combinedData.pointEndX - combinedData.pointStartX);
     var wyy = (combinedData.pointEndY - combinedData.pointStartY) * (combinedData.pointEndY - combinedData.pointStartY);
     var width = Math.sqrt(wxx + wyy);
@@ -12,13 +12,13 @@ function convertCoordinate(combinedData, carOffset) {
     depth = depth / Constants.mmPerCm / Constants.cmPerPixelX;
 
     // convert to 3D coordinate in mm unit.
-    var pointStartX = -combinedData.pointStartX * Math.sin(combinedData.carAngle) - combinedData.pointStartY * Math.cos(combinedData.carAngle);
+    var pointStartX = -combinedData.pointStartX * Math.sin(deltaAngle) - combinedData.pointStartY * Math.cos(deltaAngle);
     pointStartX = pointStartX / Constants.mmPerCm / Constants.cmPerPixelX; // pixel in 3D coordinate
     var pointStartY = 0; // z is zero in vehicle coordinate.
 
     // convert to 3D coordinate in mm unit.
-    var pointStartZ = -combinedData.pointStartX * Math.cos(combinedData.carAngle) +
-            combinedData.pointStartY * Math.sin(combinedData.carAngle) - carOffset * Constants.cmPerPixelZ * Constants.mmPerCm;
+    var pointStartZ = -combinedData.pointStartX * Math.cos(deltaAngle) +
+            combinedData.pointStartY * Math.sin(deltaAngle) - carOffset * Constants.cmPerPixelZ * Constants.mmPerCm;
     pointStartZ = pointStartZ / Constants.mmPerCm / Constants.cmPerPixelZ;
 
     return {
