@@ -81,12 +81,11 @@ Item {
 //                easing.type: Easing.Linear
 //            }
 
-
-
             id: slotScene
             Connections {
                 target: uiupdater
                 function onCombinedDataUpdated(combinedData) {
+                    SceneManager.initScene(combinedData);
                     SceneManager.controlScene(wrapperNode, slotScene, combinedData, goStraightAnim, rotateSceneAnim);
                 }
             } // Connections
