@@ -53,94 +53,61 @@ void MessagesHub::onVehicleMessage(const autoparking::vehicle_infoConstPtr& msg)
     if (combinedData_.isReady()) {
         onOneFrameReady(combinedData_);
         combinedData_.clearReadyFlag();
+        combinedData_.clearData();
     }
 }
 
 void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& msg) {
-    geometry_msgs::Point32 point_start;
-    point_start.x = -1.0f;
-    point_start.y = -1.0f;
-    point_start.z = -1.0f;
+    combinedData_.num_ = msg->num;
 
-    geometry_msgs::Point32 point_end;
-    point_end.x = -1.0f;
-    point_end.y = -1.0f;
-    point_end.z = -1.0f;
-
-    geometry_msgs::Point32 point_depth_start;
-    point_depth_start.x = -1.0f;
-    point_depth_start.y = -1.0f;
-    point_depth_start.z = -1.0f;
-
-    geometry_msgs::Point32 point_depth_end;
-    point_depth_end.x = -1.0f;
-    point_depth_end.y = -1.0f;
-    point_depth_end.z = -1.0f;
-
-    if (msg->polygonStamped.size() > 0) {
-        if (msg->polygonStamped[0].polygon.points.size() >= 4) {
-            point_start.x = msg->polygonStamped[0].polygon.points[0].x;
-            point_start.y = msg->polygonStamped[0].polygon.points[0].y;
-            point_end.x = msg->polygonStamped[0].polygon.points[1].x;
-            point_end.y = msg->polygonStamped[0].polygon.points[1].y;
-            point_depth_start.x = msg->polygonStamped[0].polygon.points[2].x;
-            point_depth_start.y = msg->polygonStamped[0].polygon.points[2].y;
-            point_depth_end.x = msg->polygonStamped[0].polygon.points[3].x;
-            point_depth_end.y = msg->polygonStamped[0].polygon.points[3].y;
+    if (msg->state.size() == msg->type.size() && msg->state.size() == msg->slot_id.size()) {
+        for (size_t j = 0; j < msg->slot_id.size(); ++j) {
+            combinedData_.slotIds_.push_back(msg->slot_id[j]);
+            combinedData_.states_.push_back(msg->state[j]);
+            combinedData_.types_.push_back(msg->type[j]);
         }
     }
 
-    int32_t state = msg->state.size() > 0 ? msg->state[0] : -1;
-    int32_t type = msg->type.size() > 0 ? msg->type[0] : -1;
-    int32_t isNew = msg->is_new.size() > 0 ? msg->is_new[0] : -1;
-    int32_t slotId = msg->slot_id.size() > 0 ? msg->slot_id[0] : -1;
+    for (size_t i = 0; i < msg->polygonStamped.size(); ++i) {
+        if (msg->polygonStamped[i].polygon.points.size() >= 4) {
+            geometry_msgs::Point32 point_start;
+            geometry_msgs::Point32 point_end;
+            geometry_msgs::Point32 point_depth_start;
+            geometry_msgs::Point32 point_depth_end;
 
-    ROS_DEBUG("Fusion-timestamp:%ld, num:%d, type:%d, state:%d,is_new:%d,"
-             "slot_id:%d, count:%ld, target_id:%d, delay_time:%ld,"
-             "points[(%lf, %lf), (%lf, %lf), (%lf, %lf)]",
-             msg->timestamp, msg->num, type, state,
-             msg->is_new.size() > 0 ? msg->is_new[0] : -1,
-             msg->slot_id.size() > 0 ? msg->slot_id[0] : -1,
-             msg->count, msg->target_id, msg->delay_time,
-             point_start.x, point_start.y, point_end.x, point_end.y,
-             point_depth_start.x, point_depth_start.y, point_depth_end.x, point_depth_end.y);
+            point_start.x = msg->polygonStamped[i].polygon.points[0].x;
+            point_start.y = msg->polygonStamped[i].polygon.points[0].y;
+            point_end.x = msg->polygonStamped[i].polygon.points[1].x;
+            point_end.y = msg->polygonStamped[i].polygon.points[1].y;
+            point_depth_start.x = msg->polygonStamped[i].polygon.points[2].x;
+            point_depth_start.y = msg->polygonStamped[i].polygon.points[2].y;
+            point_depth_end.x = msg->polygonStamped[i].polygon.points[3].x;
+            point_depth_end.y = msg->polygonStamped[i].polygon.points[3].y;
+            combinedData_.slotPoints_.push_back(point_start.x);
+            combinedData_.slotPoints_.push_back(point_start.y);
+            combinedData_.slotPoints_.push_back(point_end.x);
+            combinedData_.slotPoints_.push_back(point_end.y);
+            combinedData_.slotPoints_.push_back(point_depth_start.x);
+            combinedData_.slotPoints_.push_back(point_depth_start.y);
+            combinedData_.slotPoints_.push_back(point_depth_end.x);
+            combinedData_.slotPoints_.push_back(point_depth_end.y);
 
-//    if (slotId == -1 || msg->num <= 0 /*|| lastSlotId == slotId*/) {
-//        return;
-//    }
+            ROS_DEBUG("Fusion-timestamp:%ld, slots size:%u, num:%d, type:%d, state:%d,is_new:%d,"
+                     "slot_id:%d, count:%ld, target_id:%d, delay_time:%ld,"
+                     "points[(%lf, %lf), (%lf, %lf), (%lf, %lf)]",
+                     msg->timestamp, msg->polygonStamped.size(), msg->num, msg->type[i], msg->state[i],
+                     msg->is_new[i], msg->slot_id[i],
+                     msg->count, msg->target_id, msg->delay_time,
+                     point_start.x, point_start.y, point_end.x, point_end.y,
+                     point_depth_start.x, point_depth_start.y, point_depth_end.x, point_depth_end.y);
+        }
+    }
 
-    lastSlotId = slotId;
-    combinedData_.num_ = msg->num;
-    combinedData_.slotId_ = slotId;
-    combinedData_.state_ = state;
-    combinedData_.type_ = type;
-    combinedData_.isNew_ = isNew;
-    combinedData_.pointStartX_ = point_start.x;
-    combinedData_.pointStartY_ = point_start.y;
-    combinedData_.pointEndX_ = point_end.x;
-    combinedData_.pointEndY_ = point_end.y;
-    combinedData_.pointDepthStartX_ = point_depth_start.x;
-    combinedData_.pointDepthStartY_ = point_depth_start.y;
-    combinedData_.pointDepthEndX_ = point_depth_end.x;
-    combinedData_.pointDepthEndY_ = point_depth_end.y;
     combinedData_.readyFlag |= SLOT_FUSION_INFO();
-
-    static bool hasReported = false;
-//    float epsilon = 0.01f;
-
-//    if (combinedData_.isReady() /*&& combinedData_.vehicleSpeed <= epsilon*/  /*&& !hasReported*/) {
-//        combinedData_.vehicleSpeed = 0.0f;
-//        combinedData_.yawSpeed = 0.0f;
-//        combinedData_.readyFlag |= VEHICLE_INFO();
-//        onOneFrameReady(combinedData_);
-//        combinedData_.clearReadyFlag();
-//        hasReported = true;
-//        return;
-//    }
-
     if (combinedData_.isReady()) {
         onOneFrameReady(combinedData_);
         combinedData_.clearReadyFlag();
+        combinedData_.clearData();
     }
 }
 #else

@@ -1,31 +1,37 @@
 .import "Constants.js" as Constants
 // Here need complicate linear algera calculation. Please see readme.
-function convertCoordinate(combinedData, carOffset, deltaAngle) {
-    var wxx = (combinedData.pointEndX - combinedData.pointStartX) * (combinedData.pointEndX - combinedData.pointStartX);
-    var wyy = (combinedData.pointEndY - combinedData.pointStartY) * (combinedData.pointEndY - combinedData.pointStartY);
+function convertCoordinate(pointsArray, carOffset, yawAngle) {
+    var pointStartX = pointsArray[0];
+    var pointStartY = pointsArray[1];
+    var pointEndX = pointsArray[2];
+    var pointEndY = pointsArray[3];
+    var pointDepthStartX = pointsArray[4];
+    var pointDepthStartY = pointsArray[5];
+    var wxx = (pointEndX - pointStartX) * (pointEndX - pointStartX);
+    var wyy = (pointEndY - pointStartY) * (pointEndY - pointStartY);
     var width = Math.sqrt(wxx + wyy);
-    var dxx = (combinedData.pointDepthStartX - combinedData.pointStartX) * (combinedData.pointDepthStartX - combinedData.pointStartX);
-    var dyy = (combinedData.pointDepthStartY - combinedData.pointStartY) * (combinedData.pointDepthStartY - combinedData.pointStartY);
+    var dxx = (pointDepthStartX - pointStartX) * (pointDepthStartX - pointStartX);
+    var dyy = (pointDepthStartY - pointStartY) * (pointDepthStartY - pointStartY);
     var depth = Math.sqrt(dxx + dyy);
 
     width = width / Constants.mmPerCm / Constants.cmPerPixelZ;
     depth = depth / Constants.mmPerCm / Constants.cmPerPixelX;
 
     // convert to 3D coordinate in mm unit.
-    var pointStartX = -combinedData.pointStartX * Math.sin(deltaAngle) - combinedData.pointStartY * Math.cos(deltaAngle);
-    pointStartX = pointStartX / Constants.mmPerCm / Constants.cmPerPixelX; // pixel in 3D coordinate
-    var pointStartY = 0; // z is zero in vehicle coordinate.
+    var worldPointStartX = -pointStartX * Math.sin(yawAngle) - pointStartY * Math.cos(yawAngle);
+    var pixelPointStartX = worldPointStartX / Constants.mmPerCm / Constants.cmPerPixelX; // pixel in 3D coordinate
+    var pixelPointStartY = 0; // z is zero in vehicle coordinate.
 
     // convert to 3D coordinate in mm unit.
-    var pointStartZ = -combinedData.pointStartX * Math.cos(deltaAngle) +
-            combinedData.pointStartY * Math.sin(deltaAngle) - carOffset * Constants.cmPerPixelZ * Constants.mmPerCm;
-    pointStartZ = pointStartZ / Constants.mmPerCm / Constants.cmPerPixelZ;
+    var worldPointStartZ = -pointStartX * Math.cos(yawAngle) +
+            pointStartY * Math.sin(deltaAngle) - carOffset * Constants.cmPerPixelZ * Constants.mmPerCm;
+    var pixelPointStartZ = worldPointStartZ / Constants.mmPerCm / Constants.cmPerPixelZ;
 
     return {
         width: width,
         depth: depth,
-        pointStartX: pointStartX,
-        pointStartY: pointStartY,
-        pointStartZ: pointStartZ
+        pointStartX: pixelPointStartX,
+        pointStartY: pixelPointStartY,
+        pointStartZ: pixelPointStartZ
     }
 }

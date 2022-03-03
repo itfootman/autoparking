@@ -1,8 +1,8 @@
 const SlotState = {
     INVALID : -1,
-    UNKNOWN : 0,
-    FREE : 1,
-    OCCUPY : 2,
+    FREE : 0,
+    OCCUPY : 1,
+    SONAR : 2,
     SPECIAL : 3,
     PRIVATE : 4
 }
@@ -49,4 +49,5 @@ const pi = 3.1415926;
 const yawSpeedFactor = 1;
 const sceneWidth = 1000;
 const sceneHeight = 800;
+const slotPointsCount = 8;
 //const movingThreshold = 0.01;//m/s

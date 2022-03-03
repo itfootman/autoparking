@@ -2,7 +2,6 @@
 .import "Constants.js" as Constants
 .import "Logger.js" as Logger
 
-var lastSlotId =  -1;
 var instances = new Map();
 var initZ = 0;
 var carCount = 0;
@@ -32,20 +31,32 @@ function calculateYaw(combinedData) {
 
 function initScene(combinedData) {
     // Todo change the condition to judge points' size
-    if (combinedData.pointStartX !== -1 && !sceneInited) {
+    if (combinedData.slotPoints.length > 0 && !sceneInited) {
         initCarAngle = combinedData.carAngle;
         lastCarAngle = combinedData.carAngle;
         sceneInited = true;
     }
 }
 
-function controlScene(wrapperNode, slotScene, combinedData, goStraightAnim, rotateAnim) {
-    if (!isInScene(combinedData.slotId) && combinedData.slotId !== -1) {
-        if(combinedData.pointStartX !== -1) {
-            Logger.dumpCombinedData(combinedData);
-        }
-    }
+function isDataValid(combinedData) {
+    console.log("combinedData.num:", combinedData.num, "combinedData.slotIds.length:", combinedData.slotIds.length,
+                "combinedData.types.length:", combinedData.types.length, "combinedData.states.length:", combinedData.states.length,
+                "combinedData.slotPoints.length:", combinedData.slotPoints.length);
+    return (combinedData.num > 0 && combinedData.slotIds.length > 0 && combinedData.slotPoints.length > 0 &&
+           combinedData.slotPoints.length / Constants.slotPointsCount === combinedData.slotIds.length &&
+           combinedData.slotPoints.length / Constants.slotPointsCount === combinedData.states.length &&
+           combinedData.slotPoints.length / Constants.slotPointsCount === combinedData.types.length &&
+           combinedData.types.length === combinedData.states.length &&
+           combinedData.types.length === combinedData.slotIds.length &&
+           combinedData.slotPoints.length >= Constants.slotPointsCount);
+}
 
+function controlScene(wrapperNode, slotScene, combinedData, goStraightAnim, rotateAnim) {
+    if (combinedData.slotIds.length > 0) {
+      //  if(combinedData.slotPoints.length > 0) {
+            Logger.dumpCombinedData(combinedData);
+     //   }
+    }
     yawAngle = calculateYaw(combinedData);
     // Init initial rotation degree of car.
 
@@ -64,33 +75,38 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnim, rota
         stopRotation(wrapperNode, rotateAnim);
     }
 
-    if (combinedData.slotId === Constants.slotIdStart) {
-        clearObjects();
-    }
+    if (isDataValid(combinedData)) {
+        console.log("biwenyang:#############3");
+        var j = 0;
+        for (var i = 0; i < combinedData.slotIds.length; i++) {
+            if (!isInScene(combinedData.slotIds[i]) && combinedData.isNews[i] !== Constants.IsNew.INVALID) {
+                var pointsArray = [];
+                for (var k = 0; k < Constants.slotPointsCount; k++) {
+                    pointsArray[k] = combinedData.slotPoints[j + k];
+                }
+                if (combinedData.states[i] === Constants.SlotState.OCCUPY) {
+                    addCar(slotScene, pointsArray, combinedData.types[i], combinedData.states[i], Math.abs(coupe.z));
+                } else if (combinedData.state[i] === Constants.SlotState.FREE || combinedData.state[i] === Constants.SlotState.SONAR) {
+                    addSlot(slotScene, pointsArray, combinedData.types[i], combinedData.states[i], Math.abs(coupe.z), true);
+                } else {
+                    console.log("APA: Do not process temporarily.");
+                }
 
-    if (combinedData.num > 0 && combinedData.slotId !== -1 &&
-        !isInScene(combinedData.slotId) &&
-        (combinedData.isNew !== Constants.IsNew.INVALID)) {
-
-        if (combinedData.state === Constants.SlotState.OCCUPY) {
-            addCar(slotScene, combinedData, Math.abs(coupe.z));
-        } else if (combinedData.state === Constants.SlotState.FREE || combinedData.state === Constants.SlotState.UNKNOWN) {
-            addSlot(slotScene, combinedData, Math.abs(coupe.z), true);
-        } else {
-            console.log("APA: Do not process temporarily.");
+                j += Constants.slotPointsCount;
+            }
         }
-    }
+     }
 }
 
-function addSlot(parent, combinedData, carOffset, isShowText) {
-    var pixelCoordinate = Utils.convertCoordinate(combinedData, carOffset, yawAngle);
+function addSlot(parent, pointsArray, type, state, carOffset, isShowText) {
+    var pixelCoordinate = Utils.convertCoordinate(pointsArray, carOffset, yawAngle);
     var positionX = pixelCoordinate.pointStartX > 0 ?
                 pixelCoordinate.pointStartX + pixelCoordinate.depth / 2  - Constants.offsetX:
                 pixelCoordinate.pointStartX - (pixelCoordinate.depth / 2) + Constants.offsetX;
     var roation = Qt.vector3d(0, 0, 0);
-    if (combinedData.type === Constants.SlotType.PERPENDICULAR) {
+    if (type === Constants.SlotType.PERPENDICULAR) {
         roation = Qt.vector3d(-90, 0, 0);
-    } else if (combinedData.type === Constants.SlotType.PARALLEL) {
+    } else if (type === Constants.SlotType.PARALLEL) {
          roation = Qt.vector3d(-90, 90, 0);
     } else {
         console.log("APA: Slot type is not supported...");
@@ -114,29 +130,29 @@ function addSlot(parent, combinedData, carOffset, isShowText) {
             "eulerRotation": roation
         });
 
-    if (combinedData.state === Constants.SlotState.FREE || combinedData.state === Constants.SlotState.UNKNOWN) {
+    if (state === Constants.SlotState.FREE || state === Constants.SlotState.UNKNOWN) {
         slotObject.changeBackgroundColor("#1000FF00");
-    } else if (combinedData.state === Constants.SlotState.OCCUPY) {
+    } else if (state === Constants.SlotState.OCCUPY) {
         slotObject.changeBackgroundColor("#10FF0000");
     }
 
     slotObject.showText(isShowText);
 
-    if (combinedData.type === Constants.SlotType.PERPENDICULAR) {
+    if (type === Constants.SlotType.PERPENDICULAR) {
         slotObject.changeSize(pixelCoordinate.depth, pixelCoordinate.width);
-    } else if (combinedData.type === Constants.SlotType.PARALLEL) {
+    } else if (type === Constants.SlotType.PARALLEL) {
         slotObject.changeSize(pixelCoordinate.width, pixelCoordinate.depth);
     }
 
-    instances.set(combinedData.slotId, slotObject);
+    instances.set(slotId, slotObject);
 
     console.log("APA: Add slot ", slotObject, " to scene successfully, instances size:", instances.size);
 }
 
-function addCar(parent, combinedData, carOffset) {
-    addSlot(parent, combinedData, carOffset, false);
+function addCar(parent, pointsArray, type, state, carOffset) {
+    addSlot(parent, pointsArray, type, state, carOffset, false);
 
-    var pixelCoordinate = Utils.convertCoordinate(combinedData, carOffset, deltaAngle);
+    var pixelCoordinate = Utils.convertCoordinate(pointsArray, carOffset, yawAngle);
 
     var positionX = pixelCoordinate.pointStartX > 0 ?
                 pixelCoordinate.pointStartX + pixelCoordinate.depth / 2 :
@@ -145,11 +161,11 @@ function addCar(parent, combinedData, carOffset) {
     var offsetx = 0;
     var roation = Qt.vector3d(0, 0, 0);
 
-    if (combinedData.type === Constants.SlotType.PERPENDICULAR) {
+    if (type === Constants.SlotType.PERPENDICULAR) {
         roation = Qt.vector3d(0, 90, 0);
         positionX += positionX > 0 ? Constants.carLength / 4 / Constants.mmPerCm / Constants.cmPerPixelX:
                                      -Constants.carLength / 4 / Constants.mmPerCm / Constants.cmPerPixelX;
-    } else if (combinedData.type === Constants.SlotType.PARALLEL) {
+    } else if (type === Constants.SlotType.PARALLEL) {
     } else {
         console.log("APA: Slot type is not supported...");
         return;
@@ -157,7 +173,7 @@ function addCar(parent, combinedData, carOffset) {
 
     carCount++;
     var positionZ = pixelCoordinate.pointStartZ - offsetz;
-    if (combinedData.type === Constants.SlotType.PARALLEL) {
+    if (type === Constants.SlotType.PARALLEL) {
         positionZ += Constants.carLength / 2 / Constants.mmPerCm / Constants.cmPerPixelZ;
     }
 
@@ -195,26 +211,13 @@ function clearObjects(slotScene){
 }
 
 function rotateScene(slotScene, yawAngle, yawSpeed, rotateSceneAnim) {
+   // Todo: Calculate speed for animation.
+   // var degreeSpeed = yawSpeed * 180 / Constants.pi * Constants.yawSpeedFactor;
 
-    var degreeSpeed = yawSpeed * 180 / Constants.pi * Constants.yawSpeedFactor;
-   // slotScene.pivot = Qt.vector3d(0, 0, slotScene.z);
-
-   // rotateSceneAnim.duration = Math.abs(rotateSceneAnim.to - slotScene.eulerRotation.y) / degreeSpeed * Constants.millseccondsPerSecond * 1000;
-    if (yawSpeed <= 0.01) {
-       // rotateSceneAnim.velocity = 10000;
-      //  slotScene.eulerRotation.y = 0;
-    } else {
+    if (yawSpeed > Constants.roationThreshold) {
         rotateSceneAnim.velocity = 2;
         slotScene.eulerRotation.y = yawAngle * 180 / Constants.pi;
     }
-
-   // console.log("APA: turning duration is", rotateSceneAnim.duration);
-
-   // rotateSceneAnim.restart();
-
-
-
-    console.log("APA: Begin to turn...");
 }
 
 function pauseRotation(rotateSceneAnim) {

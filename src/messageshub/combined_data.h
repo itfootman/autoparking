@@ -26,18 +26,11 @@ private:
     Q_PROPERTY(double yawSpeed READ yawSpeed)
     Q_PROPERTY(float carAngle READ carAngle)
     Q_PROPERTY(int num READ num)
-    Q_PROPERTY(int slotId READ slotId)
-    Q_PROPERTY(int state READ state)
-    Q_PROPERTY(int type READ type)
-    Q_PROPERTY(int isNew READ isNew)
-    Q_PROPERTY(float pointStartX READ pointStartX)
-    Q_PROPERTY(float pointStartY READ pointStartY)
-    Q_PROPERTY(float pointEndX READ pointEndX)
-    Q_PROPERTY(float pointEndY READ pointEndY)
-    Q_PROPERTY(float pointDepthStartX READ pointDepthStartX)
-    Q_PROPERTY(float pointDepthStartY READ pointDepthStartY)
-    Q_PROPERTY(float pointDepthEndX READ pointDepthEndX)
-    Q_PROPERTY(float pointDepthEndY READ pointDepthEndY)
+    Q_PROPERTY(std::vector<int> slotIds READ slotIds)
+    Q_PROPERTY(std::vector<int> states READ states)
+    Q_PROPERTY(std::vector<int> types READ types)
+    Q_PROPERTY(std::vector<int> isNews READ isNews)
+    Q_PROPERTY(std::vector<qreal> slotPoints READ slotPoints)
 
 public:
     uint16_t readyFlag = INITIAL_BASE();
@@ -48,6 +41,19 @@ public:
 
     void clearReadyFlag() {
         readyFlag = INITIAL_BASE();
+    }
+
+    void clearData() {
+        timestamp_ = -1;
+        vehicleSpeed_ = 0.0f;
+        yawSpeed_ = 0.0f;
+        carAngle_ = 0.0f;
+        num_ = 0;
+        slotIds_.clear();
+        states_.clear();
+        types_.clear();
+        isNews_.clear();
+        slotPoints_.clear();
     }
 
     int64_t timestamp() const {
@@ -70,52 +76,24 @@ public:
         return num_;
     }
 
-    int32_t slotId() const {
-        return slotId_;
+    std::vector<int> slotIds() const {
+        return slotIds_;
     }
 
-    int32_t state() const {
-        return state_;
+    std::vector<int> states() const {
+        return states_;
     }
 
-    int32_t type() const {
-        return type_;
+    std::vector<int> types() const {
+        return types_;
     }
 
-    int32_t isNew() const {
-        return isNew_;
+    std::vector<int> isNews() const {
+        return isNews_;
     }
 
-    float pointStartX() const {
-        return pointStartX_;
-    }
-
-    float pointStartY() const {
-        return pointStartY_;
-    }
-
-    float pointEndX() const {
-        return pointEndX_;
-    }
-
-    float pointEndY() const {
-        return pointEndY_;
-    }
-
-    float pointDepthStartX() const {
-        return pointDepthStartX_;
-    }
-
-    float pointDepthStartY() const {
-        return pointDepthStartY_;
-    }
-
-    float pointDepthEndX() const {
-        return pointDepthEndX_;
-    }
-
-    float pointDepthEndY() const {
-        return pointDepthEndY_;
+    std::vector<qreal> slotPoints() const {
+        return slotPoints_;
     }
 
     int64_t timestamp_ = -1;
@@ -123,18 +101,12 @@ public:
     float yawSpeed_ = 0.0f;
     float carAngle_ = 0.0f;
     int32_t num_ = 0;
-    int32_t slotId_ = -1;
-    int32_t state_ = -1;
-    int32_t type_ = -1;
-    int32_t isNew_ = -1;
-    float pointStartX_ = std::nan("1");
-    float pointStartY_ = std::nan("1");
-    float pointEndX_ = std::nan("1");
-    float pointEndY_ = std::nan("1");
-    float pointDepthStartX_ = std::nan("1");
-    float pointDepthStartY_ = std::nan("1");
-    float pointDepthEndX_ = std::nan("1");
-    float pointDepthEndY_ = std::nan("1");
+    std::vector<int> slotIds_;
+    std::vector<int> states_;
+    std::vector<int> types_;
+    std::vector<int> isNews_;
+
+    std::vector<qreal> slotPoints_;
 };
 //}
 Q_DECLARE_METATYPE(CombinedData)
