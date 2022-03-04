@@ -47,53 +47,31 @@ Item {
                     easing.type: Easing.Linear
                 }
             }
-        Node {
- //           pivot: Qt.vector3d(0, 0, -3000);
-//            Behavior on z {
-//                id: moveSceneBehavior
 
-//                function changeVelocity(v) {
-//                    moveSceneAnim.velocity = v;
-//                }
+            Node {
 
-//                SmoothedAnimation {
-//                    id: moveSceneAnim
-//                    easing.type: Easing.Linear
-//                }
-//            }
-
-            NumberAnimation {
-                id: goStraightAnim
-                target: slotScene
-                running: false
-                property: "z"
-                to: Constants.slotSceneMovingTo
-                easing.type: Easing.Linear
-            }
-
-//            NumberAnimation {
-//                id: rotateSceneAnim
-//                running: false
-//                target: slotScene
-//                loops: Animation.Infinite
-//                duration: 20000
-//                property: "eulerRotation.y"
-//                easing.type: Easing.Linear
-//            }
-
-            id: slotScene
-            Connections {
-                target: uiupdater
-                function onCombinedDataUpdated(combinedData) {
-                    SceneManager.initScene(combinedData);
-                    SceneManager.controlScene(wrapperNode, slotScene, combinedData, goStraightAnim, rotateSceneAnim);
+                NumberAnimation {
+                    id: goStraightAnim
+                    target: slotScene
+                    running: false
+                    property: "z"
+                    to: Constants.slotSceneMovingTo
+                    easing.type: Easing.Linear
                 }
-            } // Connections
 
-            Component.onCompleted: {
-                SceneManager.initZ = slotScene.z;
+                id: slotScene
+                Connections {
+                    target: uiupdater
+                    function onCombinedDataUpdated(combinedData) {
+                        SceneManager.initScene(combinedData);
+                        SceneManager.controlScene(wrapperNode, slotScene, combinedData, goStraightAnim, rotateSceneAnim);
+                    }
+                } // Connections
+
+                Component.onCompleted: {
+                    SceneManager.initZ = slotScene.z;
+                }
             }
-        }
         } // node wrapper
 
         HDRBloomTonemap {

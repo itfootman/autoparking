@@ -24,7 +24,7 @@ function convertCoordinate(pointsArray, carOffset, yawAngle) {
 
     // convert to 3D coordinate in mm unit.
     var worldPointStartZ = -pointStartX * Math.cos(yawAngle) +
-            pointStartY * Math.sin(deltaAngle) - carOffset * Constants.cmPerPixelZ * Constants.mmPerCm;
+            pointStartY * Math.sin(yawAngle) - carOffset * Constants.cmPerPixelZ * Constants.mmPerCm;
     var pixelPointStartZ = worldPointStartZ / Constants.mmPerCm / Constants.cmPerPixelZ;
 
     return {

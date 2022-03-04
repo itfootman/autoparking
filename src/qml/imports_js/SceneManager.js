@@ -31,9 +31,10 @@ function calculateYaw(combinedData) {
 
 function initScene(combinedData) {
     // Todo change the condition to judge points' size
-    if (combinedData.slotPoints.length > 0 && !sceneInited) {
+    if (combinedData.slotPoints.length > 0 && combinedData.slotPoints[0] !== 0 && !sceneInited) {
         initCarAngle = combinedData.carAngle;
         lastCarAngle = combinedData.carAngle;
+        console.log("APA: init angle is ", initCarAngle, "###################");
         sceneInited = true;
     }
 }
@@ -52,12 +53,16 @@ function isDataValid(combinedData) {
 }
 
 function controlScene(wrapperNode, slotScene, combinedData, goStraightAnim, rotateAnim) {
-    if (combinedData.slotIds.length > 0) {
-      //  if(combinedData.slotPoints.length > 0) {
-            Logger.dumpCombinedData(combinedData);
-     //   }
+//    if (combinedData.slotIds.length > 0) {
+//        if(combinedData.slotPoints.length > 0) {
+//            Logger.dumpCombinedData(combinedData);
+//        }
+//    }
+    if (sceneInited) {
+        yawAngle = calculateYaw(combinedData);
+        console.log("APA:yawAngle is ", yawAngle, "###########");
     }
-    yawAngle = calculateYaw(combinedData);
+
     // Init initial rotation degree of car.
 
    // slotScene.eulerRotation.y = -combinedData.carAngle;
@@ -76,17 +81,18 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnim, rota
     }
 
     if (isDataValid(combinedData)) {
-        console.log("biwenyang:#############3");
         var j = 0;
         for (var i = 0; i < combinedData.slotIds.length; i++) {
             if (!isInScene(combinedData.slotIds[i]) && combinedData.isNews[i] !== Constants.IsNew.INVALID) {
                 var pointsArray = [];
                 for (var k = 0; k < Constants.slotPointsCount; k++) {
-                    pointsArray[k] = combinedData.slotPoints[j + k];
+                    if (combinedData.slotPoints[j + k] !== 0) {
+                        pointsArray[k] = combinedData.slotPoints[j + k];
+                    }
                 }
                 if (combinedData.states[i] === Constants.SlotState.OCCUPY) {
                     addCar(slotScene, pointsArray, combinedData.types[i], combinedData.states[i], Math.abs(coupe.z));
-                } else if (combinedData.state[i] === Constants.SlotState.FREE || combinedData.state[i] === Constants.SlotState.SONAR) {
+                } else if (combinedData.states[i] === Constants.SlotState.FREE || combinedData.states[i] === Constants.SlotState.SONAR) {
                     addSlot(slotScene, pointsArray, combinedData.types[i], combinedData.states[i], Math.abs(coupe.z), true);
                 } else {
                     console.log("APA: Do not process temporarily.");
@@ -199,7 +205,7 @@ function moveScene(slotScene, vehicleSpeed, goStraightAnim) {
     pixelSpeed *= Constants.movingSpeedFactor;
     console.log("APA:Pixel moving speed is ", pixelSpeed);
 
-    goStraightAnim.duration = (goStraightAnim.to - initZ) / pixelSpeed * Constants.millseccondsPerSecond;
+    goStraightAnim.duration = (goStraightAnim.to - slotScene.z) / pixelSpeed * Constants.millseccondsPerSecond;
     console.log("APA:slotScene.z is ", slotScene.z, "movingAnim.to is ", goStraightAnim.to, "Moving duration is ",  goStraightAnim.duration);
     goStraightAnim.from = slotScene.z;
     goStraightAnim.restart();
@@ -239,6 +245,7 @@ function stopRotation(wrapperNode, rotateSceneAnim) {
 
 function pauseGoStraight(movingSceneBehavior) {
     if (goStraightAnim.running) {
+        console.log("APA: stop moving ahead...");
         goStraightAnim.pause();
     }
 }

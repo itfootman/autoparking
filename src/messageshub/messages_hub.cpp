@@ -68,7 +68,9 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
         }
     }
 
+    ROS_DEBUG("APA:msg->polygonStamped.size():%u", msg->polygonStamped.size());
     for (size_t i = 0; i < msg->polygonStamped.size(); ++i) {
+        ROS_DEBUG("APA:polygon.points.size():%u", msg->polygonStamped[i].polygon.points.size());
         if (msg->polygonStamped[i].polygon.points.size() >= 4) {
             geometry_msgs::Point32 point_start;
             geometry_msgs::Point32 point_end;
@@ -100,6 +102,10 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
                      msg->count, msg->target_id, msg->delay_time,
                      point_start.x, point_start.y, point_end.x, point_end.y,
                      point_depth_start.x, point_depth_start.y, point_depth_end.x, point_depth_end.y);
+        } else {
+            for (int i = 0; i < 8; ++i) {
+                combinedData_.slotPoints_.push_back(0.0f);
+            }
         }
     }
 
@@ -133,7 +139,7 @@ void MessagesHub::workLoop() {
     float distance = -3500;
     float distanceV = -5500;
     int loopCount = 0;
- #if 1
+ #if 0
     std::ifstream dataFile("d:\\temp\\log_0227.data", std::ios::binary | std::ios::in);
     if (dataFile) {
         while (dataFile.read((char*)&combinedData_, sizeof(CombinedData))) {
