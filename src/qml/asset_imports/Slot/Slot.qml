@@ -22,6 +22,10 @@ Node {
         }
     }
 
+    function changeText(str) {
+        text0.text = str;
+    }
+
     Rectangle {
       // layer.enabled: true
         id: slotFrame

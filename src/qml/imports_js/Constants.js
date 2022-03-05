@@ -1,7 +1,8 @@
 const SlotState = {
     INVALID : -1,
-    FREE : 0,
-    OCCUPY : 1,
+    UNKNOWN: 0,
+    FREE : 1,
+    OCCUPY : 5,
     SONAR : 2,
     SPECIAL : 3,
     PRIVATE : 4

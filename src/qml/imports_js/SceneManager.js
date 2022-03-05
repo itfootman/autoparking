@@ -40,9 +40,9 @@ function initScene(combinedData) {
 }
 
 function isDataValid(combinedData) {
-    console.log("combinedData.num:", combinedData.num, "combinedData.slotIds.length:", combinedData.slotIds.length,
-                "combinedData.types.length:", combinedData.types.length, "combinedData.states.length:", combinedData.states.length,
-                "combinedData.slotPoints.length:", combinedData.slotPoints.length);
+//    console.log("combinedData.num:", combinedData.num, "combinedData.slotIds.length:", combinedData.slotIds.length,
+//                "combinedData.types.length:", combinedData.types.length, "combinedData.states.length:", combinedData.states.length,
+//                "combinedData.slotPoints.length:", combinedData.slotPoints.length);
     return (combinedData.num > 0 && combinedData.slotIds.length > 0 && combinedData.slotPoints.length > 0 &&
            combinedData.slotPoints.length / Constants.slotPointsCount === combinedData.slotIds.length &&
            combinedData.slotPoints.length / Constants.slotPointsCount === combinedData.states.length &&
@@ -91,11 +91,11 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnim, rota
                     }
                 }
                 if (combinedData.states[i] === Constants.SlotState.OCCUPY) {
-                    addCar(slotScene, pointsArray, combinedData.types[i], combinedData.states[i], Math.abs(coupe.z));
-                } else if (combinedData.states[i] === Constants.SlotState.FREE || combinedData.states[i] === Constants.SlotState.SONAR) {
-                    addSlot(slotScene, pointsArray, combinedData.types[i], combinedData.states[i], Math.abs(coupe.z), true);
+                    addCar(slotScene, combinedData.slotIds[i], pointsArray, combinedData.types[i], combinedData.states[i], Math.abs(coupe.z));
+                } else if (combinedData.states[i] === Constants.SlotState.FREE || combinedData.states[i] === Constants.SlotState.SONAR || combinedData.states[i] === Constants.SlotState.UNKNOWN) {
+                    addSlot(slotScene, combinedData.slotIds[i], pointsArray, combinedData.types[i], combinedData.states[i], Math.abs(coupe.z), true);
                 } else {
-                    console.log("APA: Do not process temporarily.");
+                    console.log("APA: State is", combinedData.states[i], "Do not process temporarily.");
                 }
 
                 j += Constants.slotPointsCount;
@@ -104,7 +104,14 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnim, rota
      }
 }
 
-function addSlot(parent, pointsArray, type, state, carOffset, isShowText) {
+function addSlot(parent, slotId, pointsArray, type, state, carOffset, isShowText) {
+
+    console.log("APA: add Slot--Vehicle coordinate,", "slotId:", slotId,
+                   "slotPoints:(", pointsArray[0], ",", pointsArray[1], ",",
+                    pointsArray[2],  ",", pointsArray[3], ",",
+                    pointsArray[4],  ",", pointsArray[5], ",",
+                    pointsArray[6],  ",", pointsArray[7], ",", ")");
+
     var pixelCoordinate = Utils.convertCoordinate(pointsArray, carOffset, yawAngle);
     var positionX = pixelCoordinate.pointStartX > 0 ?
                 pixelCoordinate.pointStartX + pixelCoordinate.depth / 2  - Constants.offsetX:
@@ -122,21 +129,21 @@ function addSlot(parent, pointsArray, type, state, carOffset, isShowText) {
     slotCount++;
     var offsetz = pixelCoordinate.width / 2;
     var positionZ = pixelCoordinate.pointStartZ - offsetz;
-    console.log("APA: Add slot, positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ);
 
     var slotComponent = Qt.createComponent("qrc:/qml/asset_imports/Slot/Slot.qml");
     var localVec = parent.mapPositionFromScene(Qt.vector3d(positionX, pixelCoordinate.pointStartY, positionZ));
-    console.log("APA: Add slot, local position:" + localVec);
     localVec.y = -Constants.carHeight;
-    var slotId = "slot" + slotCount;
+    var tempSlotId = "slot" + slotCount;
     let slotObject = slotComponent.createObject(parent,
         {
             "position": localVec,
-            "id": slotId,
+            "id": tempSlotId,
             "eulerRotation": roation
         });
 
-    if (state === Constants.SlotState.FREE || state === Constants.SlotState.UNKNOWN) {
+    slotObject.changeText(slotId);
+
+    if (state === Constants.SlotState.FREE || state === Constants.SlotState.UNKNOWN || state === Constants.SlotState.SONAR) {
         slotObject.changeBackgroundColor("#1000FF00");
     } else if (state === Constants.SlotState.OCCUPY) {
         slotObject.changeBackgroundColor("#10FF0000");
@@ -151,12 +158,11 @@ function addSlot(parent, pointsArray, type, state, carOffset, isShowText) {
     }
 
     instances.set(slotId, slotObject);
-
-    console.log("APA: Add slot ", slotObject, " to scene successfully, instances size:", instances.size);
+    console.log("APA: Add slot--", "slotId:", slotId, ",positionX:" + positionX + ",positionY:" + pixelCoordinate.pointStartY, "positonZ:" + positionZ, "local position:" + localVec);
 }
 
-function addCar(parent, pointsArray, type, state, carOffset) {
-    addSlot(parent, pointsArray, type, state, carOffset, false);
+function addCar(parent, slotId, pointsArray, type, state, carOffset) {
+    addSlot(parent, slotId, pointsArray, type, state, carOffset, false);
 
     var pixelCoordinate = Utils.convertCoordinate(pointsArray, carOffset, yawAngle);
 

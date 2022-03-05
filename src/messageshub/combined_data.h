@@ -44,11 +44,6 @@ public:
     }
 
     void clearData() {
-        timestamp_ = -1;
-        vehicleSpeed_ = 0.0f;
-        yawSpeed_ = 0.0f;
-        carAngle_ = 0.0f;
-        num_ = 0;
         slotIds_.clear();
         states_.clear();
         types_.clear();

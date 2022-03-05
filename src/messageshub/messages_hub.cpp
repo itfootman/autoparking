@@ -49,26 +49,21 @@ void MessagesHub::onVehicleMessage(const autoparking::vehicle_infoConstPtr& msg)
     combinedData_.vehicleSpeed_ = msg->vehicleSpeed;
     combinedData_.timestamp_ = msg->timestamp;
     combinedData_.carAngle_ = msg->APACarPar.z;
-    combinedData_.readyFlag |= VEHICLE_INFO();
-    if (combinedData_.isReady()) {
-        onOneFrameReady(combinedData_);
-        combinedData_.clearReadyFlag();
-        combinedData_.clearData();
-    }
 }
 
 void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& msg) {
     combinedData_.num_ = msg->num;
 
+    ROS_DEBUG("APA:msg->polygonStamped.size():%u, msg->state.size():%u, msg->type.size():%u, msg->isNew.size():%u", msg->polygonStamped.size(), msg->state.size(), msg->type.size(), msg->is_new.size());
     if (msg->state.size() == msg->type.size() && msg->state.size() == msg->slot_id.size()) {
         for (size_t j = 0; j < msg->slot_id.size(); ++j) {
+            ROS_DEBUG("   APA:Push slot id:%d", msg->slot_id[j]);
             combinedData_.slotIds_.push_back(msg->slot_id[j]);
             combinedData_.states_.push_back(msg->state[j]);
             combinedData_.types_.push_back(msg->type[j]);
+            combinedData_.isNews_.push_back(msg->type[j]);
         }
     }
-
-    ROS_DEBUG("APA:msg->polygonStamped.size():%u", msg->polygonStamped.size());
     for (size_t i = 0; i < msg->polygonStamped.size(); ++i) {
         ROS_DEBUG("APA:polygon.points.size():%u", msg->polygonStamped[i].polygon.points.size());
         if (msg->polygonStamped[i].polygon.points.size() >= 4) {
@@ -110,6 +105,7 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
     }
 
     combinedData_.readyFlag |= SLOT_FUSION_INFO();
+    combinedData_.readyFlag |= VEHICLE_INFO();
     if (combinedData_.isReady()) {
         onOneFrameReady(combinedData_);
         combinedData_.clearReadyFlag();
