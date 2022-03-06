@@ -49,9 +49,11 @@ void MessagesHub::onVehicleMessage(const autoparking::vehicle_infoConstPtr& msg)
     combinedData_.vehicleSpeed_ = msg->vehicleSpeed;
     combinedData_.timestamp_ = msg->timestamp;
     combinedData_.carAngle_ = msg->APACarPar.z;
+    //ROS_INFO("APA: vehicle data thread id:%d", std::this_thread::get_id());
 }
 
 void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& msg) {
+   // ROS_INFO("APA: slot data thread id:%d", std::this_thread::get_id());
     combinedData_.num_ = msg->num;
 
     ROS_DEBUG("APA:msg->polygonStamped.size():%u, msg->state.size():%u, msg->type.size():%u, msg->isNew.size():%u", msg->polygonStamped.size(), msg->state.size(), msg->type.size(), msg->is_new.size());

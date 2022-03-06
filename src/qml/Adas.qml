@@ -51,10 +51,19 @@ Item {
             Node {
 
                 NumberAnimation {
-                    id: goStraightAnim
+                    id: goStraightAnimZ
                     target: slotScene
-                    running: false
                     property: "z"
+                    from: 0
+                    to: Constants.slotSceneMovingTo
+                    easing.type: Easing.Linear
+                }
+
+                NumberAnimation {
+                    id: goStraightAnimX
+                    target: slotScene
+                    property: "x"
+                    from: 0
                     to: Constants.slotSceneMovingTo
                     easing.type: Easing.Linear
                 }
@@ -64,7 +73,7 @@ Item {
                     target: uiupdater
                     function onCombinedDataUpdated(combinedData) {
                         SceneManager.initScene(combinedData);
-                        SceneManager.controlScene(wrapperNode, slotScene, combinedData, goStraightAnim, rotateSceneAnim);
+                        SceneManager.controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goStraightAnimX, rotateSceneAnim);
                     }
                 } // Connections
 
