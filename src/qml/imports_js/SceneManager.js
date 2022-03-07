@@ -101,8 +101,9 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goS
                         console.log("APA: State is", combinedData.states[i], "Do not process temporarily.");
                     }
                 }
-                j += Constants.slotPointsCount;
             }
+
+            j += Constants.slotPointsCount;
         }
      }
 }
@@ -209,7 +210,6 @@ function addCar(parent, slotId, pointsArray, type, state, carOffset) {
 }
 
 function moveScene(slotScene, vehicleSpeed, goStraightAnimZ, goStraightAnimX) {
-    console.log("#######cos(90):", Math.cos(90));
     var pixelSpeed = vehicleSpeed * Constants.cmPerMeter / Constants.cmPerPixelZ;
     pixelSpeed *= Constants.movingSpeedFactor;
     var pixelSpeedZ = pixelSpeed * Math.cos(yawAngle);

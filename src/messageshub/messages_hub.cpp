@@ -94,7 +94,7 @@ void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& ms
             ROS_DEBUG("Fusion-timestamp:%ld, slots size:%u, num:%d, type:%d, state:%d,is_new:%d,"
                      "slot_id:%d, count:%ld, target_id:%d, delay_time:%ld,"
                      "points[(%lf, %lf), (%lf, %lf), (%lf, %lf)]",
-                     msg->timestamp, msg->polygonStamped.size(), msg->num, msg->type[i], msg->state[i],
+                     QDateTime::currentDateTime().currentMSecsSinceEpoch(), msg->polygonStamped.size(), msg->num, msg->type[i], msg->state[i],
                      msg->is_new[i], msg->slot_id[i],
                      msg->count, msg->target_id, msg->delay_time,
                      point_start.x, point_start.y, point_end.x, point_end.y,
