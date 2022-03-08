@@ -25,6 +25,8 @@ private:
     Q_PROPERTY(float vehicleSpeed READ vehicleSpeed)
     Q_PROPERTY(double yawSpeed READ yawSpeed)
     Q_PROPERTY(float carAngle READ carAngle)
+    Q_PROPERTY(float worldX READ worldX)
+    Q_PROPERTY(float worldY READ worldY)
     Q_PROPERTY(int num READ num)
     Q_PROPERTY(std::vector<int> slotIds READ slotIds)
     Q_PROPERTY(std::vector<int> states READ states)
@@ -67,6 +69,14 @@ public:
         return carAngle_;
     }
 
+    float worldX() const {
+        return worldX_;
+    }
+
+    float worldY() const {
+        return worldY_;
+    }
+
     int32_t num() const {
         return num_;
     }
@@ -95,6 +105,8 @@ public:
     float vehicleSpeed_ = 0.0f;
     float yawSpeed_ = 0.0f;
     float carAngle_ = 0.0f;
+    float worldX_ = 0.0f;
+    float worldY_ = 0.0f;
     int32_t num_ = 0;
     std::vector<int> slotIds_;
     std::vector<int> states_;

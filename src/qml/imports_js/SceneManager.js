@@ -80,6 +80,7 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goS
         stopRotation(wrapperNode, rotateAnim);
     }
 
+    console.log("APA: timestamp:", combinedData.timestamp, "worldX:", combinedData.worldX, ",worldY:", combinedData.worldY, ",carAngle:", combinedData.carAngle);
     if (isDataValid(combinedData)) {
         var j = 0;
         for (var i = 0; i < combinedData.slotIds.length; i++) {
@@ -95,7 +96,6 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goS
                     if (combinedData.states[i] === Constants.SlotState.OCCUPY) {
                         addCar(slotScene, combinedData.slotIds[i], pointsArray, combinedData.types[i], combinedData.states[i], carOffsetPixel);
                     } else if (combinedData.states[i] === Constants.SlotState.FREE || combinedData.states[i] === Constants.SlotState.SONAR || combinedData.states[i] === Constants.SlotState.UNKNOWN) {
-                        console.log("APA: timestamp:", combinedData.timestamp);
                         addSlot(slotScene, combinedData.slotIds[i], pointsArray, combinedData.types[i], combinedData.states[i], carOffsetPixel, true);
                     } else {
                         console.log("APA: State is", combinedData.states[i], "Do not process temporarily.");
@@ -216,8 +216,8 @@ function moveScene(slotScene, vehicleSpeed, goStraightAnimZ, goStraightAnimX) {
     var pixelSpeedX = pixelSpeed * Math.sin(yawAngle);
     console.log("APA:Vehicle speed is ", vehicleSpeed ,",Pixel moving speed is ", pixelSpeed, "Pixel Z moving speed is ", pixelSpeedZ, "Pixel X moving speed is ", pixelSpeedX);
 
-    if (pixelSpeedZ >= Constants.movingThreshold) {
-        goStraightAnimZ.duration = (goStraightAnimZ.to - slotScene.z) / pixelSpeedZ * Constants.millseccondsPerSecond;
+    if (Math.abs(pixelSpeedZ) >= Constants.movingThreshold) {
+        goStraightAnimZ.duration = (goStraightAnimZ.to - slotScene.z) / Math.abs(pixelSpeedZ) * Constants.millseccondsPerSecond;
         goStraightAnimZ.from = slotScene.z;
         goStraightAnimZ.restart();
     } else {
@@ -226,8 +226,8 @@ function moveScene(slotScene, vehicleSpeed, goStraightAnimZ, goStraightAnimX) {
         }
     }
 
-    if (pixelSpeedX >= Constants.movingThreshold) {
-        goStraightAnimX.duration = (goStraightAnimX.to - slotScene.x) / pixelSpeedX * Constants.millseccondsPerSecond;
+    if (Math.abs(pixelSpeedX) >= Constants.movingThreshold) {
+        goStraightAnimX.duration = (goStraightAnimX.to - slotScene.x) / Math.abs(pixelSpeedX) * Constants.millseccondsPerSecond;
         goStraightAnimX.from = slotScene.x;
         goStraightAnimX.restart();
     } else {

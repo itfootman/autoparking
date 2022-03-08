@@ -49,6 +49,8 @@ void MessagesHub::onVehicleMessage(const autoparking::vehicle_infoConstPtr& msg)
     combinedData_.vehicleSpeed_ = msg->vehicleSpeed;
     combinedData_.timestamp_ = msg->timestamp;
     combinedData_.carAngle_ = msg->APACarPar.z;
+    combinedData_.worldX_ = msg->APACarPar.x;
+    combinedData_.worldY_ = msg->APACarPar.y;
     //ROS_INFO("APA: vehicle data thread id:%d", std::this_thread::get_id());
 }
 
