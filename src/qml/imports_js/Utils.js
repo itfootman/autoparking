@@ -1,6 +1,6 @@
 .import "Constants.js" as Constants
 // Here need complicate linear algera calculation. Please see readme.
-function convertCoordinate(pointsArray, carOffset, yawAngle) {
+function convertCoordinate(pointsArray, carOffset, translation, yawAngle) {
     var pointStartX = pointsArray[0];
     var pointStartY = pointsArray[1];
     var pointEndX = pointsArray[2];
@@ -18,7 +18,7 @@ function convertCoordinate(pointsArray, carOffset, yawAngle) {
     depth = depth / Constants.mmPerCm / Constants.cmPerPixelX;
 
     // convert to 3D coordinate in mm unit.
-    var worldPointStartX = pointStartX * Math.sin(yawAngle) - pointStartY * Math.cos(yawAngle);
+    var worldPointStartX = pointStartX * Math.sin(yawAngle) - pointStartY * Math.cos(yawAngle) - translation;
     var pixelPointStartX = worldPointStartX / Constants.mmPerCm / Constants.cmPerPixelX; // pixel in 3D coordinate
     var pixelPointStartY = 0; // z is zero in vehicle coordinate.
 

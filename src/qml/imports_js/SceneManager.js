@@ -10,6 +10,9 @@ var lastCarAngle = 0;
 var sceneInited = false;
 var initCarAngle = 0;
 var yawAngle = 0;
+var lastWorldX = 0;
+var lastWorldY = 0;
+var translation = 0;
 
 function isInScene(slotId) {
     return instances.has(slotId);
@@ -52,6 +55,14 @@ function isDataValid(combinedData) {
            combinedData.slotPoints.length >= Constants.slotPointsCount);
 }
 
+function calculateOffset(worldX, worldY, yawAngle) {
+    var offset = Math.sqrt(Math.pow(worldX - lastWorldX, 2) + Math.pow(worldY - lastWorldY, 2)) * Math.sin(yawAngle);
+    lastWorldX = worldX;
+    lastWorldY = worldY;
+
+    return offset;
+}
+
 function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goStraightAnimX, rotateAnim) {
 //    if (combinedData.slotIds.length > 0) {
 //        if(combinedData.slotPoints.length > 0) {
@@ -60,16 +71,19 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goS
 //    }
     if (sceneInited) {
         yawAngle = calculateYaw(combinedData);
-        console.log("APA:yawAngle is ", yawAngle, "###########");
     }
 
     // Init initial rotation degree of car.
 
+    console.log("------------------Global values-------------------");
+    console.log("carAngle:", combinedData.carAngle, "yawAngle:", yawAngle);
+    console.log("------------------Global values end----------------\n");
+
    // slotScene.eulerRotation.y = -combinedData.carAngle;
+    translation = calculateOffset(combinedData.worldX, combinedData.worldY, yawAngle);
 
     if (Math.abs(combinedData.vehicleSpeed) > 0) {
         moveScene(slotScene, combinedData.vehicleSpeed, goStraightAnimZ, goStraightAnimX);
-        console.log("APA: yawspeed is ", combinedData.yawSpeed);
         if (Math.abs(combinedData.yawSpeed) > Constants.roationThreshold) {
             rotateScene(wrapperNode, yawAngle, combinedData.yawSpeed, rotateAnim);
         } else {
@@ -80,7 +94,6 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goS
         stopRotation(wrapperNode, rotateAnim);
     }
 
-    console.log("APA: timestamp:", combinedData.timestamp, "worldX:", combinedData.worldX, ",worldY:", combinedData.worldY, ",carAngle:", combinedData.carAngle);
     if (isDataValid(combinedData)) {
         var j = 0;
         for (var i = 0; i < combinedData.slotIds.length; i++) {
@@ -96,7 +109,11 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goS
                     if (combinedData.states[i] === Constants.SlotState.OCCUPY) {
                         addCar(slotScene, combinedData.slotIds[i], pointsArray, combinedData.types[i], combinedData.states[i], carOffsetPixel);
                     } else if (combinedData.states[i] === Constants.SlotState.FREE || combinedData.states[i] === Constants.SlotState.SONAR || combinedData.states[i] === Constants.SlotState.UNKNOWN) {
+                        console.log("--------------------------Add slot begin-------------------------");
+                        console.log("APA: timestamp:", combinedData.timestamp, "worldX:", combinedData.worldX, ",worldY:", combinedData.worldY,
+                                    ",carAngle:", combinedData.carAngle, "yawAngle:",  yawAngle, "translation:", translation);
                         addSlot(slotScene, combinedData.slotIds[i], pointsArray, combinedData.types[i], combinedData.states[i], carOffsetPixel, true);
+                        console.log("--------------------------Add slot end---------------------------\n");
                     } else {
                         console.log("APA: State is", combinedData.states[i], "Do not process temporarily.");
                     }
@@ -110,13 +127,13 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goS
 
 function addSlot(parent, slotId, pointsArray, type, state, carOffset, isShowText) {
 
-    console.log("APA: add Slot--Vehicle coordinate,", "slotId:", slotId, "type:", type, "state:", state,
+    console.log("APA: ################add Slot--Vehicle coordinate,", "slotId:", slotId, "type:", type, "state:", state,
                    "slotPoints:(", pointsArray[0], ",", pointsArray[1], ",",
                     pointsArray[2],  ",", pointsArray[3], ",",
                     pointsArray[4],  ",", pointsArray[5], ",",
-                    pointsArray[6],  ",", pointsArray[7], ",", ")");
+                    pointsArray[6],  ",", pointsArray[7], ",", ")#################");
 
-    var pixelCoordinate = Utils.convertCoordinate(pointsArray, carOffset, yawAngle);
+    var pixelCoordinate = Utils.convertCoordinate(pointsArray, carOffset, translation, yawAngle);
     var positionX = pixelCoordinate.pointStartX > 0 ?
                 pixelCoordinate.pointStartX + pixelCoordinate.depth / 2  - Constants.offsetX:
                 pixelCoordinate.pointStartX - (pixelCoordinate.depth / 2) + Constants.offsetX;
@@ -167,7 +184,7 @@ function addSlot(parent, slotId, pointsArray, type, state, carOffset, isShowText
 function addCar(parent, slotId, pointsArray, type, state, carOffset) {
     addSlot(parent, slotId, pointsArray, type, state, carOffset, false);
 
-    var pixelCoordinate = Utils.convertCoordinate(pointsArray, carOffset, yawAngle);
+    var pixelCoordinate = Utils.convertCoordinate(pointsArray, carOffset, translation, yawAngle);
 
     var positionX = pixelCoordinate.pointStartX > 0 ?
                 pixelCoordinate.pointStartX + pixelCoordinate.depth / 2 :
@@ -210,16 +227,23 @@ function addCar(parent, slotId, pointsArray, type, state, carOffset) {
 }
 
 function moveScene(slotScene, vehicleSpeed, goStraightAnimZ, goStraightAnimX) {
+     console.log("------------------------Moving Begin---------------------")
     var pixelSpeed = vehicleSpeed * Constants.cmPerMeter / Constants.cmPerPixelZ;
     pixelSpeed *= Constants.movingSpeedFactor;
     var pixelSpeedZ = pixelSpeed * Math.cos(yawAngle);
     var pixelSpeedX = pixelSpeed * Math.sin(yawAngle);
-    console.log("APA:Vehicle speed is ", vehicleSpeed ,",Pixel moving speed is ", pixelSpeed, "Pixel Z moving speed is ", pixelSpeedZ, "Pixel X moving speed is ", pixelSpeedX);
 
     if (Math.abs(pixelSpeedZ) >= Constants.movingThreshold) {
-        goStraightAnimZ.duration = (goStraightAnimZ.to - slotScene.z) / Math.abs(pixelSpeedZ) * Constants.millseccondsPerSecond;
+        goStraightAnimZ.duration = Math.abs((goStraightAnimZ.to - slotScene.z)) / Math.abs(pixelSpeedZ) * Constants.millseccondsPerSecond;
         goStraightAnimZ.from = slotScene.z;
+        if (pixelSpeedZ < 0) {
+            goStraightAnimZ.to = -Constants.slotSceneMovingTo;
+        } else {
+            goStraightAnimZ.to = Constants.slotSceneMovingTo;
+        }
+
         goStraightAnimZ.restart();
+
     } else {
         if (goStraightAnimZ.running) {
             goStraightAnimZ.pause();
@@ -227,8 +251,14 @@ function moveScene(slotScene, vehicleSpeed, goStraightAnimZ, goStraightAnimX) {
     }
 
     if (Math.abs(pixelSpeedX) >= Constants.movingThreshold) {
-        goStraightAnimX.duration = (goStraightAnimX.to - slotScene.x) / Math.abs(pixelSpeedX) * Constants.millseccondsPerSecond;
+        goStraightAnimX.duration = Math.abs((goStraightAnimX.to - slotScene.x)) / Math.abs(pixelSpeedX) * Constants.millseccondsPerSecond;
         goStraightAnimX.from = slotScene.x;
+        if (pixelSpeedX < 0) {
+            goStraightAnimX.to = -Constants.slotSceneMovingTo;
+        } else {
+            goStraightAnimX.to = Constants.slotSceneMovingTo;
+        }
+
         goStraightAnimX.restart();
     } else {
         if (goStraightAnimX.running) {
@@ -237,8 +267,11 @@ function moveScene(slotScene, vehicleSpeed, goStraightAnimZ, goStraightAnimX) {
     }
 
     //goStraightAnim.duration = 3000000000000
+
+    console.log("APA:Vehicle speed is ", vehicleSpeed ,",Pixel moving speed is ", pixelSpeed, "Pixel Z moving speed is ", pixelSpeedZ, "Pixel X moving speed is ", pixelSpeedX);
     console.log("APA:slotScene.z is ", slotScene.z, "movingAnim.to is ", goStraightAnimZ.to, "Moving duration is ",  goStraightAnimZ.duration);
     console.log("APA:slotScene.x is ", slotScene.x, "movingAnim.to is ", goStraightAnimX.to, "Moving duration is ",  goStraightAnimX.duration);
+    console.log("------------------------Moving End---------------------\n")
 }
 
 function clearObjects(slotScene){
@@ -248,6 +281,7 @@ function clearObjects(slotScene){
 
 function rotateScene(wrapperNode, yawAngle, yawSpeed, rotateSceneAnim) {
    // Todo: Calculate speed for animation.
+    console.log("----------------------Rotation begin---------------------");
     var degreeSpeed = yawSpeed * 180 / Constants.pi * Constants.yawSpeedFactor;
 
  //   if (yawSpeed > Constants.roationThreshold) {
@@ -257,6 +291,9 @@ function rotateScene(wrapperNode, yawAngle, yawSpeed, rotateSceneAnim) {
    ///     rotateSceneAnim.velocity = 10000;
    //     wrapperNode.eulerRotation.y = 0;
   //  }
+
+    console.log("APA: yawspeed:", yawSpeed, "degreeSpeed:", degreeSpeed, "yawAngle:", yawAngle, "wrapperNode.eulerRotation.y:", wrapperNode.eulerRotation.y);
+    console.log("----------------------Rotation end----------------------");
 }
 
 function pauseRotation(rotateSceneAnim) {
