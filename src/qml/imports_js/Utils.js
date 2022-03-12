@@ -18,14 +18,14 @@ function convertCoordinate(pointsArray, carOffset, translation, yawAngle) {
     depth = depth / Constants.mmPerCm / Constants.cmPerPixelX;
 
     // convert to 3D coordinate in mm unit.
-    var worldPointStartX = pointStartX * Math.sin(yawAngle) - pointStartY * Math.cos(yawAngle) - translation;
-    var pixelPointStartX = worldPointStartX / Constants.mmPerCm / Constants.cmPerPixelX; // pixel in 3D coordinate
+    var worldPointStartX = pointStartX * Math.sin(yawAngle) - pointStartY * Math.cos(yawAngle);
+    var pixelPointStartX = worldPointStartX / Constants.mmPerCm / Constants.cmPerPixelX - translation.slotSceneDeltaX * Math.cos(yawAngle) + translation.slotSceneDeltaZ * Math.sin(yawAngle); // pixel in 3D coordinate
     var pixelPointStartY = 0; // z is zero in vehicle coordinate.
 
     // convert to 3D coordinate in mm unit.
     var worldPointStartZ = -pointStartX * Math.cos(yawAngle) -
-            pointStartY * Math.sin(yawAngle) - carOffset * Constants.cmPerPixelZ * Constants.mmPerCm;
-    var pixelPointStartZ = worldPointStartZ / Constants.mmPerCm / Constants.cmPerPixelZ;
+            pointStartY * Math.sin(yawAngle);
+    var pixelPointStartZ = worldPointStartZ / Constants.mmPerCm / Constants.cmPerPixelZ  - translation.slotSceneDeltaZ * Math.cos(yawAngle) - translation.slotSceneDeltaX * Math.cos(yawAngle);
 
     return {
         width: width,

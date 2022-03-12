@@ -72,7 +72,7 @@ Item {
                 Connections {
                     target: uiupdater
                     function onCombinedDataUpdated(combinedData) {
-                        SceneManager.initScene(combinedData);
+                        SceneManager.initScene(slotScene, combinedData);
                         SceneManager.controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goStraightAnimX, rotateSceneAnim);
                     }
                 } // Connections

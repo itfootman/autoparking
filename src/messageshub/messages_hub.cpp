@@ -262,7 +262,7 @@ void MessagesHub::addOneObject() {
 void MessagesHub::onOneFrameReady(const CombinedData& combinedData) {
  //          QThread::msleep(1000);
     for (const auto& o : observers_) {
-        qDebug() << "biwenyang:onOneFrameReady, notify observer...";
+ //       qDebug() << "biwenyang:onOneFrameReady, notify observer...";
         QMetaObject::invokeMethod(o.get() , "onUpdate" , Qt::AutoConnection
             , Q_ARG(CombinedData, combinedData));
     }
