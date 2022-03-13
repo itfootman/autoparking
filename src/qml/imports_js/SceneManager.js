@@ -38,12 +38,18 @@ function calculateYaw(combinedData) {
 
     if (Math.abs(deltaAngle) <= Constants.yawDeviation) {
         deltaAngle = 0;
+    } else {
+        if (deltaAngle > 0) {
+            deltaAngle -= Constants.yawDeviation;
+        } else {
+            deltaAngle += Constants.yawDeviation;
+        }
     }
 
     return deltaAngle;
 }
 
-function initScene(slotScene, combinedData) {
+function initScene(slotScene, rotateSceneAnim, combinedData) {
     // Todo change the condition to judge points' size
     if (combinedData.slotPoints.length > 0 && combinedData.slotPoints[0] !== 0 && !sceneInited) {
         initCarAngle = combinedData.carAngle;
@@ -55,6 +61,9 @@ function initScene(slotScene, combinedData) {
         initSlotSceneZ = slotScene.z;
         console.log("APA: Init scene complete.");
         sceneInited = true;
+        yawAngle = calculateYaw(combinedData);
+        rotateSceneAnim.from = yawAngle;
+        rotateSceneAnim.to = yawAngle;
     }
 }
 
@@ -252,8 +261,17 @@ function addCar(parent, slotId, pointsArray, type, state, carOffset) {
 function moveScene(slotScene, vehicleSpeed, goStraightAnimZ, goStraightAnimX) {
     var pixelSpeed = vehicleSpeed * Constants.cmPerMeter / Constants.cmPerPixelZ;
     pixelSpeed *= Constants.movingSpeedFactor;
-    var pixelSpeedZ = pixelSpeed * Math.cos(yawAngle);
-    var pixelSpeedX = pixelSpeed * Math.sin(yawAngle);
+    var pixelSpeed1 = pixelSpeed * Math.cos(yawAngle);
+    var pixelSpeed2 = pixelSpeed * Math.sin(yawAngle);
+    var pixelSpeedZ = 0;
+    var pixelSpeedX = 0;
+    if (Math.abs(pixelSpeed1) > Math.abs(pixelSpeed2)) {
+        pixelSpeedZ = pixelSpeed1;
+        pixelSpeedX = pixelSpeed2;
+    } else {
+        pixelSpeedZ = pixelSpeed2;
+        pixelSpeedX = pixelSpeed1;
+    }
 
     if (Math.abs(pixelSpeedZ) >= Constants.movingThreshold) {
         goStraightAnimZ.duration = Math.abs((goStraightAnimZ.to - slotScene.z)) / Math.abs(pixelSpeedZ) * Constants.millseccondsPerSecond;
@@ -310,15 +328,12 @@ function clearObjects(slotScene){
 
 function rotateScene(wrapperNode, yawAngle, yawSpeed, rotateSceneAnim) {
    // Todo: Calculate speed for animation.
-    var degreeSpeed = yawSpeed * 180 / Constants.pi * Constants.yawSpeedFactor;
-
- //   if (yawSpeed > Constants.roationThreshold) {
-        rotateSceneAnim.velocity = degreeSpeed;
-        wrapperNode.eulerRotation.y = -yawAngle * 180 / Constants.pi;
-   // } else {
-   ///     rotateSceneAnim.velocity = 10000;
-   //     wrapperNode.eulerRotation.y = 0;
-  //  }
+    var degreeSpeed = Utils.convertToDegree(Math.abs(yawSpeed));
+    var curDegree = Utils.convertToDegree(yawAngle);
+    rotateSceneAnim.from = rotateSceneAnim.to;
+    rotateSceneAnim.to = -curDegree;
+    rotateSceneAnim.duration = Math.abs((rotateSceneAnim.to - rotateSceneAnim.from)) / degreeSpeed * Constants.millseccondsPerSecond;
+    rotateSceneAnim.restart();
 
     console.log("Rotation info:{\n",
                 "    yawspeed:", yawSpeed, "\n",

@@ -35,3 +35,7 @@ function convertCoordinate(pointsArray, carOffset, translation, yawAngle) {
         pointStartZ: pixelPointStartZ
     }
 }
+
+function convertToDegree(rad) {
+    return rad * 180 / Constants.pi
+}

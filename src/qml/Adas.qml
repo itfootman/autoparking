@@ -39,14 +39,23 @@ Item {
             z: -1500 + Constants.carLength / Constants.mmPerCm / Constants.cmPerPixelZ
             eulerRotation.y: 0
 
-            Behavior on eulerRotation.y  {
-                id: rotateSceneBehavior
-                SmoothedAnimation {
-                    id: rotateSceneAnim
-                    velocity: 2
-                    easing.type: Easing.Linear
-                }
+//            Behavior on eulerRotation.y  {
+//                id: rotateSceneBehavior
+//                SmoothedAnimation {
+//                    id: rotateSceneAnim
+//                    easing.type: Easing.Linear
+//                }
+//            }
+
+
+            NumberAnimation {
+              running: false
+              id: rotateSceneAnim
+              target: wrapperNode
+              property: "eulerRotation.y"
+              easing.type: Easing.InOutQuad
             }
+
 
             Node {
 
@@ -72,7 +81,7 @@ Item {
                 Connections {
                     target: uiupdater
                     function onCombinedDataUpdated(combinedData) {
-                        SceneManager.initScene(slotScene, combinedData);
+                        SceneManager.initScene(slotScene, rotateSceneAnim, combinedData);
                         SceneManager.controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goStraightAnimX, rotateSceneAnim);
                     }
                 } // Connections
