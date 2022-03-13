@@ -16,6 +16,8 @@ var initSlotSceneX = 0;
 var initSlotSceneZ = 0;
 var translation = 0;
 var firstCarAngle = 0;
+var recordYawAngle = 0;
+var isRotating = false;
 
 function isInScene(slotId) {
     return instances.has(slotId);
@@ -24,11 +26,13 @@ function isInScene(slotId) {
 function calculateYaw(combinedData) {
     var deltaAngle = 0;
     if (combinedData.carAngle * lastCarAngle < 0) {
+        recordYawAngle = yawAngle;
         initCarAngle = combinedData.carAngle;
-        deltaAngle = 0;
+        deltaAngle = recordYawAngle;
         lastCarAngle = initCarAngle;
     } else {
        deltaAngle = combinedData.carAngle - initCarAngle;
+       deltaAngle += recordYawAngle;
     }
 
     lastCarAngle = combinedData.carAngle;
@@ -107,6 +111,8 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goS
                     "    initCarAngle:", initCarAngle, "\n",
                     "    carAngle:", combinedData.carAngle, "\n",
                     "    yawAngle:",  yawAngle, "\n",
+                    "    recordYawAngle:", recordYawAngle, "\n",
+                    "    yawSpeed:",     combinedData.yawSpeed, "\n",
                     "    vehicleSpeed:", combinedData.vehicleSpeed, "\n",
                     "    initWordXY:(",initWorldX,",",initWorldY,")\n",
                     "    worldXY:(",combinedData.worldX,",",combinedData.worldY,")\n",
@@ -118,7 +124,10 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goS
             if (Math.abs(combinedData.yawSpeed) > Constants.roationThreshold && Math.abs(yawAngle) > Constants.yawDeviation) {
                 rotateScene(wrapperNode, yawAngle, combinedData.yawSpeed, rotateAnim);
             } else {
-                stopRotation(wrapperNode, rotateAnim);
+                if (isRotating) {
+                    stopRotation(wrapperNode, rotateAnim);
+                 //   resetScene(slotScene);
+                }
             }
         } else {
             pauseGoStraight(goStraightAnimZ, goStraightAnimX);
@@ -261,19 +270,25 @@ function addCar(parent, slotId, pointsArray, type, state, carOffset) {
 function moveScene(slotScene, vehicleSpeed, goStraightAnimZ, goStraightAnimX) {
     var pixelSpeed = vehicleSpeed * Constants.cmPerMeter / Constants.cmPerPixelZ;
     pixelSpeed *= Constants.movingSpeedFactor;
-    var pixelSpeed1 = pixelSpeed * Math.cos(yawAngle);
-    var pixelSpeed2 = pixelSpeed * Math.sin(yawAngle);
-    var pixelSpeedZ = 0;
-    var pixelSpeedX = 0;
-    if (Math.abs(pixelSpeed1) > Math.abs(pixelSpeed2)) {
-        pixelSpeedZ = pixelSpeed1;
-        pixelSpeedX = pixelSpeed2;
-    } else {
-        pixelSpeedZ = pixelSpeed2;
-        pixelSpeedX = pixelSpeed1;
+
+    var pixelSpeedZ = pixelSpeed * Math.cos(yawAngle);
+    var pixelSpeedX = pixelSpeed * Math.sin(yawAngle);
+    var needMoveX = false;
+    var needMoveZ = false;
+    if (isRotating) {
+        needMoveX = true;
+        needMoveZ = true;
     }
 
-    if (Math.abs(pixelSpeedZ) >= Constants.movingThreshold) {
+    if (Math.abs(pixelSpeedX) > Math.abs(pixelSpeedZ)) {
+        needMoveX = true;
+        needMoveZ = false;
+    } else {
+        needMoveX = false;
+        needMoveZ = true;
+    }
+
+    if (Math.abs(pixelSpeedZ) >= Constants.movingThreshold && needMoveZ) {
         goStraightAnimZ.duration = Math.abs((goStraightAnimZ.to - slotScene.z)) / Math.abs(pixelSpeedZ) * Constants.millseccondsPerSecond;
         goStraightAnimZ.from = slotScene.z;
         if (pixelSpeedZ < 0) {
@@ -289,8 +304,7 @@ function moveScene(slotScene, vehicleSpeed, goStraightAnimZ, goStraightAnimX) {
             goStraightAnimZ.pause();
         }
     }
-
-    if (Math.abs(pixelSpeedX) >= Constants.movingThreshold) {
+    if (Math.abs(pixelSpeedX) >= Constants.movingThreshold && needMoveX) {
         goStraightAnimX.duration = Math.abs((goStraightAnimX.to - slotScene.x)) / Math.abs(pixelSpeedX) * Constants.millseccondsPerSecond;
         goStraightAnimX.from = slotScene.x;
         if (pixelSpeedX < 0) {
@@ -334,6 +348,7 @@ function rotateScene(wrapperNode, yawAngle, yawSpeed, rotateSceneAnim) {
     rotateSceneAnim.to = -curDegree;
     rotateSceneAnim.duration = Math.abs((rotateSceneAnim.to - rotateSceneAnim.from)) / degreeSpeed * Constants.millseccondsPerSecond;
     rotateSceneAnim.restart();
+    isRotating = true;
 
     console.log("Rotation info:{\n",
                 "    yawspeed:", yawSpeed, "\n",
@@ -348,6 +363,8 @@ function pauseRotation(rotateSceneAnim) {
 //        console.log("APA: Pause turning...");
 //        rotateSceneAnim.pause();
 //    }
+
+    isRotating = false;
 }
 
 function stopRotation(wrapperNode, rotateSceneAnim) {
@@ -356,8 +373,16 @@ function stopRotation(wrapperNode, rotateSceneAnim) {
 //        rotateSceneAnim.stop();
 //    }
 
-//    rotateSceneAnim.velocity = 10000;
+//    rotateSceneAnim.duration = 0.01;
 //    wrapperNode.eulerRotation.y = 0;
+//    recordYawAngle = 0;
+//    yawAngle = 0;
+    isRotating = false;
+}
+
+function resetScene(slotScene) {
+    console.log("APA:============Reset Scene...");
+    slotScene.z = 0;
 }
 
 function pauseGoStraight(goStraightAnimZ, goStraightAnimX) {

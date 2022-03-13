@@ -53,7 +53,7 @@ Item {
               id: rotateSceneAnim
               target: wrapperNode
               property: "eulerRotation.y"
-              easing.type: Easing.InOutQuad
+              easing.type: Easing.Linear
             }
 
 
