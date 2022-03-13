@@ -36,7 +36,7 @@ Item {
 
         Node {
             id: wrapperNode
-            z: -1500
+            z: -1500 + Constants.carLength / Constants.mmPerCm / Constants.cmPerPixelZ
             eulerRotation.y: 0
 
             Behavior on eulerRotation.y  {

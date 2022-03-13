@@ -36,6 +36,10 @@ function calculateYaw(combinedData) {
 //        deltaAngle = 0;
 //    }
 
+    if (Math.abs(deltaAngle) <= Constants.yawDeviation) {
+        deltaAngle = 0;
+    }
+
     return deltaAngle;
 }
 
@@ -102,7 +106,7 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goS
 
         if (Math.abs(combinedData.vehicleSpeed) > 0) {
             moveScene(slotScene, combinedData.vehicleSpeed, goStraightAnimZ, goStraightAnimX);
-            if (Math.abs(combinedData.yawSpeed) > Constants.roationThreshold) {
+            if (Math.abs(combinedData.yawSpeed) > Constants.roationThreshold && Math.abs(yawAngle) > Constants.yawDeviation) {
                 rotateScene(wrapperNode, yawAngle, combinedData.yawSpeed, rotateAnim);
             } else {
                 stopRotation(wrapperNode, rotateAnim);
