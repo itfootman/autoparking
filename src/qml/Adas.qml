@@ -38,7 +38,6 @@ Item {
             id: wrapperNode
             z: -1500 + Constants.carLength / Constants.mmPerCm / Constants.cmPerPixelZ
             eulerRotation.y: 0
-
 //            Behavior on eulerRotation.y  {
 //                id: rotateSceneBehavior
 //                SmoothedAnimation {
@@ -48,46 +47,87 @@ Item {
 //            }
 
 
-            NumberAnimation {
-              running: false
-              id: rotateSceneAnim
-              target: wrapperNode
-              property: "eulerRotation.y"
-              easing.type: Easing.Linear
-            }
-
 
             Node {
+                property alias parallelMovingAnim: parallelAnim
+                property alias goStraightAnimZ: movingAnimZ
+                property alias goStraightAnimX: movingAnimX
+                property alias turningAnim: rotateSceneAnim
+                x: 0
+                z: 0
+                ParallelAnimation {
+                    running: false
+                    id: parallelAnim
+                    NumberAnimation {
+                        id: movingAnimZ
+                        target: slotScene
+                        property: "z"
+                        from: 0
+                        to: Constants.slotSceneMovingTo
+                        easing.type: Easing.Linear
+                    }
 
-                NumberAnimation {
-                    id: goStraightAnimZ
-                    target: slotScene
-                    property: "z"
-                    from: 0
-                    to: Constants.slotSceneMovingTo
-                    easing.type: Easing.Linear
-                }
+                    NumberAnimation {
+                        id: movingAnimX
+                        target: slotScene
+                        property: "x"
+                        from: 0
+                        to: Constants.slotSceneMovingTo
+                        easing.type: Easing.Linear
+                    }
 
-                NumberAnimation {
-                    id: goStraightAnimX
-                    target: slotScene
-                    property: "x"
-                    from: 0
-                    to: Constants.slotSceneMovingTo
-                    easing.type: Easing.Linear
+                    NumberAnimation {
+                      id: rotateSceneAnim
+                      target: wrapperNode
+                      property: "eulerRotation.y"
+                      easing.type: Easing.Linear
+                    }
                 }
 
                 id: slotScene
                 Connections {
                     target: uiupdater
                     function onCombinedDataUpdated(combinedData) {
-                        SceneManager.initScene(slotScene, rotateSceneAnim, combinedData);
-                        SceneManager.controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goStraightAnimX, rotateSceneAnim);
+                        SceneManager.initScene(slotScene, combinedData);
+                        SceneManager.controlScene(wrapperNode, slotScene, combinedData);
                     }
                 } // Connections
 
                 Component.onCompleted: {
                     SceneManager.initZ = slotScene.z;
+;
+               // slotScene.rotate(-90, Qt.vector3d(0,1,0), Node.LocalSpace);
+                    var roation = wrapperNode.eulerRotation.y / 180 * Constants.pi;
+//                    var deltay = -(1000 * Math.cos(roation) + 5000 * Math.sin(roation));
+//                    var deltax = -(-1000 * Math.sin(roation) - 5000 * Math.cos(roation));
+                    var slotComponent = Qt.createComponent("qrc:/qml/asset_imports/Slot/Slot.qml");
+//                    var localVec = Qt.vector3d(500 * Math.sin(roation) - 500 * Math.cos(roation) +
+//                                               deltay * Math.cos(roation) - deltax * Math.sin(roation)
+//                                               , 0,
+//                                               -500 * Math.cos(roation) - 500 * Math.sin(roation) +
+//                                               deltay * Math.sin(roation)  + deltax * Math.cos(roation));
+                    var x0 = 800;
+                    var y0 = 500;
+                    var newx = -(y0 * Math.cos(roation) - x0 * Math.sin(roation) + slotScene.x);
+                    var newz = -(y0 * Math.sin(roation) + x0 * Math.cos(roation) + slotScene.z);
+                    var localVec = Qt.vector3d(newx, 0, newz);
+                 //   var scenePos = wrapperNode.mapPositionToNode(slotScene, localVec);
+
+//                    let slotObject = slotComponent.createObject(slotScene,
+//                        {
+//                            "position": localVec,
+//                            "id": "tempSlotId",
+//                            "eulerRotation": Qt.vector3d(-90, 0, 0)
+//                        });
+
+//                    slotObject.changeText("Test");
+//                    slotObject.changeSize(400, 200);
+//                    slotObject.changeBackgroundColor("#10FF0000");
+
+//                    console.log("scenePos:",localVec, "roation:", roation);
+//                    console.log("wrapperScene:", wrapperNode.x, ",", wrapperNode.z);
+//                    console.log("slotScene:", slotScene.x, ",", slotScene.z);
+//                    console.log("#####################add a slot##################");
                 }
             }
         } // node wrapper

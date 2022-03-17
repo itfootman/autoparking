@@ -52,6 +52,14 @@ void MessagesHub::onVehicleMessage(const autoparking::vehicle_infoConstPtr& msg)
     combinedData_.worldX_ = msg->APACarPar.x;
     combinedData_.worldY_ = msg->APACarPar.y;
     //ROS_INFO("APA: vehicle data thread id:%d", std::this_thread::get_id());
+    combinedData_.readyFlag |= SLOT_FUSION_INFO();
+    combinedData_.readyFlag |= VEHICLE_INFO();
+    if (combinedData_.isReady()) {
+        combinedData_.num_ = 0;
+        combinedData_.clearReadyFlag();
+        combinedData_.clearData();
+        onOneFrameReady(combinedData_);
+    }
 }
 
 void MessagesHub::onSlotFusionMessage(const autoparking::fusion_infoConstPtr& msg) {

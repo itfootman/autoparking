@@ -17,7 +17,6 @@ var initSlotSceneZ = 0;
 var translation = 0;
 var firstCarAngle = 0;
 var recordYawAngle = 0;
-var isRotating = false;
 
 function isInScene(slotId) {
     return instances.has(slotId);
@@ -36,9 +35,6 @@ function calculateYaw(combinedData) {
     }
 
     lastCarAngle = combinedData.carAngle;
-//    if (Math.abs(deltaAngle) <= Constants.roationThreshold) {
-//        deltaAngle = 0;
-//    }
 
     if (Math.abs(deltaAngle) <= Constants.yawDeviation) {
         deltaAngle = 0;
@@ -53,7 +49,7 @@ function calculateYaw(combinedData) {
     return deltaAngle;
 }
 
-function initScene(slotScene, rotateSceneAnim, combinedData) {
+function initScene(slotScene, combinedData) {
     // Todo change the condition to judge points' size
     if (combinedData.slotPoints.length > 0 && combinedData.slotPoints[0] !== 0 && !sceneInited) {
         initCarAngle = combinedData.carAngle;
@@ -66,8 +62,8 @@ function initScene(slotScene, rotateSceneAnim, combinedData) {
         console.log("APA: Init scene complete.");
         sceneInited = true;
         yawAngle = calculateYaw(combinedData);
-        rotateSceneAnim.from = yawAngle;
-        rotateSceneAnim.to = yawAngle;
+        slotScene.turningAnim.from = yawAngle;
+        slotScene.turningAnim.to = yawAngle;
     }
 }
 
@@ -93,7 +89,7 @@ function calculateOffset(slotScene, worldX, worldY) {
     }
 }
 
-function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goStraightAnimX, rotateAnim) {
+function controlScene(wrapperNode, slotScene, combinedData) {
 //    if (combinedData.slotIds.length > 0) {
 //        if(combinedData.slotPoints.length > 0) {
 //            Logger.dumpCombinedData(combinedData);
@@ -120,18 +116,10 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goS
                     "\n}");
 
         if (Math.abs(combinedData.vehicleSpeed) > 0) {
-            moveScene(slotScene, combinedData.vehicleSpeed, goStraightAnimZ, goStraightAnimX);
-            if (Math.abs(combinedData.yawSpeed) > Constants.roationThreshold && Math.abs(yawAngle) > Constants.yawDeviation) {
-                rotateScene(wrapperNode, yawAngle, combinedData.yawSpeed, rotateAnim);
-            } else {
-                if (isRotating) {
-                    stopRotation(wrapperNode, rotateAnim);
-                 //   resetScene(slotScene);
-                }
-            }
+            animateScene(wrapperNode, slotScene, combinedData.vehicleSpeed, combinedData.yawSpeed);
         } else {
-            pauseGoStraight(goStraightAnimZ, goStraightAnimX);
-            stopRotation(wrapperNode, rotateAnim);
+            pauseGoStraight(slotScene.goStraightAnimZ, slotScene.goStraightAnimX);
+            stopRotation(wrapperNode, slotScene.turningAnim);
         }
 
         if (isDataValid(combinedData)) {
@@ -156,7 +144,6 @@ function controlScene(wrapperNode, slotScene, combinedData, goStraightAnimZ, goS
                         }
                     }
                 }
-
                 j += Constants.slotPointsCount;
             }
          }
@@ -184,6 +171,18 @@ function addSlot(parent, slotId, pointsArray, type, state, carOffset, isShowText
 
     var slotComponent = Qt.createComponent("qrc:/qml/asset_imports/Slot/Slot.qml");
     var localVec = Qt.vector3d(positionX, pixelCoordinate.pointStartY - Constants.carHeight, positionZ);
+//    if (Math.abs(localVec.x) > Math.abs(localVec.z)) {
+//        var temp = localVec.x;
+//        localVec.x = localVec.z;
+//        localVec.z = temp;
+//    }
+
+//    if (slotId === 38) {
+//        console.log("#############biwenyang: change position z..");
+//        localVec.z = -6500;
+//        localVec.x = -1000;
+//    }
+//QVector3D(-5463.74, -50, -2744.29)
     //var localVec = parent.mapPositionFromScene(Qt.vector3d(positionX, pixelCoordinate.pointStartY - Constants.carHeight, positionZ));
     var tempSlotId = "slot" + slotCount;
     let slotObject = slotComponent.createObject(parent,
@@ -208,6 +207,10 @@ function addSlot(parent, slotId, pointsArray, type, state, carOffset, isShowText
     } else if (type === Constants.SlotType.PARALLEL) {
         slotObject.changeSize(pixelCoordinate.width, pixelCoordinate.depth);
     }
+ //   if (slotId === 38) {
+//         slotObject.changeSize(480, 201);
+//    }
+
 
     instances.set(slotId, slotObject);
     console.log("SlotInfo:{\n",
@@ -267,72 +270,61 @@ function addCar(parent, slotId, pointsArray, type, state, carOffset) {
     console.log("APA: Add a car ", carObject, " to scene successfully...");
 }
 
-function moveScene(slotScene, vehicleSpeed, goStraightAnimZ, goStraightAnimX) {
+function animateScene(wrapperNode, slotScene, vehicleSpeed, yawSpeed) {
+    moveScene(slotScene, vehicleSpeed);
+    rotateScene(wrapperNode, yawSpeed, slotScene.turningAnim);
+    slotScene.parallelMovingAnim.restart();
+}
+
+function moveScene(slotScene, vehicleSpeed) {
     var pixelSpeed = vehicleSpeed * Constants.cmPerMeter / Constants.cmPerPixelZ;
     pixelSpeed *= Constants.movingSpeedFactor;
 
     var pixelSpeedZ = pixelSpeed * Math.cos(yawAngle);
     var pixelSpeedX = pixelSpeed * Math.sin(yawAngle);
-    var needMoveX = false;
-    var needMoveZ = false;
-    if (isRotating) {
-        needMoveX = true;
-        needMoveZ = true;
-    }
 
-    if (Math.abs(pixelSpeedX) > Math.abs(pixelSpeedZ)) {
-        needMoveX = true;
-        needMoveZ = false;
-    } else {
-        needMoveX = false;
-        needMoveZ = true;
-    }
-
-    if (Math.abs(pixelSpeedZ) >= Constants.movingThreshold && needMoveZ) {
-        goStraightAnimZ.duration = Math.abs((goStraightAnimZ.to - slotScene.z)) / Math.abs(pixelSpeedZ) * Constants.millseccondsPerSecond;
-        goStraightAnimZ.from = slotScene.z;
+    if (Math.abs(pixelSpeedZ) >= Constants.movingThreshold) {
         if (pixelSpeedZ < 0) {
-            goStraightAnimZ.to = -Constants.slotSceneMovingTo;
+            slotScene.goStraightAnimZ.to = -Constants.slotSceneMovingTo;
         } else {
-            goStraightAnimZ.to = Constants.slotSceneMovingTo;
+            slotScene.goStraightAnimZ.to = Constants.slotSceneMovingTo;
         }
-
-        goStraightAnimZ.restart();
+        slotScene.goStraightAnimZ.duration = Math.abs((slotScene.goStraightAnimZ.to - slotScene.z)) / Math.abs(pixelSpeedZ) * Constants.millseccondsPerSecond;
+        slotScene.goStraightAnimZ.from = slotScene.z;
 
     } else {
-        if (goStraightAnimZ.running) {
-            goStraightAnimZ.pause();
-        }
+       slotScene.goStraightAnimZ.from = slotScene.z;
+       slotScene.goStraightAnimZ.to = slotScene.z;
+       slotScene.goStraightAnimZ.duration = Number.MAX_SAFE_INTEGER;
     }
-    if (Math.abs(pixelSpeedX) >= Constants.movingThreshold && needMoveX) {
-        goStraightAnimX.duration = Math.abs((goStraightAnimX.to - slotScene.x)) / Math.abs(pixelSpeedX) * Constants.millseccondsPerSecond;
-        goStraightAnimX.from = slotScene.x;
+
+    if (Math.abs(pixelSpeedX) >= Constants.movingThreshold) {
+        slotScene.goStraightAnimX.from = slotScene.x;
         if (pixelSpeedX < 0) {
-            goStraightAnimX.to = -Constants.slotSceneMovingTo;
+            slotScene.goStraightAnimX.to = -Constants.slotSceneMovingTo;
         } else {
-            goStraightAnimX.to = Constants.slotSceneMovingTo;
+            slotScene.goStraightAnimX.to = Constants.slotSceneMovingTo;
         }
 
-        goStraightAnimX.restart();
+        slotScene.goStraightAnimX.duration = Math.abs((slotScene.goStraightAnimX.to - slotScene.x)) / Math.abs(pixelSpeedX) * Constants.millseccondsPerSecond;
+
     } else {
-        if (goStraightAnimX.running) {
-            goStraightAnimX.pause();
-        }
+        slotScene.goStraightAnimX.from = slotScene.x;
+        slotScene.goStraightAnimX.to = slotScene.x;
+        slotScene.goStraightAnimX.duration = Number.MAX_SAFE_INTEGER;
     }
-
-    //goStraightAnim.duration = 3000000000000
 
     console.log("Moving info: {\n",
                 "    vehicleSpeed:", vehicleSpeed, "\n",
                 "    pixelSpeed:",   pixelSpeed,   "\n",
-                "    moveToZ:",      goStraightAnimZ.to, "\n",
+                "    moveToZ:",      slotScene.goStraightAnimZ.to, "\n",
                 "    slotSceneZ:",   slotScene.z,  "\n",
                 "    pixelSpeedZ:",  pixelSpeedZ,  "\n",
-                "    moveDurationZ:", goStraightAnimZ.duration, "\n",
-                "    moveToX:",      goStraightAnimX.to, "\n",
+                "    moveDurationZ:", slotScene.goStraightAnimZ.duration, "\n",
+                "    moveToX:",      slotScene.goStraightAnimX.to, "\n",
                 "    slotSceneX:",   slotScene.x,  "\n",
                 "    pixelSpeedX:",  pixelSpeedX,  "\n",
-                "    moveDurationX:", goStraightAnimX.duration, "\n}");
+                "    moveDurationX:", slotScene.goStraightAnimX.duration, "\n}");
 }
 
 function clearObjects(slotScene){
@@ -340,15 +332,12 @@ function clearObjects(slotScene){
     instances.clear();
 }
 
-function rotateScene(wrapperNode, yawAngle, yawSpeed, rotateSceneAnim) {
-   // Todo: Calculate speed for animation.
+function rotateScene(wrapperNode, yawSpeed, rotateSceneAnim) {
     var degreeSpeed = Utils.convertToDegree(Math.abs(yawSpeed));
     var curDegree = Utils.convertToDegree(yawAngle);
     rotateSceneAnim.from = rotateSceneAnim.to;
     rotateSceneAnim.to = -curDegree;
     rotateSceneAnim.duration = Math.abs((rotateSceneAnim.to - rotateSceneAnim.from)) / degreeSpeed * Constants.millseccondsPerSecond;
-    rotateSceneAnim.restart();
-    isRotating = true;
 
     console.log("Rotation info:{\n",
                 "    yawspeed:", yawSpeed, "\n",
@@ -363,8 +352,6 @@ function pauseRotation(rotateSceneAnim) {
 //        console.log("APA: Pause turning...");
 //        rotateSceneAnim.pause();
 //    }
-
-    isRotating = false;
 }
 
 function stopRotation(wrapperNode, rotateSceneAnim) {
@@ -377,7 +364,6 @@ function stopRotation(wrapperNode, rotateSceneAnim) {
 //    wrapperNode.eulerRotation.y = 0;
 //    recordYawAngle = 0;
 //    yawAngle = 0;
-    isRotating = false;
 }
 
 function resetScene(slotScene) {
